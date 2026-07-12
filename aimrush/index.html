@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+<title>Aim Rush | Ajora Games</title>
+<meta name="description" content="30 seconds. Pop as many targets as you can. Track your accuracy, chase your best streak."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --range:#0c1210; --range2:#131c19;
+  --cyan:#2ff5d0; --amber:#ffb020; --red:#ff3b3b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;color:#e8fff8;-webkit-font-smoothing:antialiased;touch-action:none;
+}
+#wrap{position:relative;width:100vw;height:100vh;background:radial-gradient(ellipse 100% 70% at 50% 30%,var(--range2),var(--range) 70%);overflow:hidden}
+#wrap::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background-image:linear-gradient(rgba(47,245,208,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(47,245,208,0.035) 1px,transparent 1px);
+  background-size:34px 34px;
+}
+#range{position:absolute;inset:0;z-index:2;touch-action:none}
+
+#topbar{position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;pointer-events:none}
+#topbar a{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:8px;opacity:.85}
+.brand img{width:20px;height:20px;object-fit:contain;border-radius:5px}
+.brand b{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:14px;letter-spacing:.06em;color:#fff;text-transform:uppercase}
+.hud{display:flex;gap:16px;font-size:12px;font-weight:700;color:var(--cyan);letter-spacing:.04em;background:rgba(4,10,8,0.6);padding:6px 14px;border:1px solid rgba(47,245,208,0.3);border-radius:6px}
+.hud span b{color:#fff}
+
+.target{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle,rgba(47,245,208,0.9) 0%,rgba(47,245,208,0.5) 45%,transparent 70%);
+  border:2px solid var(--cyan);box-shadow:0 0 20px rgba(47,245,208,0.6);
+  display:flex;align-items:center;justify-content:center;cursor:crosshair;
+  animation:pop-in .12s ease-out;
+}
+.target::before{content:'';position:absolute;width:30%;height:30%;border-radius:50%;background:#fff}
+@keyframes pop-in{from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1}}
+.target.hit{animation:pop-hit .18s ease-out forwards;pointer-events:none}
+@keyframes pop-hit{to{transform:scale(1.6);opacity:0}}
+
+.overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(3,8,7,0.94);gap:14px;text-align:center;padding:24px}
+.overlay.hidden{display:none}
+.overlay h1{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(28px,7vw,40px);letter-spacing:.06em;text-transform:uppercase;margin:0}
+.overlay p{color:#8ab8ac;font-size:13px;margin:0;max-width:300px;line-height:1.5}
+.stat-row{display:flex;gap:22px;margin:6px 0}
+.stat{display:flex;flex-direction:column;align-items:center;gap:2px}
+.stat b{font-size:clamp(26px,7vw,36px);color:var(--cyan)}
+.stat span{font-size:10px;color:#7a9a90;letter-spacing:.1em;text-transform:uppercase}
+.btn{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--cyan);color:#032019;border:none;padding:12px 30px;border-radius:6px;cursor:pointer}
+.btn:active{transform:scale(.97)}
+.hint{font-size:11px;color:#5a7a70;letter-spacing:.03em}
+
+#countdown{position:absolute;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(3,8,7,0.85)}
+#countdown.hidden{display:none}
+#countNum{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(80px,22vw,140px);color:var(--cyan);text-shadow:0 0 30px var(--cyan)}
+
+/* INTRO SPLASH */
+#nv-intro{position:fixed;inset:0;background:#0c1210;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;overflow:hidden}
+#nv-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(47,245,208,0.14),transparent 70%)}
+#ni-logos{display:flex;align-items:center;gap:22px;opacity:0;transform:scale(.92) translateY(12px);transition:all .85s cubic-bezier(.34,1.1,.64,1)}
+#ni-logos img{height:min(64px,13vw);width:min(64px,13vw);object-fit:contain}
+#ni-div{width:1px;height:44px;background:linear-gradient(180deg,transparent,rgba(47,245,208,.7),transparent)}
+#ni-title{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:17px;letter-spacing:.1em;color:#fff;margin-top:20px;opacity:0;transition:opacity .5s ease .65s;text-transform:uppercase}
+#ni-sub{font-family:'JetBrains Mono',monospace;font-weight:400;font-size:10px;color:#5a8a7a;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .72s}
+#ni-bar{width:min(160px,44vw);height:5px;background:#132420;border-radius:8px;margin-top:28px;overflow:hidden;opacity:0;transition:opacity .3s ease .8s}
+#ni-progress{height:100%;width:0%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);transition:width 1.05s ease .88s}
+
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important}}
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <div id="nv-intro">
+    <div id="ni-logos">
+      <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+      <div id="ni-div"></div>
+      <img src="../games/aimrush-logo.svg" alt="Aim Rush" style="border-radius:16px;box-shadow:0 0 24px rgba(47,245,208,0.35)"/>
+    </div>
+    <div id="ni-title">AIM RUSH</div>
+    <div id="ni-sub">An Ajora Games Original</div>
+    <div id="ni-bar"><div id="ni-progress"></div></div>
+  </div>
+  <script>
+  (function(){
+    var logos=document.getElementById('ni-logos');
+    setTimeout(function(){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';},120);
+    var title=document.getElementById('ni-title'),sub=document.getElementById('ni-sub'),bar=document.getElementById('ni-bar'),prog=document.getElementById('ni-progress');
+    setTimeout(function(){title.style.opacity='1';},650);
+    setTimeout(function(){sub.style.opacity='1';},720);
+    setTimeout(function(){bar.style.opacity='1';},800);
+    setTimeout(function(){prog.style.width='100%';},840);
+    setTimeout(function(){
+      var intro=document.getElementById('nv-intro');
+      intro.style.transition='opacity .45s ease';
+      intro.style.opacity='0';
+      setTimeout(function(){intro.style.display='none';},450);
+    },2100);
+  })();
+  </script>
+
+  <div id="range"></div>
+
+  <div id="topbar">
+    <div class="brand"><img src="../ajora-logo-transparent.png" alt=""/><b>Aim Rush</b></div>
+    <div class="hud"><span>TIME <b id="hudTime">30</b></span><span>HITS <b id="hudHits">0</b></span></div>
+  </div>
+
+  <div id="countdown" class="hidden"><div id="countNum">3</div></div>
+
+  <div id="startOverlay" class="overlay">
+    <h1>AIM RUSH</h1>
+    <p>Targets appear at random. Tap or click as many as you can before the clock runs out. Miss and your accuracy drops.</p>
+    <button class="btn" id="startBtn">START 30s RUN</button>
+    <div class="hint">Best hits: <span id="startBest">0</span></div>
+  </div>
+
+  <div id="overOverlay" class="overlay hidden">
+    <h1 style="color:var(--cyan)">TIME'S UP</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="finalHits">0</b><span>Hits</span></div>
+      <div class="stat"><b id="finalAcc">0%</b><span>Accuracy</span></div>
+    </div>
+    <p id="newBestMsg" style="color:var(--cyan);display:none">New best hit count!</p>
+    <button class="btn" id="retryBtn">RUN AGAIN</button>
+  </div>
+</div>
+
+<a href="../games/" id="ajora-back-badge" style="position:fixed;top:14px;right:14px;z-index:2147483647;display:flex;align-items:center;gap:7px;background:rgba(4,10,8,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(47,245,208,0.25);border-radius:999px;padding:6px 14px 6px 6px;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.02em;color:#e8fff8;opacity:.78;transition:opacity .15s ease;line-height:1;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.78'">
+  <img src="../ajora-logo-transparent.png" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:5px;display:block;pointer-events:none"/>
+  <span style="pointer-events:none">Ajora Games</span>
+</a>
+
+<script>
+(function(){
+  var range=document.getElementById('range');
+  var wrap=document.getElementById('wrap');
+  var hits=0, misses=0, timeLeft=30, running=false, spawnTimer=null, countdownTimer=null, tickTimer=null;
+  var minSize=44, maxSize=76;
+
+  var BEST_KEY='ajora_aimrush_best';
+  var best=parseInt(localStorage.getItem(BEST_KEY)||'0',10);
+  document.getElementById('startBest').textContent=best;
+
+  function isTouch(){ return 'ontouchstart' in window || navigator.maxTouchPoints>0; }
+
+  function spawnTarget(){
+    if(!running) return;
+    var size=minSize+Math.random()*(maxSize-minSize) - Math.min(20, (30-timeLeft)*0.8);
+    size=Math.max(30,size);
+    var w=wrap.clientWidth, h=wrap.clientHeight;
+    var x=Math.random()*(w-size-20)+10;
+    var y=Math.random()*(h-size-100)+70;
+    var t=document.createElement('div');
+    t.className='target';
+    t.style.width=size+'px'; t.style.height=size+'px';
+    t.style.left=x+'px'; t.style.top=y+'px';
+    var life=setTimeout(function(){
+      if(t.parentNode){ t.remove(); misses++; }
+    }, 1400);
+    function onHit(e){
+      e.preventDefault();
+      clearTimeout(life);
+      hits++;
+      document.getElementById('hudHits').textContent=hits;
+      t.classList.add('hit');
+      setTimeout(function(){ t.remove(); },180);
+    }
+    t.addEventListener('click',onHit);
+    t.addEventListener('touchstart',onHit,{passive:false});
+    range.appendChild(t);
+    var nextDelay=Math.max(340, 620 - (30-timeLeft)*8);
+    spawnTimer=setTimeout(spawnTarget,nextDelay);
+  }
+
+  range.addEventListener('click',function(e){
+    if(e.target===range && running) misses++;
+  });
+
+  function startCountdown(){
+    document.getElementById('startOverlay').classList.add('hidden');
+    document.getElementById('overOverlay').classList.add('hidden');
+    var cd=document.getElementById('countdown'); cd.classList.remove('hidden');
+    var n=3;
+    document.getElementById('countNum').textContent=n;
+    countdownTimer=setInterval(function(){
+      n--;
+      if(n<=0){
+        clearInterval(countdownTimer);
+        cd.classList.add('hidden');
+        startGame();
+      } else {
+        document.getElementById('countNum').textContent=n;
+      }
+    },700);
+  }
+
+  function startGame(){
+    hits=0; misses=0; timeLeft=30; running=true;
+    range.innerHTML='';
+    document.getElementById('hudHits').textContent=0;
+    document.getElementById('hudTime').textContent=timeLeft;
+    spawnTarget();
+    tickTimer=setInterval(function(){
+      timeLeft--;
+      document.getElementById('hudTime').textContent=timeLeft;
+      if(timeLeft<=0) endGame();
+    },1000);
+  }
+
+  function endGame(){
+    running=false;
+    clearInterval(tickTimer); clearTimeout(spawnTimer);
+    range.innerHTML='';
+    var total=hits+misses;
+    var acc=total>0?Math.round((hits/total)*100):0;
+    document.getElementById('finalHits').textContent=hits;
+    document.getElementById('finalAcc').textContent=acc+'%';
+    if(hits>best){
+      best=hits; localStorage.setItem(BEST_KEY,best);
+      document.getElementById('newBestMsg').style.display='block';
+    } else {
+      document.getElementById('newBestMsg').style.display='none';
+    }
+    document.getElementById('overOverlay').classList.remove('hidden');
+  }
+
+  document.getElementById('startBtn').addEventListener('click',startCountdown);
+  document.getElementById('retryBtn').addEventListener('click',startCountdown);
+})();
+</script>
+</body>
+</html>

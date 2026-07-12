@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+<title>Quantum Forge | Ajora Games</title>
+<meta name="description" content="Tap the quantum core, build an energy empire, prestige into Antimatter. A cosmic incremental game."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0B0C10;
+  --panel:#1F2833;
+  --panel2:#171d24;
+  --cyan:#66FCF1;
+  --violet:#45A29E;
+  --white:#FFFFFF;
+  --muted:#C5C6C7;
+  --line:#2b3440;
+  --num:'Orbitron',sans-serif;
+  --ui:'Inter',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--white);font-family:var(--ui);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+::selection{background:var(--cyan);color:var(--bg)}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
+
+/* ===== INTRO ===== */
+#qf-intro{position:fixed;inset:0;background:#0B0C10;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;overflow:hidden}
+#qf-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(102,252,241,0.10),transparent 70%)}
+#qi-logos{display:flex;align-items:center;gap:22px;opacity:0;transform:scale(.92) translateY(12px);transition:all .85s cubic-bezier(.34,1.1,.64,1)}
+#qi-logos img{height:min(64px,13vw);width:min(64px,13vw);object-fit:contain}
+#qi-div{width:1px;height:44px;background:linear-gradient(180deg,transparent,rgba(102,252,241,.6),transparent)}
+#qi-title{font-family:var(--num);font-weight:800;font-size:15px;letter-spacing:.08em;color:#fff;margin-top:20px;opacity:0;transition:opacity .5s ease .65s;text-transform:uppercase}
+#qi-sub{font-family:var(--ui);font-weight:600;font-size:10px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .72s}
+#qi-bar{width:min(160px,44vw);height:5px;background:#151a20;border-radius:8px;margin-top:28px;overflow:hidden;opacity:0;transition:opacity .3s ease .8s}
+#qi-progress{height:100%;width:0%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);transition:width 1.05s ease .88s}
+
+/* ===== TOP BAR ===== */
+#qf-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;background:var(--panel2);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:200;
+}
+.qf-brand{display:flex;align-items:center;gap:10px}
+.qf-brand img{width:26px;height:26px;object-fit:contain;border-radius:6px}
+.qf-brand b{font-family:var(--num);font-weight:700;font-size:14px;letter-spacing:.03em}
+.qf-back{
+  font-family:var(--ui);font-size:12px;font-weight:600;color:var(--muted);
+  display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;
+  transition:border-color .15s,color .15s;
+}
+.qf-back:hover{color:var(--cyan);border-color:var(--cyan)}
+
+/* ===== LAYOUT ===== */
+#qf-app{display:grid;grid-template-columns:38% 32% 30%;min-height:calc(100vh - 51px)}
+@media(max-width:920px){#qf-app{grid-template-columns:1fr;min-height:0}}
+
+.qf-col{padding:18px;border-right:1px solid var(--line)}
+.qf-col:last-child{border-right:none}
+.qf-col-head{font-family:var(--num);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin:0 0 16px;display:flex;align-items:center;gap:8px}
+.qf-col-head::before{content:'';width:6px;height:6px;background:var(--violet);border-radius:50%}
+
+/* ===== REACTOR (col 1) ===== */
+.qf-counter{text-align:center;margin-bottom:26px}
+.qf-quarks{font-family:var(--num);font-weight:900;font-size:clamp(30px,5vw,44px);color:#fff;letter-spacing:.01em;line-height:1}
+.qf-qps{font-family:var(--ui);font-size:12px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+.qf-qps b{color:var(--cyan);font-family:var(--num);font-weight:700}
+
+.qf-core-zone{position:relative;display:flex;align-items:center;justify-content:center;height:min(50vw,300px);margin-bottom:14px}
+#qf-core{
+  position:relative;width:min(46vw,220px);height:min(46vw,220px);border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #eafffe 0%, var(--cyan) 42%, #1b8f88 100%);
+  border:none;box-shadow:0 0 40px 6px rgba(102,252,241,0.45),0 0 90px 20px rgba(102,252,241,0.18);
+  transition:transform .08s ease;
+  animation:qfPulse 2.6s ease-in-out infinite;
+}
+#qf-core:active{transform:scale(0.95)}
+#qf-core.skin-violet{background:radial-gradient(circle at 40% 35%,#eafcfa 0%,var(--violet) 42%,#1c4a48 100%);box-shadow:0 0 40px 6px rgba(69,162,158,0.5),0 0 90px 20px rgba(69,162,158,0.2)}
+#qf-core.skin-gold{background:radial-gradient(circle at 40% 35%,#fff9e6 0%,#ffd447 42%,#8a6b12 100%);box-shadow:0 0 40px 6px rgba(255,212,71,0.5),0 0 90px 20px rgba(255,212,71,0.2)}
+#qf-core.skin-crimson{background:radial-gradient(circle at 40% 35%,#ffe8ec 0%,#c41230 42%,#4c0714 100%);box-shadow:0 0 40px 6px rgba(196,18,48,0.5),0 0 90px 20px rgba(196,18,48,0.2)}
+#qf-core.skin-prism{background:conic-gradient(from 0deg,#66FCF1,#45A29E,#c41230,#ffd447,#66FCF1);box-shadow:0 0 40px 6px rgba(255,255,255,0.35),0 0 90px 20px rgba(255,255,255,0.15);animation:qfPulse 2.6s ease-in-out infinite, qfSpin 6s linear infinite}
+@keyframes qfPulse{0%,100%{box-shadow:0 0 40px 6px rgba(102,252,241,0.45),0 0 90px 20px rgba(102,252,241,0.18)}50%{box-shadow:0 0 55px 10px rgba(102,252,241,0.65),0 0 120px 30px rgba(102,252,241,0.28)}}
+@keyframes qfSpin{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+.qf-particle{position:absolute;font-family:var(--num);font-weight:800;font-size:15px;color:var(--cyan);pointer-events:none;animation:qfFloat 0.9s ease-out forwards}
+@keyframes qfFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.2)}}
+.qf-tap-hint{text-align:center;font-family:var(--ui);font-size:11px;color:#565b62;letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+
+/* ===== AUTOMATORS (col 2) ===== */
+.qf-gen-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;margin-bottom:10px;position:relative;overflow:hidden;
+  transition:border-color .15s;
+}
+.qf-gen-card.affordable{border-color:rgba(102,252,241,0.45)}
+.qf-gen-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.qf-gen-name{font-weight:700;font-size:13.5px}
+.qf-gen-owned{font-family:var(--num);font-size:12px;color:var(--muted)}
+.qf-gen-flavor{font-size:10.5px;color:#7d8590;margin:4px 0 10px;line-height:1.4}
+.qf-gen-bottom{display:flex;justify-content:space-between;align-items:center}
+.qf-gen-qps{font-family:var(--num);font-size:11px;color:var(--violet)}
+.qf-buy-btn{
+  font-family:var(--num);font-weight:700;font-size:12px;
+  border:none;border-radius:7px;padding:7px 12px;color:#08181a;
+  background:var(--cyan);transition:transform .1s,opacity .15s;
+}
+.qf-buy-btn:active{transform:scale(0.95)}
+.qf-buy-btn.unaffordable{background:#3a2a2c;color:#ff8a8a;cursor:not-allowed;opacity:.7}
+.qf-milestone-flash{position:absolute;inset:0;background:rgba(102,252,241,0.18);opacity:0;pointer-events:none}
+
+/* ===== LAB (col 3) ===== */
+.qf-tabs{display:flex;gap:6px;margin-bottom:14px}
+.qf-tab{flex:1;text-align:center;padding:8px;font-family:var(--num);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--muted)}
+.qf-tab.active{color:var(--cyan);border-color:var(--cyan)}
+.qf-upgrade-card,.qf-skin-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:11px 13px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.qf-upgrade-card.owned,.qf-skin-card.owned{opacity:.55}
+.qf-uc-name{font-size:12.5px;font-weight:700}
+.qf-uc-desc{font-size:10px;color:#7d8590;margin-top:3px}
+.qf-mini-btn{font-family:var(--num);font-weight:700;font-size:11px;border:none;border-radius:6px;padding:6px 10px;background:var(--violet);color:#04100f;white-space:nowrap}
+.qf-mini-btn.unaffordable{background:#33393f;color:#8a8f95;cursor:not-allowed}
+.qf-mini-btn.equipped{background:transparent;border:1px solid var(--cyan);color:var(--cyan)}
+
+.qf-prestige-box{margin-top:18px;padding:14px;border:1px dashed rgba(196,18,48,0.5);border-radius:10px;background:rgba(196,18,48,0.06)}
+.qf-prestige-box h4{margin:0 0 6px;font-family:var(--num);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#ff8a94}
+.qf-prestige-box p{font-size:10.5px;color:var(--muted);margin:0 0 10px;line-height:1.5}
+.qf-prestige-btn{width:100%;font-family:var(--num);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;padding:10px;border:none;border-radius:8px;background:#c41230;color:#fff}
+.qf-prestige-btn:disabled{background:#3a2a2c;color:#7a5a5e;cursor:not-allowed}
+
+/* ===== TOAST + CONFETTI ===== */
+#qf-toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:5000;display:flex;flex-direction:column;gap:8px;align-items:center}
+.qf-toast{background:var(--panel);border:1px solid var(--cyan);border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:qfToastIn .25s ease,qfToastOut .3s ease 2.4s forwards}
+@keyframes qfToastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes qfToastOut{to{opacity:0;transform:translateY(-8px)}}
+.qf-confetti{position:fixed;width:7px;height:7px;pointer-events:none;z-index:4999;animation:qfConfetti 1.1s ease-out forwards}
+@keyframes qfConfetti{0%{opacity:1;transform:translate(0,0) rotate(0deg)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}}
+</style>
+</head>
+<body>
+
+<div id="qf-intro">
+  <div id="qi-logos">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+    <div id="qi-div"></div>
+    <img src="../games/quantumforge-logo.svg" alt="Quantum Forge"/>
+  </div>
+  <div id="qi-title">Quantum Forge</div>
+  <div id="qi-sub">An Ajora Games Original</div>
+  <div id="qi-bar"><div id="qi-progress"></div></div>
+</div>
+
+<div id="qf-topbar">
+  <div class="qf-brand">
+    <img src="../games/quantumforge-logo.svg" alt=""/>
+    <b>QUANTUM FORGE</b>
+  </div>
+  <a href="../games/" class="qf-back">&larr; Arcade</a>
+</div>
+
+<div id="qf-app">
+
+  <div class="qf-col" id="qf-col-reactor">
+    <div class="qf-col-head">Reactor</div>
+    <div class="qf-counter">
+      <div class="qf-quarks" id="qf-quarks-display">0</div>
+      <div class="qf-qps">Quarks &middot; <b id="qf-qps-display">0</b> QPS</div>
+    </div>
+    <div class="qf-core-zone" id="qf-core-zone">
+      <button id="qf-core" aria-label="Harvest the quantum core"></button>
+    </div>
+    <div class="qf-tap-hint">Tap the core to harvest</div>
+  </div>
+
+  <div class="qf-col" id="qf-col-automators">
+    <div class="qf-col-head">Energy Generators</div>
+    <div id="qf-gen-list"></div>
+  </div>
+
+  <div class="qf-col" id="qf-col-lab">
+    <div class="qf-col-head">Upgrades &amp; Customization</div>
+    <div class="qf-tabs">
+      <div class="qf-tab active" id="qf-tab-lab" onclick="qfSwitchTab('lab')">Research Lab</div>
+      <div class="qf-tab" id="qf-tab-cosmetics" onclick="qfSwitchTab('cosmetics')">Core Cosmetics</div>
+    </div>
+    <div id="qf-lab-panel"></div>
+    <div id="qf-cosmetics-panel" style="display:none"></div>
+
+    <div class="qf-prestige-box">
+      <h4>&#9889; Melt Down The Forge</h4>
+      <p id="qf-prestige-desc">Reset your progress for permanent Antimatter. Each Antimatter grants +2% Quarks, forever.</p>
+      <button class="qf-prestige-btn" id="qf-prestige-btn" onclick="qfPrestige()">Prestige</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="qf-toasts"></div>
+
+<script>
+/* ============ DATA ============ */
+const GENERATORS = [
+  {id:'drone',   name:'Subatomic Drone',       baseCost:15,      qps:0.1, flavor:'Tiny bots mining background radiation.'},
+  {id:'plasma',  name:'Plasma Harvester',      baseCost:100,     qps:1.0, flavor:'Siphons heat from mini fusion reactors.'},
+  {id:'darkm',   name:'Dark Matter Refinery',  baseCost:1100,    qps:8.0, flavor:'Condenses space anomalies into raw power.'},
+  {id:'worm',    name:'Wormhole Siphon',       baseCost:12000,   qps:47.0, flavor:'Steals energy from parallel universes.'},
+  {id:'neutron', name:'Neutron Star Compressor', baseCost:130000, qps:260.0, flavor:'Crushes a dying star into fuel.'},
+  {id:'galactic',name:'Galactic Forge',        baseCost:1400000, qps:1400.0, flavor:'Forges energy at the scale of galaxies.'},
+];
+
+const UPGRADES = [
+  {id:'u1', name:'Reinforced Circuits', desc:'Doubles click power.', cost:500,     type:'click', mult:2},
+  {id:'u2', name:'Automator Calibration', desc:'+50% Generator QPS.', cost:10000, type:'qps',   mult:1.5},
+  {id:'u3', name:'Overclocked Core', desc:'Doubles click power again.', cost:25000, type:'click', mult:2},
+  {id:'u4', name:'Quantum Compression', desc:'+50% Generator QPS.', cost:100000, type:'qps',    mult:1.5},
+  {id:'u5', name:'Singularity Tap', desc:'Click power x2, QPS +25%.', cost:2000000, type:'both', clickMult:2, qpsMult:1.25},
+];
+
+const SKINS = [
+  {id:'cyan',    name:'Cyber Cyan',  cost:0,        cls:''},
+  {id:'violet',  name:'Neon Violet', cost:250000,   cls:'skin-violet'},
+  {id:'gold',    name:'Gold Core',   cost:1000000,  cls:'skin-gold'},
+  {id:'crimson', name:'Ajora Crimson', cost:5000000, cls:'skin-crimson'},
+  {id:'prism',   name:'Prism Core',  cost:25000000, cls:'skin-prism'},
+];
+
+const SAVE_KEY = 'ajora_quantumforge_save_v1';
+
+/* ============ STATE ============ */
+let state = {
+  quarks: 0,
+  lifetimeQuarks: 0,
+  owned: {},          // {genId: count}
+  milestones: {},     // {genId: highest milestone tier hit}
+  upgradesOwned: {},  // {upgradeId: true}
+  skinsOwned: {cyan:true},
+  equippedSkin: 'cyan',
+  antimatter: 0,
+  activeTab: 'lab',
+};
+GENERATORS.forEach(g=>{ state.owned[g.id]=0; state.milestones[g.id]=0; });
+
+function qfLoad(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+      GENERATORS.forEach(g=>{ if(!(g.id in state.owned)) state.owned[g.id]=0; if(!(g.id in state.milestones)) state.milestones[g.id]=0; });
+    }
+  }catch(e){ console.error('QF: save load failed', e); }
+}
+function qfSave(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){ console.error('QF: save failed', e); }
+}
+
+/* ============ MATH ============ */
+function qfGenCost(gen){
+  const owned = state.owned[gen.id];
+  return Math.ceil(gen.baseCost * Math.pow(1.15, owned));
+}
+function qfPrestigeMult(){ return 1 + state.antimatter * 0.02; }
+function qfClickMult(){
+  let m = 1;
+  UPGRADES.forEach(u=>{
+    if(!state.upgradesOwned[u.id]) return;
+    if(u.type==='click') m *= u.mult;
+    if(u.type==='both') m *= u.clickMult;
+  });
+  return m;
+}
+function qfQpsMult(){
+  let m = 1;
+  UPGRADES.forEach(u=>{
+    if(!state.upgradesOwned[u.id]) return;
+    if(u.type==='qps') m *= u.mult;
+    if(u.type==='both') m *= u.qpsMult;
+  });
+  return m;
+}
+function qfGenMilestoneMult(gen){
+  return Math.pow(2, state.milestones[gen.id]||0);
+}
+function qfTotalQps(){
+  let total = 0;
+  GENERATORS.forEach(g=>{ total += g.qps * state.owned[g.id] * qfGenMilestoneMult(g); });
+  return total * qfQpsMult() * qfPrestigeMult();
+}
+function qfClickValue(){
+  return 1 * qfClickMult() * qfPrestigeMult();
+}
+function qfFormat(n){
+  if(n < 1000) return n.toFixed(n<10 && n%1!==0 ? 1 : 0);
+  const units = ['K','M','B','T','Qa','Qi','Sx','Sp'];
+  let u = -1;
+  while(n >= 1000 && u < units.length-1){ n/=1000; u++; }
+  return n.toFixed(2) + units[u];
+}
+
+/* ============ RENDER ============ */
+function qfRenderCounters(){
+  document.getElementById('qf-quarks-display').textContent = qfFormat(state.quarks);
+  document.getElementById('qf-qps-display').textContent = qfFormat(qfTotalQps());
+}
+
+function qfRenderGenerators(){
+  const list = document.getElementById('qf-gen-list');
+  list.innerHTML = '';
+  GENERATORS.forEach(g=>{
+    const cost = qfGenCost(g);
+    const affordable = state.quarks >= cost;
+    const owned = state.owned[g.id];
+    const effQps = (g.qps * qfGenMilestoneMult(g)).toFixed(2);
+    const card = document.createElement('div');
+    card.className = 'qf-gen-card' + (affordable ? ' affordable' : '');
+    card.innerHTML = `
+      <div class="qf-milestone-flash" id="flash-${g.id}"></div>
+      <div class="qf-gen-top">
+        <span class="qf-gen-name">${g.name}</span>
+        <span class="qf-gen-owned">x${owned}</span>
+      </div>
+      <div class="qf-gen-flavor">${g.flavor}</div>
+      <div class="qf-gen-bottom">
+        <span class="qf-gen-qps">+${effQps} QPS each</span>
+        <button class="qf-buy-btn ${affordable?'':'unaffordable'}" onclick="qfBuyGen('${g.id}')">${qfFormat(cost)} Q</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function qfRenderLab(){
+  const panel = document.getElementById('qf-lab-panel');
+  panel.innerHTML = '';
+  UPGRADES.forEach(u=>{
+    const owned = !!state.upgradesOwned[u.id];
+    const affordable = state.quarks >= u.cost;
+    const card = document.createElement('div');
+    card.className = 'qf-upgrade-card' + (owned ? ' owned':'');
+    card.innerHTML = `
+      <div>
+        <div class="qf-uc-name">${u.name}</div>
+        <div class="qf-uc-desc">${u.desc}</div>
+      </div>
+      ${owned
+        ? `<span class="qf-mini-btn equipped">Owned</span>`
+        : `<button class="qf-mini-btn ${affordable?'':'unaffordable'}" onclick="qfBuyUpgrade('${u.id}')">${qfFormat(u.cost)} Q</button>`}
+    `;
+    panel.appendChild(card);
+  });
+}
+
+function qfRenderCosmetics(){
+  const panel = document.getElementById('qf-cosmetics-panel');
+  panel.innerHTML = '';
+  SKINS.forEach(s=>{
+    const owned = !!state.skinsOwned[s.id];
+    const equipped = state.equippedSkin === s.id;
+    const affordable = state.quarks >= s.cost;
+    const card = document.createElement('div');
+    card.className = 'qf-skin-card';
+    let btn;
+    if(equipped) btn = `<span class="qf-mini-btn equipped">Equipped</span>`;
+    else if(owned) btn = `<button class="qf-mini-btn" onclick="qfEquipSkin('${s.id}')">Equip</button>`;
+    else btn = `<button class="qf-mini-btn ${affordable?'':'unaffordable'}" onclick="qfBuySkin('${s.id}')">${s.cost===0?'Free':qfFormat(s.cost)+' Q'}</button>`;
+    card.innerHTML = `
+      <div>
+        <div class="qf-uc-name">${s.name}</div>
+        <div class="qf-uc-desc">${s.cost===0?'Default core skin':'Cosmetic core skin'}</div>
+      </div>
+      ${btn}
+    `;
+    panel.appendChild(card);
+  });
+}
+
+function qfApplySkin(){
+  const core = document.getElementById('qf-core');
+  core.className = '';
+  const skin = SKINS.find(s=>s.id===state.equippedSkin);
+  if(skin && skin.cls) core.classList.add(skin.cls);
+}
+
+function qfRenderPrestige(){
+  const lifetimeReq = 1000000;
+  const gain = Math.floor(Math.sqrt(state.lifetimeQuarks / 1000000));
+  const btn = document.getElementById('qf-prestige-btn');
+  const desc = document.getElementById('qf-prestige-desc');
+  if(state.lifetimeQuarks < lifetimeReq){
+    btn.disabled = true;
+    btn.textContent = `Locked (need ${qfFormat(lifetimeReq)} lifetime Quarks)`;
+  } else {
+    btn.disabled = gain < 1;
+    btn.textContent = `Melt Down &rarr; +${gain} Antimatter`;
+  }
+  desc.textContent = `You have ${state.antimatter} Antimatter (+${(state.antimatter*2)}% Quarks, forever). Resets Quarks & Generators, keeps Upgrades locked until re-earned.`;
+}
+
+function qfRenderAll(){
+  qfRenderCounters();
+  qfRenderGenerators();
+  qfRenderLab();
+  qfRenderCosmetics();
+  qfApplySkin();
+  qfRenderPrestige();
+}
+
+/* ============ ACTIONS ============ */
+function qfSpawnParticle(x, y, value){
+  const zone = document.getElementById('qf-core-zone');
+  const el = document.createElement('div');
+  el.className = 'qf-particle';
+  el.textContent = '+' + qfFormat(value);
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  zone.appendChild(el);
+  setTimeout(()=>el.remove(), 950);
+}
+
+function qfSpawnConfetti(originEl){
+  const rect = originEl.getBoundingClientRect();
+  const colors = ['#66FCF1','#45A29E','#c41230','#ffd447','#ffffff'];
+  for(let i=0;i<18;i++){
+    const c = document.createElement('div');
+    c.className = 'qf-confetti';
+    c.style.left = (rect.left + rect.width/2) + 'px';
+    c.style.top = (rect.top + rect.height/2) + 'px';
+    c.style.background = colors[i % colors.length];
+    const angle = Math.random()*Math.PI*2;
+    const dist = 60 + Math.random()*70;
+    c.style.setProperty('--dx', Math.cos(angle)*dist + 'px');
+    c.style.setProperty('--dy', Math.sin(angle)*dist + 'px');
+    c.style.setProperty('--rot', (Math.random()*360)+'deg');
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 1150);
+  }
+}
+
+function qfToast(msg){
+  const wrap = document.getElementById('qf-toasts');
+  const t = document.createElement('div');
+  t.className = 'qf-toast';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(()=>t.remove(), 2750);
+}
+
+function qfClickCore(e){
+  const val = qfClickValue();
+  state.quarks += val;
+  state.lifetimeQuarks += val;
+  const zone = document.getElementById('qf-core-zone');
+  const rect = zone.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  qfSpawnParticle(x, y, val);
+  qfRenderCounters();
+}
+
+function qfBuyGen(id){
+  const gen = GENERATORS.find(g=>g.id===id);
+  const cost = qfGenCost(gen);
+  if(state.quarks < cost) return;
+  state.quarks -= cost;
+  state.owned[id]++;
+  const owned = state.owned[id];
+  if(owned % 10 === 0){
+    const tier = Math.floor(owned/10);
+    if(tier > state.milestones[id]){
+      state.milestones[id] = tier;
+      qfToast(`\u26A1 ${gen.name} output doubled!`);
+      const cardFlash = document.getElementById('flash-'+id);
+      if(cardFlash){
+        cardFlash.style.transition = 'opacity .15s';
+        cardFlash.style.opacity = '1';
+        setTimeout(()=>{ cardFlash.style.opacity='0'; }, 350);
+      }
+      qfSpawnConfetti(document.getElementById('flash-'+id) || document.body);
+    }
+  }
+  qfRenderAll();
+  qfSave();
+}
+
+function qfBuyUpgrade(id){
+  const u = UPGRADES.find(x=>x.id===id);
+  if(state.upgradesOwned[id] || state.quarks < u.cost) return;
+  state.quarks -= u.cost;
+  state.upgradesOwned[id] = true;
+  qfToast(`Research complete: ${u.name}`);
+  qfRenderAll();
+  qfSave();
+}
+
+function qfBuySkin(id){
+  const s = SKINS.find(x=>x.id===id);
+  if(state.skinsOwned[id] || state.quarks < s.cost) return;
+  state.quarks -= s.cost;
+  state.skinsOwned[id] = true;
+  state.equippedSkin = id;
+  qfToast(`Unlocked: ${s.name}`);
+  qfRenderAll();
+  qfSave();
+}
+
+function qfEquipSkin(id){
+  state.equippedSkin = id;
+  qfRenderAll();
+  qfSave();
+}
+
+function qfPrestige(){
+  const gain = Math.floor(Math.sqrt(state.lifetimeQuarks / 1000000));
+  if(state.lifetimeQuarks < 1000000 || gain < 1) return;
+  if(!confirm(`Melt down the forge for +${gain} Antimatter? Quarks and Generators will reset.`)) return;
+  state.antimatter += gain;
+  state.quarks = 0;
+  GENERATORS.forEach(g=>{ state.owned[g.id]=0; state.milestones[g.id]=0; });
+  qfToast(`\u2604 Forge melted down. +${gain} Antimatter earned.`);
+  qfRenderAll();
+  qfSave();
+}
+
+function qfSwitchTab(tab){
+  state.activeTab = tab;
+  document.getElementById('qf-tab-lab').classList.toggle('active', tab==='lab');
+  document.getElementById('qf-tab-cosmetics').classList.toggle('active', tab==='cosmetics');
+  document.getElementById('qf-lab-panel').style.display = tab==='lab' ? 'block':'none';
+  document.getElementById('qf-cosmetics-panel').style.display = tab==='cosmetics' ? 'block':'none';
+}
+
+/* ============ INIT ============ */
+qfLoad();
+qfRenderAll();
+qfSwitchTab(state.activeTab || 'lab');
+
+document.getElementById('qf-core').addEventListener('click', qfClickCore);
+document.getElementById('qf-core').addEventListener('touchstart', function(e){ e.preventDefault(); qfClickCore(e); }, {passive:false});
+
+// Tick loop — QPS/10 every 100ms for a smooth constantly-ticking counter
+setInterval(function(){
+  const qps = qfTotalQps();
+  if(qps > 0){
+    const gain = qps / 10;
+    state.quarks += gain;
+    state.lifetimeQuarks += gain;
+    qfRenderCounters();
+  }
+}, 100);
+
+// Re-render generator/lab affordability every second (cheaper than full re-render every tick)
+setInterval(function(){
+  qfRenderGenerators();
+  qfRenderLab();
+  qfRenderCosmetics();
+  qfRenderPrestige();
+}, 1000);
+
+// Autosave
+setInterval(qfSave, 8000);
+window.addEventListener('beforeunload', qfSave);
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') qfSave(); });
+
+/* ============ INTRO TIMING (matches site convention) ============ */
+(function(){
+  const logos=document.getElementById('qi-logos');
+  const title=document.getElementById('qi-title');
+  const sub=document.getElementById('qi-sub');
+  const bar=document.getElementById('qi-bar');
+  const prog=document.getElementById('qi-progress');
+  setTimeout(()=>{ logos.style.opacity='1'; logos.style.transform='scale(1) translateY(0)'; },120);
+  setTimeout(()=>{ title.style.opacity='1'; },650);
+  setTimeout(()=>{ sub.style.opacity='1'; },720);
+  setTimeout(()=>{ bar.style.opacity='1'; },800);
+  setTimeout(()=>{ prog.style.width='100%'; },840);
+  setTimeout(()=>{
+    const intro=document.getElementById('qf-intro');
+    intro.style.transition='opacity .45s ease';
+    intro.style.opacity='0';
+    setTimeout(()=>{ intro.style.display='none'; },450);
+  },2100);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Last One Standing — Would You Survive?</title>
+<meta name="description" content="Can you survive a zombie apocalypse, Squid Game, prison, horror movie, alien invasion and war zone? The most addictive survival quiz game online."/>
+<meta name="keywords" content="survival game, would you survive, squid game quiz, zombie survival, horror game, free online game"/>
+<meta property="og:title" content="Last One Standing — Would You Survive?"/>
+<meta property="og:description" content="6 deadly scenarios. Wrong answer = you die. How long can you last?"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Last One Standing — Would You Survive?"/>
+<meta name="twitter:description" content="6 deadly scenarios. Wrong answer = you die. How long can you last? Free to play."/>
+<meta name="og:image" content="https://ajoragames.com/lastonestanding/preview.png"/>
+<meta name="twitter:image" content="https://ajoragames.com/lastonestanding/preview.png"/>
+<link rel="canonical" href="https://ajoragames.com/lastonestanding/"/>
+<meta name="theme-color" content="#000000"/>
+<meta name="google-adsense-account" content="ca-pub-3421312807231714">
+<!-- Favicon: crimson A from the AjorA logo -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Cpath d='M16 4.5 L26.5 27 L22.3 27 L16 13 L9.7 27 L5.5 27 Z' fill='%23911A30'/%3E%3Cpath d='M11.3 19.5 L20.7 19.5 L19.4 22.5 L12.6 22.5 Z' fill='%23911A30'/%3E%3C/svg%3E"/>
+<script>
+// ===== PER-SESSION THEME =====
+// Picks one accent+background-tint pair per browser session (sessionStorage),
+// stable across reloads/navigation within the same visit, fresh on a new tab/session.
+// Red stays reserved as the universal "wrong answer / danger" signal and is never reassigned.
+(function(){
+  var THEMES=[
+    {name:'signal-green', accent:'#00ff66', tint:'8,255,130'},
+    {name:'cyber-pink',   accent:'#ff2e88', tint:'255,46,136'},
+    {name:'arc-blue',     accent:'#2ea3ff', tint:'46,163,255'},
+    {name:'acid-yellow',  accent:'#e7ff2e', tint:'231,255,46'},
+    {name:'ultraviolet',  accent:'#b066ff', tint:'176,102,255'},
+    {name:'molten-orange',accent:'#ff7a1a', tint:'255,122,26'},
+    {name:'glacier-cyan', accent:'#2effe0', tint:'46,255,224'},
+  ];
+  var KEY='los_theme_v1';
+  var picked;
+  try{
+    var saved=sessionStorage.getItem(KEY);
+    picked=saved?JSON.parse(saved):null;
+  }catch(e){picked=null;}
+  if(!picked){
+    picked=THEMES[Math.floor(Math.random()*THEMES.length)];
+    try{sessionStorage.setItem(KEY,JSON.stringify(picked));}catch(e){}
+  }
+  var root=document.documentElement.style;
+  root.setProperty('--green',picked.accent);
+  root.setProperty('--amber',picked.accent);
+  root.setProperty('--blue',picked.accent);
+  root.setProperty('--gbg','rgba('+picked.tint+',0.08)');
+  root.setProperty('--gbd',picked.accent);
+  root.setProperty('--abg','rgba('+picked.tint+',0.08)');
+  root.setProperty('--grid-line','rgba('+picked.tint+',0.025)');
+  window._losTheme=picked;
+})();
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3421312807231714" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo+Black&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  /* NEO-BRUTALIST CYBERPUNK TERMINAL TOKENS — accent + bg tint set per-session by theme.js below */
+  --bg:#000000;--s1:#0d0d0d;--s2:#141414;--s3:#1a1a1a;
+  --b1:#ffffff;--b2:#ffffff;--b3:#ffffff;
+  --tx:#ffffff;--mu:#999999;--di:#555555;
+  --green:#00ff66;--gbg:rgba(0,255,102,0.08);--gbd:#00ff66;
+  --red:#ff0055;--rbg:rgba(255,0,85,0.08);
+  --amber:#00ff66;--abg:rgba(0,255,102,0.08);
+  --purple:#ffffff;--blue:#00ff66;--pink:#ff0055;
+  --grid-line:rgba(0,255,102,0.025);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;border-radius:0!important}
+body{background:var(--bg);color:var(--tx);font-family:'Space Mono','JetBrains Mono',monospace;min-height:100vh;padding-bottom:70px;display:flex;flex-direction:column;align-items:center;position:relative}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0;transition:background-image .6s}
+/* Ambient background tint — paired with the session's accent colour */
+#bg-wash{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,var(--gbg),transparent 60%);transition:background .6s}
+/* TENSION OVERLAY */
+#tension-overlay{position:fixed;inset:0;pointer-events:none;z-index:50;transition:all .5s;opacity:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(255,0,85,0.0) 100%)}
+#heartbeat-ring{position:fixed;inset:0;pointer-events:none;z-index:49;border:0px solid rgba(255,0,85,0);transition:border .3s}
+@keyframes glitch{0%{transform:translate(0)}20%{transform:translate(-2px,1px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(1px,-1px)}100%{transform:translate(0)}}
+@keyframes heartpulse{0%,100%{box-shadow:inset 0 0 0px rgba(255,0,85,0)}50%{box-shadow:inset 0 0 40px rgba(255,0,85,0.15)}}
+.glitching{animation:glitch .1s infinite}
+/* TIMER VISUAL — big countdown */
+#big-timer{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Archivo Black',sans-serif;font-weight:900;font-size:72px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5;text-shadow:none;-webkit-text-stroke:2px #000}
+.wrap{position:relative;z-index:1}
+.hidden{display:none!important}
+.wrap{width:100%;max-width:620px;margin:0 auto;padding:0 20px}
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0 14px;border-bottom:1px solid var(--di);margin-bottom:20px;gap:8px}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;text-decoration:none}
+.logo span{color:var(--green)}
+.nav-right{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.nav-btn{background:none;border:none;padding:5px 2px;font-size:12px;color:var(--mu);cursor:pointer;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;transition:color .12s,letter-spacing .12s;white-space:nowrap}
+.nav-btn:hover{color:var(--tx);letter-spacing:.12em;background:none;box-shadow:none}
+.nav-btn.primary{background:none;color:var(--green);border:none;font-weight:700;box-shadow:none}
+.nav-btn.primary:hover{color:var(--tx)}
+.user-chip{font-size:12px;color:var(--mu);display:flex;align-items:center;gap:5px}
+.user-dot{width:7px;height:7px;background:var(--green);flex-shrink:0}
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--di);border-left:2px solid var(--green);padding:18px 16px;margin-bottom:14px;transition:border-color .15s}
+.card-title{font-family:'Archivo Black',sans-serif;font-weight:900;font-size:17px;letter-spacing:0;margin-bottom:3px;text-transform:uppercase}
+.card-sub{font-size:12px;color:var(--mu);line-height:1.6}
+/* TABS */
+.tabs{display:flex;gap:3px;background:#000;border:2px solid var(--tx);padding:3px;margin-bottom:14px}
+.tab{flex:1;padding:7px 4px;border:none;background:transparent;color:var(--di);font-size:12px;font-family:'Space Mono',monospace;text-transform:uppercase;cursor:pointer;transition:all .08s;white-space:nowrap;border:2px solid transparent}
+.tab.active{background:var(--green);color:#000;font-weight:700;border:2px solid var(--green)}
+/* FORM */
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--mu);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.field input{width:100%;background:#000;border:2px solid var(--tx);padding:10px 13px;font-size:14px;color:var(--tx);font-family:'Space Mono',monospace;outline:none;transition:none}
+.field input:focus{border-color:var(--green);box-shadow:3px 3px 0px var(--green)}
+.err-msg{font-size:11px;color:var(--red);margin-top:3px;min-height:13px;font-weight:700}
+.form-btn{width:100%;background:var(--green);color:#000;border:2px solid var(--tx);padding:12px;font-size:14px;font-weight:700;font-family:'Archivo Black',sans-serif;text-transform:uppercase;cursor:pointer;transition:none;margin-top:4px;box-shadow:4px 4px 0px var(--tx)}
+.form-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0px var(--tx)}
+.form-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.form-note{font-size:11px;color:var(--di);text-align:center;margin-top:8px;line-height:1.6}
+/* HOME */
+.daily-banner{background:none;border:none;border-bottom:1px solid var(--green);padding:4px 0 14px;display:flex;flex-direction:column;gap:6px;margin-bottom:20px;cursor:pointer;transition:opacity .12s}
+.daily-banner:hover{opacity:.8}
+.daily-title{font-size:13px;font-weight:700;color:var(--green);font-family:'Archivo Black',sans-serif;text-transform:uppercase}
+.daily-sub{font-size:12px;color:var(--mu)}
+.daily-badge{font-size:10px;font-weight:700;padding:3px 9px;background:none;color:var(--green);border:1px solid var(--green);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
+/* SCENARIO PICKER */
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}
+.sc-card{background:#000;border:1px solid var(--di);padding:13px 10px;cursor:pointer;transition:border-color .12s,background .12s;position:relative}
+.sc-card:hover{border-color:var(--tx)}
+.sc-card.selected{border-color:var(--green);background:var(--gbg)}
+.sc-icon{font-size:10px;margin-bottom:5px;font-weight:700;letter-spacing:.12em;color:var(--green);text-transform:uppercase}
+.sc-name{font-size:12px;font-weight:700;font-family:'Archivo Black',sans-serif;text-transform:uppercase}
+.sc-count{font-size:10px;color:var(--mu);margin-top:2px}
+.sc-check{position:absolute;top:8px;right:8px;font-size:12px;opacity:0;transition:opacity .12s;color:var(--green);font-weight:700}
+.sc-card.selected .sc-check{opacity:1}
+/* DIFF */
+.diff-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin:10px 0}
+.diff-card{background:#000;border:1px solid var(--di);padding:10px 6px;text-align:center;cursor:pointer;transition:border-color .12s,background .12s}
+.diff-card:hover{border-color:var(--tx)}
+.diff-card.selected{border-color:var(--green);background:var(--gbg)}
+.diff-icon{font-size:9px;margin-bottom:3px;font-weight:700;letter-spacing:.04em;color:var(--mu)}
+.diff-name{font-size:11px;font-weight:700;font-family:'Archivo Black',sans-serif;text-transform:uppercase}
+.diff-desc{font-size:9px;color:var(--mu);margin-top:2px;line-height:1.3}
+.big-btn{width:100%;background:var(--green);color:#000;border:2px solid var(--tx);padding:15px;font-size:16px;font-weight:800;font-family:'Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:.03em;cursor:pointer;transition:none;margin-top:8px;box-shadow:5px 5px 0px var(--tx)}
+.big-btn:hover{transform:translate(3px,3px);box-shadow:2px 2px 0px var(--tx)}
+.big-btn:active{transform:translate(5px,5px);box-shadow:0px 0px 0px var(--tx)}
+/* GAME — full-bleed arcade terminal, breaks out of .wrap constraint */
+#page-game.hidden{display:none!important}
+#page-game{width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);padding:0 16px;display:flex;flex-direction:column;gap:10px}
+#top-bar{display:flex;gap:0;align-items:stretch;margin-bottom:4px;max-width:680px;width:100%;margin-left:auto;margin-right:auto}
+.stat-box{background:#000;border:2px solid var(--tx);padding:8px 14px;text-align:center;min-width:74px}
+.sv{font-size:24px;font-weight:900;font-family:'Archivo Black',sans-serif;line-height:1}
+.sl{font-size:9px;color:var(--mu);margin-top:1px;text-transform:uppercase;letter-spacing:.1em}
+#timer-wrap{flex:1;border-top:2px solid var(--tx);border-bottom:2px solid var(--tx);display:flex;flex-direction:column;justify-content:center;padding:0 10px}
+#timer-secs{font-size:13px;color:var(--tx);text-align:center;margin-bottom:4px;font-weight:700;letter-spacing:.05em}
+#timer-bar{height:10px;background:#000;border:2px solid var(--tx);overflow:hidden}
+#timer-fill{height:100%;width:100%;transition:width .08s linear,background .2s;background:var(--green)}
+#combo-flash{text-align:center;font-family:'Archivo Black',sans-serif;font-weight:900;font-size:20px;min-height:26px;opacity:0;transition:opacity .2s;text-transform:uppercase;letter-spacing:.04em}
+/* QUESTION — massive and commanding */
+#scenario-card{padding:38px 26px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;min-height:220px;justify-content:center;border:3px solid var(--tx);transition:border-color .15s,box-shadow .15s;background:#000;box-shadow:7px 7px 0px var(--green);max-width:680px;width:100%;margin:0 auto}
+#s-tag{font-size:11px;font-weight:700;padding:0 0 5px;border:none;border-bottom:1px solid currentColor;text-transform:uppercase;letter-spacing:.18em;font-family:'Space Mono',monospace}
+#s-text{font-family:'Archivo Black',sans-serif;font-size:clamp(22px,5.2vw,32px);font-weight:900;line-height:1.2;color:var(--tx);letter-spacing:-.01em}
+#speed-lbl{font-size:11px;color:var(--green);text-align:center;text-transform:uppercase;letter-spacing:.12em;min-height:14px;font-weight:700}
+/* ANSWERS — huge raw text blocks */
+#choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:680px;width:100%;margin:0 auto}
+.cb{background:#000;border:3px solid var(--tx);padding:22px 16px;font-size:15px;font-weight:700;font-family:'Space Mono',monospace;color:var(--tx);cursor:pointer;text-align:left;line-height:1.4;transition:none;min-height:84px;display:flex;align-items:center}
+.cb:hover{background:var(--tx);color:#000;box-shadow:5px 5px 0px var(--green)}
+.cb:active{transform:translate(3px,3px);box-shadow:none}
+.cb.correct{border-color:var(--green)!important;background:var(--green)!important;color:#000!important;box-shadow:5px 5px 0px var(--tx)!important}
+.cb.wrong{border-color:var(--red)!important;background:var(--red)!important;color:#000!important;box-shadow:5px 5px 0px var(--tx)!important}
+.cb.reveal{border-color:var(--green)!important;background:var(--green)!important;color:#000!important;box-shadow:5px 5px 0px var(--tx)!important}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes popin{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+.shake{animation:shake .3s}
+.popin{animation:popin .2s}
+#feedback-row{display:flex;justify-content:space-between;align-items:center;min-height:19px;max-width:680px;width:100%;margin:0 auto}
+#feedback{font-size:13px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+#combo-badge{font-size:11px;font-weight:700;padding:3px 11px;opacity:0;transition:opacity .2s;background:var(--green);color:#000;border:2px solid var(--green);text-transform:uppercase;letter-spacing:.05em}
+#lives-row{display:flex;gap:6px;justify-content:center;min-height:22px;max-width:680px;width:100%;margin:0 auto}
+.heart{font-size:16px;font-weight:900;font-family:'Archivo Black',sans-serif;color:var(--red);transition:opacity .2s}
+.heart.lost{opacity:.18;color:var(--di);text-decoration:line-through}
+/* XP BAR */
+
+#xp-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.xp-label{font-size:10px;color:var(--mu);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
+.xp-track{flex:1;height:6px;background:#000;border:1px solid var(--tx);overflow:hidden}
+.xp-fill{height:100%;background:var(--green);transition:width .4s}
+/* DEATH */
+#death-screen .card{text-align:center;display:flex;flex-direction:column;align-items:center;gap:9px;box-shadow:6px 6px 0px var(--red)}
+.score-big{font-family:'Archivo Black',sans-serif;font-size:52px;font-weight:900;letter-spacing:-.02em;line-height:1}
+.grade-pill{font-size:11px;font-weight:700;padding:4px 14px;border:2px solid currentColor;text-transform:uppercase;letter-spacing:.06em}
+.pb-line{font-size:13px;font-weight:700;color:var(--green);min-height:14px;font-family:'Archivo Black',sans-serif;text-transform:uppercase}
+.death-sub{font-size:12px;color:var(--mu);line-height:1.6;max-width:280px}
+.btn-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;width:100%}
+.retry-btn{flex:1;min-width:110px;background:var(--green);color:#000;border:2px solid var(--tx);padding:11px;font-size:13px;font-weight:800;font-family:'Archivo Black',sans-serif;text-transform:uppercase;cursor:pointer;transition:none;box-shadow:4px 4px 0px var(--tx)}
+.retry-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0px var(--tx)}
+.ghost-btn{flex:1;min-width:90px;background:#000;color:var(--tx);border:2px solid var(--tx);padding:11px;font-size:12px;font-family:'Space Mono',monospace;text-transform:uppercase;cursor:pointer;transition:none}
+.ghost-btn:hover{background:var(--tx);color:#000}
+.copied{font-size:11px;color:var(--green);min-height:14px;text-align:center;font-weight:700}
+/* RESULTS CARD */
+#results-card-wrap{width:100%;margin:0 auto}
+#results-card{
+  background:#000;
+  border:3px solid var(--tx);
+  padding:24px 20px;text-align:center;
+  position:relative;overflow:hidden;
+  box-shadow:7px 7px 0px var(--green);
+}
+#results-card::before{display:none}
+#results-card::after{display:none}
+.rc-logo{font-family:'Archivo Black',sans-serif;font-weight:900;font-size:11px;color:var(--green);margin-bottom:8px;letter-spacing:.2em;text-transform:uppercase}
+#death-title{font-family:'Archivo Black',sans-serif;font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:6px;color:var(--tx)}
+.rc-emoji{display:none}
+.rc-score{font-family:'Archivo Black',sans-serif;font-size:72px;font-weight:900;letter-spacing:-.02em;line-height:1;color:var(--green);-webkit-text-fill-color:var(--green)}
+.rc-grade{font-size:12px;font-weight:700;padding:5px 14px;border:2px solid currentColor;display:inline-block;margin:8px 0;letter-spacing:.06em;text-transform:uppercase}
+.rc-stats{display:flex;justify-content:center;gap:0;margin:12px 0;border:2px solid var(--tx)}
+.rc-stat{flex:1;padding:10px 6px;text-align:center;border-right:2px solid var(--tx)}
+.rc-stat:last-child{border-right:none}
+.rc-stat-val{font-family:'Archivo Black',sans-serif;font-size:20px;font-weight:900;color:var(--tx)}
+.rc-stat-lbl{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.rc-scenarios{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:10px 0}
+.rc-stag{font-size:9px;padding:3px 8px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border:1px solid currentColor}
+.rc-divider{height:2px;background:var(--tx);margin:10px 0}
+.rc-challenge-text{font-size:13px;font-weight:700;color:var(--tx);font-family:'Archivo Black',sans-serif;margin-bottom:3px;text-transform:uppercase}
+.rc-challenge-sub{font-size:11px;color:var(--mu);line-height:1.5}
+.rc-url{font-size:10px;color:var(--green);margin-top:10px;font-family:'Space Mono',monospace;letter-spacing:.05em}
+.rc-survival{font-size:12px;color:var(--mu);margin-top:6px}
+.rc-survival span{color:var(--green);font-weight:700;font-family:'Archivo Black',sans-serif}
+/* SURVIVAL % */
+#survival-pct{font-size:13px;color:var(--mu);min-height:16px}
+#survival-pct span{color:var(--green);font-weight:700;font-family:'Archivo Black',sans-serif}
+/* ACHIEVEMENTS */
+.ach-grid{display:flex;flex-direction:column}
+.ach{background:none;border:none;border-bottom:1px solid var(--di);padding:11px 2px;display:flex;gap:10px;align-items:flex-start}
+.ach.unlocked{border-bottom-color:var(--green)}
+.ach-icon{font-size:9px;min-width:34px;font-weight:700;color:var(--green);letter-spacing:.08em;padding-top:2px;text-transform:uppercase}
+.ach-name{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:1px;text-transform:uppercase;letter-spacing:.02em}
+.ach-desc{font-size:10px;color:var(--di);line-height:1.4}
+.ach.locked .ach-icon{color:var(--di)}
+.ach.locked .ach-name,.ach.locked .ach-desc{color:var(--di)}
+/* LEADERBOARD */
+.lb-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--di)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{font-family:'Archivo Black',sans-serif;font-weight:900;font-size:14px;min-width:26px;color:var(--di)}
+.lb-rank.top{color:var(--green)}
+.lb-name{flex:1;font-size:12px;font-weight:500;display:flex;align-items:center;gap:4px}
+.lb-name.me{color:var(--green)}
+.lb-badge{font-size:9px;font-weight:700;text-transform:uppercase}
+.lb-score{font-family:'Archivo Black',sans-serif;font-weight:700;font-size:14px}
+.lb-diff{font-size:9px;color:var(--di);margin-left:3px}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:14px;border-top:1px solid var(--di);border-left:1px solid var(--di)}
+.stat-card{background:none;border:none;border-right:1px solid var(--di);border-bottom:1px solid var(--di);padding:14px 12px}
+.stat-card-val{font-family:'Archivo Black',sans-serif;font-size:30px;font-weight:900;line-height:1}
+.stat-card-lbl{font-size:10px;color:var(--mu);margin-top:4px;text-transform:uppercase;letter-spacing:.1em}
+/* LEVEL */
+.level-chip{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--di);padding:4px 10px;font-size:11px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+/* CHALLENGE */
+.challenge-box{background:#000;border:2px solid var(--tx);padding:12px;margin-top:8px}
+.challenge-box input{width:100%;background:#000;border:2px solid var(--di);padding:8px 10px;font-size:11px;color:var(--mu);font-family:'Space Mono',monospace;outline:none;margin-bottom:6px}
+/* CINEMATIC DEATH FLASH */
+#death-flash{position:fixed;inset:0;background:var(--red);pointer-events:none;z-index:9000;opacity:0;transition:opacity .08s}
+/* KILLER BOX enhanced */
+#killer-box{width:100%;background:#000;border:2px solid var(--red);padding:12px;display:none;text-align:left}
+/* SURVIVAL PCT dramatic */
+#rc-survival-pct{font-size:14px;font-weight:700;font-family:'Archivo Black',sans-serif;min-height:18px;color:var(--green);text-transform:uppercase}
+/* Death screen fade-in */
+@keyframes deathReveal{0%{opacity:0;transform:scale(0.96) translateY(8px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.death-reveal{animation:deathReveal .5s ease forwards}
+.spinner{width:18px;height:18px;border:2px solid var(--di);border-top-color:var(--green);animation:spin .7s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* TOAST */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:#000;border:2px solid var(--tx);padding:9px 16px;font-size:12px;color:var(--tx);opacity:0;transition:all .22s;pointer-events:none;z-index:999;white-space:nowrap;max-width:90vw;text-overflow:ellipsis;overflow:hidden;box-shadow:4px 4px 0px var(--green)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* BOTTOM NAV */
+#bnav{position:fixed;bottom:0;left:0;right:0;background:#000;border-top:1px solid var(--di);display:flex;justify-content:center}
+#bnav.hidden{display:none!important}
+.bnav-btn{flex:1;max-width:120px;background:transparent;border:none;color:var(--mu);font-size:10px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;padding:12px 4px 14px;cursor:pointer;transition:color .1s;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bnav-btn.active{color:var(--green)}
+.bnav-icon{width:4px;height:4px;background:currentColor;opacity:0;transition:opacity .12s}
+.bnav-btn.active .bnav-icon{opacity:1}
+/* NEW ACH POPUP */
+.new-ach-item{display:flex;align-items:center;gap:7px;background:var(--gbg);border:none;border-left:2px solid var(--green);padding:7px 10px;margin-bottom:4px}
+.new-ach-item .icon{font-size:9px;font-weight:700;color:var(--green)}
+.new-ach-item .name{font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase}
+@media(max-width:400px){#choices{grid-template-columns:1fr}.diff-grid{grid-template-columns:1fr 1fr}.scenario-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="bg-wash"></div>
+<div id="death-flash"></div>
+<div id="tension-overlay"></div>
+<div id="heartbeat-ring"></div>
+<div class="wrap">
+  <nav>
+    <!-- AJORA GAMES logo | LOS logo -->
+    <a href="../games/" class="logo" style="display:flex;align-items:center;gap:12px;flex-shrink:0;text-decoration:none">
+      <img src="../ajora-logo-transparent.png" alt="Ajora Games" style="height:36px;width:36px;object-fit:contain;display:block"/>
+      <span style="width:1px;height:26px;background:rgba(255,255,255,0.13);display:inline-block;flex-shrink:0"></span>
+      <img src="../los-logo-transparent.png" alt="Last One Standing" style="height:28px;width:auto;max-width:160px;object-fit:contain;object-position:center;display:block"/>
+    </a>
+    <div class="nav-right" id="nav-right">
+      <button class="nav-btn" onclick="showPage('auth')">Log in</button>
+      <span style="width:1px;height:12px;background:var(--di);display:inline-block"></span>
+      <button class="nav-btn primary" onclick="showPage('auth')">Sign up</button>
+    </div>
+  </nav>
+
+  <!-- AUTH -->
+  <div id="page-auth" class="hidden">
+    <div class="card">
+      <div class="tabs">
+        <button class="tab active" id="tab-login" onclick="switchTab('login')">Log in</button>
+        <button class="tab" id="tab-signup" onclick="switchTab('signup')">Sign up</button>
+      </div>
+      <div id="auth-login">
+        <div class="field"><label>Username</label><input id="li-user" placeholder="your username"/><div class="err-msg" id="li-user-err"></div></div>
+        <div class="field"><label>Password</label><input id="li-pass" type="password" placeholder="••••••••"/><div class="err-msg" id="li-pass-err"></div></div>
+        <button class="form-btn" id="li-btn" onclick="doLogin()">Log in</button>
+        <div class="err-msg" style="text-align:center;margin-top:6px" id="li-err"></div>
+        <div class="form-note">No account? <span style="color:var(--tx);cursor:pointer" onclick="switchTab('signup')">Sign up free</span></div>
+      </div>
+      <div id="auth-signup" class="hidden">
+        <div class="field"><label>Username</label><input id="su-user" placeholder="pick a username" oninput="checkUsername()"/><div class="err-msg" id="su-user-err"></div></div>
+        <div class="field"><label>Password</label><input id="su-pass" type="password" placeholder="min 6 characters"/><div class="err-msg" id="su-pass-err"></div></div>
+        <div class="field"><label>Confirm password</label><input id="su-pass2" type="password" placeholder="repeat password"/><div class="err-msg" id="su-pass2-err"></div></div>
+        <button class="form-btn" id="su-btn" onclick="doSignup()">Create account</button>
+        <div class="err-msg" style="text-align:center;margin-top:6px" id="su-err"></div>
+        <div class="form-note">Have an account? <span style="color:var(--tx);cursor:pointer" onclick="switchTab('login')">Log in</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="page-home" class="hidden">
+    <div style="padding:6px 0 22px;border-left:2px solid var(--green);padding-left:14px">
+      <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:26px;letter-spacing:-.01em;color:#fff;text-transform:uppercase;line-height:1.05">Would You<br>Survive?</div>
+      <div style="font-size:12px;color:var(--mu);margin-top:8px;letter-spacing:.02em">9 deadly scenarios · 180 questions · one wrong answer could kill you</div>
+    </div>
+    <div id="daily-banner" class="daily-banner" onclick="startDaily()">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--mu);text-transform:uppercase">Daily Challenge</div>
+        <div class="daily-badge" id="daily-badge">PLAY TODAY</div>
+      </div>
+      <div class="daily-sub" id="daily-sub">Everyone plays the same run today. One attempt.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pick your scenario</div>
+      <div class="card-sub">Play one scenario solo or mix them all together</div>
+      <div class="scenario-grid" id="scenario-grid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Difficulty</div>
+      <div class="diff-grid">
+        <div class="diff-card" id="diff-easy" onclick="setDiff('easy')"><div class="diff-icon">EASY</div><div class="diff-name">Easy</div><div class="diff-desc">24s · 4 lives · 1x</div></div>
+        <div class="diff-card selected" id="diff-normal" onclick="setDiff('normal')"><div class="diff-icon">NORMAL</div><div class="diff-name">Normal</div><div class="diff-desc">16s · 3 lives · 1.5x</div></div>
+        <div class="diff-card" id="diff-nightmare" onclick="setDiff('nightmare')"><div class="diff-icon">HARD</div><div class="diff-name">Nightmare</div><div class="diff-desc">8s · 3 lives · 2x</div></div>
+        <div class="diff-card" id="diff-sudden" onclick="setDiff('sudden')"><div class="diff-icon">1-HIT</div><div class="diff-name">Sudden Death</div><div class="diff-desc">15s · 1 life · 3x</div></div>
+      </div>
+      <button class="big-btn" onclick="startGame(false)">Start Surviving</button>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="page-game" class="hidden">
+    <div id="xp-row" style="max-width:680px;width:100%;margin:0 auto"><div class="xp-label" id="xp-label">Lv1 Rookie</div><div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div><div class="xp-label" id="xp-val">0 XP</div></div>
+    <div id="ghost-bar" style="display:none;background:none;border:none;border-bottom:1px solid var(--di);padding:5px 2px 8px;font-size:11px;color:var(--mu);justify-content:space-between;align-items:center;margin-bottom:6px;max-width:680px;width:100%;margin-left:auto;margin-right:auto;text-transform:uppercase;letter-spacing:.1em">
+      <span>Your best run</span>
+      <span id="ghost-score" style="font-family:'Archivo Black',sans-serif;font-weight:700;color:var(--tx)">0</span>
+    </div>
+    <div id="top-bar">
+      <div class="stat-box"><div class="sv" id="score-val">0</div><div class="sl">score</div></div>
+      <div id="timer-wrap"><div id="timer-secs">5.0s</div><div id="timer-bar"><div id="timer-fill"></div></div></div>
+      <div class="stat-box"><div class="sv" id="streak-val">0</div><div class="sl">streak</div></div>
+    </div>
+    <div id="combo-flash"></div>
+    <div style="position:relative">
+      <div id="scenario-card"><span id="s-tag"></span><div id="s-text"></div></div>
+      <div id="big-timer">5</div>
+    </div>
+    <div id="speed-lbl"></div>
+    <div id="choices"></div>
+    <div id="feedback-row"><div id="feedback"></div><div id="combo-badge"></div></div>
+    <div id="lives-row"></div>
+  </div>
+
+  <!-- DEATH -->
+  <div id="death-screen" class="hidden">
+    <div class="card">
+      <div id="results-card-wrap">
+        <div id="results-card">
+          <div class="rc-logo">LAST ONE STANDING</div>
+          <div id="death-title"></div>
+          <div class="rc-score" id="rc-score">0</div>
+          <div class="rc-grade" id="rc-grade"></div>
+          <div class="rc-stats">
+            <div class="rc-stat"><div class="rc-stat-val" id="rc-streak">0</div><div class="rc-stat-lbl">Best Streak</div></div>
+            <div class="rc-stat"><div class="rc-stat-val" id="rc-questions">0</div><div class="rc-stat-lbl">Survived</div></div>
+            <div class="rc-stat"><div class="rc-stat-val" id="rc-diff">—</div><div class="rc-stat-lbl">Mode</div></div>
+          </div>
+          <div class="rc-scenarios" id="rc-scenarios"></div>
+          <div class="rc-survival" id="rc-survival-pct" style="font-size:13px;font-weight:700;font-family:'Archivo Black',sans-serif;min-height:18px;text-align:center;padding:4px 0"></div>
+          <div class="rc-divider"></div>
+          <div class="rc-challenge-text">Think your friends would do better?</div>
+          <div class="rc-challenge-sub">Screenshot this card and challenge them.<br>Or send them your exact run to beat.</div>
+          <div class="rc-url">ajoragames.com · Ajora Games</div>
+        </div>
+      </div>
+      <div id="near-miss-msg" style="font-size:13px;font-weight:700;min-height:16px;text-align:center;font-family:'Archivo Black',sans-serif"></div>
+      <div id="killer-box" style="width:100%;background:#000;border:2px solid var(--red);padding:12px;display:none;text-align:left">
+        <div style="font-size:10px;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px">This is what got you</div>
+        <div id="killer-question" style="font-size:12px;color:var(--tx);line-height:1.5;margin-bottom:6px"></div>
+        <div id="killer-correct" style="font-size:11px;color:var(--green);font-weight:600"></div>
+      </div>
+      <div class="pb-line" id="pb-announce"></div>
+      <div id="new-achs" style="width:100%"></div>
+      <div id="xp-gained" style="font-size:12px;color:var(--green);font-weight:600;min-height:14px;text-align:center"></div>
+      <!-- Guest login prompt — shown only when not logged in -->
+      <div id="guest-prompt" style="width:100%;background:#000;border:2px solid var(--green);padding:14px 16px;text-align:center;display:none">
+        <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:6px;text-transform:uppercase;letter-spacing:.12em">Score not saved</div>
+        <div style="font-size:13px;font-weight:700;color:var(--tx);margin-bottom:4px">Your score won't be saved!</div>
+        <div style="font-size:12px;color:var(--mu);line-height:1.6;margin-bottom:10px">Log in to compete on the global leaderboard.<br>Takes less than a minute.</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button onclick="showPage('auth')" style="background:var(--green);color:#000;border:2px solid var(--tx);padding:9px 20px;font-size:13px;font-weight:700;font-family:'Archivo Black',sans-serif;text-transform:uppercase;cursor:pointer;box-shadow:3px 3px 0px var(--tx)">Log in to save score</button>
+          <button onclick="switchToSignup()" style="background:#000;color:var(--tx);border:2px solid var(--tx);padding:9px 16px;font-size:12px;font-family:'Space Mono',monospace;cursor:pointer">No account? Create one — takes 1 min!</button>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:4px">
+        <button class="retry-btn" id="retry-btn" onclick="startGame(window._isDaily)">One more time</button>
+        <button class="retry-btn" style="background:var(--tx)" onclick="downloadCard()">Save card</button>
+      </div>
+      <div class="btn-row" style="margin-top:6px">
+        <button class="ghost-btn" onclick="copyChallenge()">Copy challenge link</button>
+        <button class="ghost-btn" onclick="showPage('home')">Home</button>
+      </div>
+      <div class="copied" id="copied-msg"></div>
+      <input id="challenge-link" style="display:none" readonly/>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div id="page-lb" class="hidden">
+    <div class="card">
+      <div class="tabs" id="lb-tabs">
+        <button class="tab active" id="lb-tab-all" onclick="switchLbTab('all')">All Time</button>
+        <button class="tab" id="lb-tab-daily" onclick="switchLbTab('daily')">Today</button>
+        <button class="tab" id="lb-tab-weekly" onclick="switchLbTab('weekly')">Weekly</button>
+        <button class="tab" id="lb-tab-sudden" onclick="switchLbTab('sudden')">1-Hit</button>
+      </div>
+      <div style="text-align:right;margin-bottom:8px"><span onclick="showPage('hof')" style="font-size:11px;color:var(--green);cursor:pointer;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Hall of Fame →</span></div>
+      <div id="lb-scenario-tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px"></div>
+      <div id="lb-content"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="page-profile" class="hidden">
+    <div class="card" id="profile-card"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px">Achievements <span id="ach-count" style="font-size:12px;color:var(--mu);font-weight:400"></span></div>
+      <div class="ach-grid" id="ach-grid"></div>
+    </div>
+  </div>
+
+<!-- INTRO SCREEN -->
+<div id="page-intro" style="position:fixed;inset:0;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;overflow:hidden">
+  <div style="position:absolute;inset:0;opacity:.4;background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.04%22/%3E%3C/svg%3E');pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(8,8,8,0.88) 100%);pointer-events:none"></div>
+  <div id="intro-glow" style="position:absolute;width:500px;height:250px;border-radius:50%;background:radial-gradient(ellipse,rgba(196,18,48,0.14) 0%,transparent 70%);filter:blur(40px);opacity:0;transition:opacity 1.2s ease .6s;pointer-events:none"></div>
+
+  <!-- Logos side by side: AJORA GAMES | Last One Standing -->
+  <div id="intro-logos" style="display:flex;align-items:center;justify-content:center;gap:24px;opacity:0;transform:scale(0.92) translateY(14px);transition:all .85s cubic-bezier(.34,1.1,.64,1)">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games" style="height:min(72px,14vw);width:min(72px,14vw);object-fit:contain;display:block"/>
+    <div style="width:1px;height:min(54px,11vw);background:linear-gradient(180deg,transparent,rgba(196,18,48,0.55),transparent);flex-shrink:0"></div>
+    <img src="../los-logo-transparent.png" alt="Last One Standing" style="height:min(58px,11vw);width:auto;max-width:min(300px,58vw);object-fit:contain;display:block"/>
+  </div>
+
+  <div id="intro-sub" style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:9px;color:#2e2e38;letter-spacing:.24em;text-transform:uppercase;margin-top:28px;opacity:0;transition:opacity .5s ease .68s">WOULD YOU SURVIVE?</div>
+
+  <div id="intro-bar" style="width:min(180px,44vw);height:1px;background:rgba(255,255,255,0.04);margin-top:36px;overflow:hidden;opacity:0;transition:opacity .3s ease .82s">
+    <div id="intro-progress" style="height:100%;width:0%;background:linear-gradient(90deg,#7a0015,#c41230);transition:width 1.2s ease .94s;box-shadow:0 0 6px rgba(196,18,48,0.7)"></div>
+  </div>
+</div>
+
+<!-- VERSUS MODE PAGE -->
+<div id="page-versus" class="hidden">
+  <div id="versus-setup" class="card">
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--green)">VS</div>
+      <div class="card-title" style="margin-top:6px">Versus Mode</div>
+      <div class="card-sub">Two players. Same phone. Take turns. Whoever survives longer wins.</div>
+    </div>
+    <div class="field"><label>Player 1 Name</label><input id="p1-name" placeholder="Player 1" style="width:100%"/></div>
+    <div class="field"><label>Player 2 Name</label><input id="p2-name" placeholder="Player 2" style="width:100%"/></div>
+    <div class="diff-grid" style="margin:10px 0">
+      <div class="diff-card selected" id="vdiff-normal" onclick="setVDiff('normal')"><div class="diff-icon">NORMAL</div><div class="diff-name">Normal</div></div>
+      <div class="diff-card" id="vdiff-nightmare" onclick="setVDiff('nightmare')"><div class="diff-icon">HARD</div><div class="diff-name">Nightmare</div></div>
+      <div class="diff-card" id="vdiff-sudden" onclick="setVDiff('sudden')"><div class="diff-icon">1-HIT</div><div class="diff-name">Sudden</div></div>
+      <div class="diff-card" id="vdiff-easy" onclick="setVDiff('easy')"><div class="diff-icon">EASY</div><div class="diff-name">Easy</div></div>
+    </div>
+    <button class="big-btn" onclick="startVersus()">Start Battle</button>
+  </div>
+  <div id="versus-handoff" class="card hidden" style="text-align:center">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--green)" id="vh-emoji">VS</div>
+    <div class="card-title" id="vh-title" style="margin:8px 0">Pass the phone</div>
+    <div class="card-sub" id="vh-sub"></div>
+    <button class="big-btn" style="margin-top:16px" id="vh-btn" onclick="startVersusRound()">I am ready</button>
+  </div>
+</div>
+
+<!-- CONTACT PAGE -->
+<div id="page-contact" class="hidden" style="width:100%;max-width:620px;margin:0 auto;padding:0 20px">
+  <div style="padding:6px 0 18px;border-left:2px solid var(--green);padding-left:14px">
+    <div class="card-title" style="font-size:20px">Contact & Legal</div>
+    <div class="card-sub">Questions, bug reports, or business inquiries</div>
+  </div>
+  <a href="mailto:ajoragames@gmail.com" style="display:flex;align-items:baseline;gap:10px;text-decoration:none;color:var(--tx);padding:11px 0;border-bottom:1px solid var(--di);transition:color .12s" onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--tx)'">
+    <span style="font-size:13px;font-weight:700">Email</span>
+    <span style="flex:1;border-bottom:1px dotted var(--di);transform:translateY(-4px)"></span>
+    <span style="font-size:12px;color:var(--mu)">ajoragames@gmail.com</span>
+  </a>
+  <a href="https://instagram.com/ajoragames" target="_blank" rel="noopener" style="display:flex;align-items:baseline;gap:10px;text-decoration:none;color:var(--tx);padding:11px 0;border-bottom:1px solid var(--di);transition:color .12s" onmouseover="this.style.color='var(--pink)'" onmouseout="this.style.color='var(--tx)'">
+    <span style="font-size:13px;font-weight:700">Instagram</span>
+    <span style="flex:1;border-bottom:1px dotted var(--di);transform:translateY(-4px)"></span>
+    <span style="font-size:12px;color:var(--mu)">@ajoragames</span>
+  </a>
+  <div style="padding:18px 0 8px">
+    <div style="font-size:11px;font-weight:700;color:var(--tx);margin-bottom:8px;text-transform:uppercase;letter-spacing:.12em">Copyright notice</div>
+    <div style="font-size:11px;color:var(--mu);line-height:1.8">
+      © 2026 Ajora Games. All rights reserved.<br>
+      All game content, questions, scenarios, design, and code are the original intellectual property of Ajora Games.<br><br>
+      Unauthorised reproduction, copying, or redistribution of any game content in whole or in part is strictly prohibited.<br><br>
+      The names "Last One Standing" and "Ajora Games", the logo, and all associated branding are trademarks of Ajora Games.
+    </div>
+  </div>
+  <div style="padding:14px 0 24px;border-top:1px solid var(--di)">
+    <div style="font-size:11px;font-weight:700;color:var(--tx);margin-bottom:8px;text-transform:uppercase;letter-spacing:.12em">Privacy policy</div>
+    <div style="font-size:11px;color:var(--mu);line-height:1.8">
+      We collect usernames and game scores to power the leaderboard. We do not collect personal data beyond what you provide at signup. We use Google AdSense which may use cookies for ad personalisation. You can opt out via Google's ad settings.
+    </div>
+  </div>
+</div>
+
+<!-- SHOP PAGE -->
+<div id="page-shop" class="hidden">
+  <div style="padding:6px 0 18px;border-left:2px solid var(--green);padding-left:14px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--green);text-transform:uppercase">Shop</div>
+    <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:22px;margin-top:4px;text-transform:uppercase">Spend your coins</div>
+    <div style="font-size:12px;color:var(--mu);margin-top:3px">Cosmetics only. Earn coins by playing.</div>
+  </div>
+  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:8px 0 16px;border-bottom:1px solid var(--di);margin-bottom:6px">
+    <div style="max-width:230px">
+      <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:40px;line-height:1.05" id="shop-coins">0</div>
+      <div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.12em;margin-top:2px">your coins</div>
+    </div>
+    <div style="font-size:11px;color:var(--mu);text-align:right;line-height:1.8">Easy 1c · Normal 2c · Nightmare 3c<br>Sudden 4c · Daily 5c — per 5 correct<br><span style="color:var(--green)">+20c new PB</span></div>
+  </div>
+
+  <!-- USERNAME COLOUR -->
+  <div style="padding:18px 0;border-bottom:1px solid var(--di)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+      <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:15px;text-transform:uppercase">Username Colour</div>
+      <div style="font-size:12px;font-weight:700;color:var(--green)">50c</div>
+    </div>
+    <div class="card-sub" style="margin-bottom:12px">Your name glows on the leaderboard</div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px" id="colour-grid"></div>
+    <button class="big-btn" style="padding:10px;font-size:13px" onclick="buyColour()">Apply Colour</button>
+  </div>
+
+  <!-- NAME FLAIR -->
+  <div style="padding:18px 0;border-bottom:1px solid var(--di)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+      <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:15px;text-transform:uppercase">Name Flair</div>
+      <div style="font-size:12px;font-weight:700;color:var(--green)">80c</div>
+    </div>
+    <div class="card-sub" style="margin-bottom:12px">A title shown before your name</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px" id="flair-grid"></div>
+    <button class="big-btn" style="padding:10px;font-size:13px" onclick="buyFlair()">Apply Flair</button>
+  </div>
+
+  <!-- CUSTOM AVATAR -->
+  <div style="padding:18px 0;border-bottom:1px solid var(--di)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+      <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:15px;text-transform:uppercase">Custom Avatar</div>
+      <div style="font-size:12px;font-weight:700;color:var(--green)">100c</div>
+    </div>
+    <div class="card-sub" style="margin-bottom:12px">Shown on leaderboard and profile</div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px" id="avatar-grid"></div>
+    <button class="big-btn" style="padding:10px;font-size:13px" onclick="buyAvatar()">Apply Avatar</button>
+  </div>
+
+  <!-- STREAK SHIELD -->
+  <div style="padding:18px 0;border-bottom:1px solid var(--di)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+      <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:15px;text-transform:uppercase">Extra Streak Shield</div>
+      <div style="font-size:12px;font-weight:700;color:var(--green)">120c</div>
+    </div>
+    <div class="card-sub" style="margin-bottom:10px">One extra shield per game session · you have <span id="shield-count" style="color:var(--green);font-weight:700">0</span></div>
+    <button class="big-btn" style="padding:10px;font-size:13px" onclick="buyShield()">Buy Shield</button>
+  </div>
+
+  <!-- COMING SOON — minimalist directory rows -->
+  <div style="padding:20px 0 8px">
+    <div style="font-size:10px;font-weight:700;color:var(--di);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px">Coming soon</div>
+    <div style="display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--di);opacity:.65">
+      <span style="font-size:13px;font-weight:700">Ad-Free Mode</span>
+      <span style="flex:1;border-bottom:1px dotted var(--di);transform:translateY(-4px)"></span>
+      <span style="font-size:11px;color:var(--di)">500c or $1.99</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--di);opacity:.65">
+      <span style="font-size:13px;font-weight:700">100 Coins</span>
+      <span style="flex:1;border-bottom:1px dotted var(--di);transform:translateY(-4px)"></span>
+      <span style="font-size:11px;color:var(--di)">$0.99</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--di);opacity:.65">
+      <span style="font-size:13px;font-weight:700">300 Coins</span>
+      <span style="flex:1;border-bottom:1px dotted var(--di);transform:translateY(-4px)"></span>
+      <span style="font-size:11px;color:var(--di)">$1.99</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:10px;padding:10px 0 18px;opacity:.65">
+      <span style="font-size:13px;font-weight:700">1000 Coins</span>
+      <span style="flex:1;border-bottom:1px dotted var(--di);transform:translateY(-4px)"></span>
+      <span style="font-size:11px;color:var(--di)">$4.99</span>
+    </div>
+  </div>
+</div>
+
+<!-- HALL OF FAME PAGE -->
+<div id="page-hof" class="hidden">
+  <div style="padding:6px 0 18px;border-left:2px solid var(--green);padding-left:14px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--green);text-transform:uppercase">Hall of Fame</div>
+    <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:22px;margin-top:4px;text-transform:uppercase">Weekly Champions</div>
+    <div style="font-size:12px;color:var(--mu);margin-top:3px">Immortalised forever</div>
+  </div>
+  <div class="card" id="hof-content"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+</div>
+</div>
+
+<!-- PARTICLES CANVAS -->
+<canvas id="particles" style="position:fixed;inset:0;pointer-events:none;z-index:100;opacity:0;transition:opacity .1s"></canvas>
+
+<div id="bnav">
+  <button onclick="showPage('home')" class="bnav-btn" id="bn-home"><div class="bnav-icon"></div><div>Play</div></button>
+  <button onclick="showPage('lb')" class="bnav-btn" id="bn-lb"><div class="bnav-icon"></div><div>Ranks</div></button>
+  <button onclick="showPage('versus')" class="bnav-btn" id="bn-versus"><div class="bnav-icon"></div><div>Versus</div></button>
+  <button onclick="showPage('shop')" class="bnav-btn" id="bn-shop"><div class="bnav-icon"></div><div>Shop</div></button>
+  <button onclick="showPage('profile')" class="bnav-btn" id="bn-profile"><div class="bnav-icon"></div><div>Me</div></button>
+  <button onclick="showPage('contact')" class="bnav-btn" id="bn-contact"><div class="bnav-icon"></div><div>Contact</div></button>
+</div>
+<div id="toast"></div>
+
+<script>
+const SB_URL='https://olfimthnryurwefftfrw.supabase.co';
+const SB_KEY='sb_publishable_D-dMCaUC16Z1YHFBiYK3Gg_5NDZkDQd';
+let sb=null;
+function initSupabase(){
+  try{
+    sb=supabase.createClient(SB_URL,SB_KEY);
+  }catch(e){
+    console.error('Supabase failed to load — leaderboard/auth features will be unavailable this session.',e);
+  }
+}
+if(typeof supabase!=='undefined'){
+  initSupabase();
+}else{
+  document.addEventListener('DOMContentLoaded',initSupabase);
+}
+
+// ===================== SCENARIOS =====================
+const SCENARIOS=[
+  {id:'zombie',tag:'Zombie Apocalypse',icon:'ZMB',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'Zombie horde at your door. 30 seconds.',a:'Barricade and go silent',w:['Scream for help','Turn on every light','Open door to check']},
+    {q:'You find a running car with half a tank.',a:'Take it and drive out of the city',w:['Wait for the owner','Fill it up first','Leave it — too loud']},
+    {q:'Someone in your group was bitten.',a:'Quarantine them immediately',w:['Give them antibiotics','Ignore it for now','Let them stay in group']},
+    {q:'Military checkpoint — unclear if friendly.',a:'Observe silently before approaching',w:['Run toward it waving','Drive straight through','Honk for attention']},
+    {q:'Hideout compromised at 2am.',a:'Slip out the back quietly',w:['Fight your way out','Hide under the bed','Turn lights on to see']},
+    {q:'Radio broadcasting survivor locations.',a:'Listen but don\'t broadcast your position',w:['Broadcast immediately','Ignore it completely','Share on every channel']},
+    {q:'Highway (fast, exposed) or forest (slow, hidden)?',a:'Forest — slow and hidden',w:['Highway — speed matters','Split up','Wait for dawn']},
+    {q:'You find a stash of weapons in an abandoned store.',a:'Take only what you can carry fast',w:['Load up everything','Leave it — too heavy','Set a trap and wait']},
+    {q:'A child is alone crying in the street.',a:'Approach cautiously and check surroundings first',w:['Run to them immediately','Ignore and move on','Call out to them loudly']},
+    {q:'Your group wants to split into two teams.',a:'Refuse — splitting up is how people die',w:['Agree — cover more ground','Let the weak ones split off','Vote on it democratically']},
+    {q:'You run out of food. A nearby house looks abandoned.',a:'Scout it quietly before entering',w:['Kick the door down fast','Shout to check if anyone is inside','Skip it — too risky']},
+    {q:'A survivor asks to join your group. You don\'t know them.',a:'Let them join but watch them closely',w:['Turn them away immediately','Trust them completely — strength in numbers','Let the group vote loudly']},
+    {q:'You find medicine but it expires in two days.',a:'Use what you need now and move on',w:['Hoard it all','Leave it — expired medicine is dangerous','Trade it immediately']},
+    {q:'A zombie is blocking the only exit.',a:'Create a distraction and slip past quietly',w:['Run straight through it','Shoot it and alert others','Wait for it to move']},
+    {q:'Your shelter has no running water.',a:'Collect and boil rainwater',w:['Drink from the nearest river directly','Melt snow without boiling','Ignore hydration — food is more important']},
+    {q:'You find a working phone with 10% battery.',a:'Call emergency services and save the number',w:['Post your location on social media','Call family to say goodbye','Play music to boost morale']},
+    {q:'Another group offers a trade — food for weapons.',a:'Negotiate carefully and trade only surplus',w:['Refuse all contact with outsiders','Give everything — they seem friendly','Demand their location in exchange']},
+    {q:'One of your group is slowing everyone down.',a:'Help them keep pace but plan for hard choices',w:['Leave them immediately','Carry them no matter what','Force them to keep up or leave']},
+    {q:'You spot a helicopter flying overhead.',a:'Signal with a mirror or light — silently',w:['Shout and wave loudly','Fire a warning shot to get attention','Ignore it — could be hostile']},
+    {q:'Your group finds a fortified building with strangers inside.',a:'Negotiate entry from a safe distance',w:['Storm the entrance — you outnumber them','Walk up and knock politely','Camp outside and wait them out']},
+  ]},
+  {id:'squid',tag:'Squid Game',icon:'SQD',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'Red light — doll starts turning.',a:'Freeze. Don\'t even breathe.',w:['Take one more step','Fall to the ground','Run as fast as you can']},
+    {q:'Tug of war — losing ground fast.',a:'Lean back and step sideways in sync',w:['Pull harder','Let go to save yourself','Scream at teammates']},
+    {q:'Honeycomb: umbrella, circle, triangle, star?',a:'Circle — easiest to trace',w:['Star — looks impressive','Umbrella — looks simple','Random choice']},
+    {q:'Another player offers an alliance.',a:'Accept, but trust no one fully',w:['Refuse all alliances','Tell everyone immediately','Trust them completely']},
+    {q:'Marbles — down to your last 3.',a:'Bluff aggressively on one bet',w:['Give up gracefully','Beg for mercy','Throw marbles at them']},
+    {q:'Glass bridge — you\'re 5th in line.',a:'Watch which panels others step on',w:['Go first to lead','Jump randomly and fast','Refuse to move']},
+    {q:'Final game. Opponent stronger but panicking.',a:'Stay calm and wait them out',w:['Attack immediately','Make a deal','Run to the edge']},
+    {q:'Guard catches you helping another player.',a:'Deny everything calmly',w:['Confess and beg forgiveness','Blame the other player','Run']},
+    {q:'You overhear two players planning to cheat.',a:'Use that information quietly to your advantage',w:['Report it to guards','Confront them directly','Warn everyone']},
+    {q:'Night time. Someone tries to steal your marble.',a:'Pretend to be asleep and wait for an opening',w:['Fight back immediately','Give it up quietly','Scream for help']},
+    {q:'You\'re picked last for tug of war. Team looks weak.',a:'Take the anchor position and organise strategy',w:['Demand a team swap','Give up mentally','Pull as hard as you can from the front']},
+    {q:'The doll\'s camera moves — you\'re directly in its line.',a:'Stay frozen — even a blink could register',w:['Slowly inch backward','Drop to the ground','Make eye contact to seem confident']},
+    {q:'A player next to you falls. Guards are watching.',a:'Stay still — don\'t react at all',w:['Catch them before they hit the ground','Step aside visibly','Cry out in shock']},
+    {q:'You have the circle honeycomb but no needle.',a:'Use your saliva and a thin fingernail carefully',w:['Snap it out aggressively','Ask a guard for a tool','Give up and break it deliberately']},
+    {q:'You\'re chosen to pick the game for the next round.',a:'Pick the one that favours your strengths',w:['Pick the most deadly one to scare others','Let someone else decide','Pick randomly to seem fair']},
+    {q:'Two alliances are forming. You\'re caught in the middle.',a:'Stay neutral and let them weaken each other',w:['Join the bigger alliance immediately','Form your own third alliance loudly','Expose both alliances to the guards']},
+    {q:'You win marbles but your opponent is your friend.',a:'Take the marbles — hesitation gets you killed',w:['Give them back out of loyalty','Offer a 50/50 split','Refuse to play and cause a scene']},
+    {q:'Guards announce a surprise midnight vote.',a:'Listen carefully before committing to any side',w:['Vote with the majority blindly','Vote to end the game immediately','Abstain and stay quiet']},
+    {q:'You\'re bleeding from a cut during the bridge game.',a:'Ignore it — focus entirely on the next step',w:['Stop and bandage it immediately','Show guards to get medical help','Use the blood to mark safe panels']},
+    {q:'Only 3 players left. The next game hasn\'t been announced.',a:'Rest, observe others, and conserve energy',w:['Eliminate a player before the game starts','Make a deal with both remaining players','Demand the prize early']},
+  ]},
+  {id:'horror',tag:'Horror Movie',icon:'HOR',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'Noise from the basement.',a:'Don\'t go down. Leave the house.',w:['Investigate alone','Yell \'hello?\'','Turn off the lights first']},
+    {q:'Car won\'t start near abandoned hospital.',a:'Run to the nearest road on foot',w:['Go back inside to call','Pop the hood in the dark','Split up to find help']},
+    {q:'Killer is inside. You have a phone.',a:'Call 911 silently and hide',w:['Text a friend for advice','Turn on flashlight to navigate','Film it for clout']},
+    {q:'You find a journal that explains everything.',a:'Read it fast and use it to escape',w:['Read it aloud in full','Leave it — it\'s cursed','Burn it without reading']},
+    {q:'Friend acts strange after touching artifact.',a:'Distance yourself and observe',w:['Touch it yourself','Assume they\'re just tired','Leave them alone overnight']},
+    {q:'Monster reacts to sound.',a:'Take off your shoes and crawl',w:['Walk fast and hope','Talk your way out','Scream and run']},
+    {q:'Cornered. Window or closet?',a:'Window — always take the exit',w:['Closet — hide and wait','Stand your ground','Play dead']},
+    {q:'You find a working phone but signal is weak.',a:'Go outside quietly to get signal',w:['Call from inside loudly','Break the wall to boost signal','Use data instead']},
+    {q:'The killer knows your name.',a:'Say nothing and change location immediately',w:['Demand how they know','Introduce yourself properly','Ask what they want']},
+    {q:'You can trap the monster but it risks exposing you.',a:'Only set the trap if you have a clear escape',w:['Set it immediately','Don\'t bother — just run','Sacrifice a friend to set it']},
+    {q:'You\'re hiding in a wardrobe. The killer is in the room.',a:'Stay completely still and control your breathing',w:['Peek through the crack','Send a text for help','Sneeze and hope for the best']},
+    {q:'There\'s a weapon on the table between you and the killer.',a:'Create a distraction and grab it',w:['Lunge for it immediately','Leave it — weapons escalate things','Pretend you don\'t see it']},
+    {q:'The power goes out.',a:'Stay still and wait for your eyes to adjust',w:['Use your phone torch immediately','Shout for your friends','Run toward the breaker box']},
+    {q:'Your friend says "I\'ll be right back."',a:'Go with them — never let anyone go alone',w:['Stay put — they\'ll be fine','Watch from the window','Call out after 5 minutes']},
+    {q:'You find a secret room behind a bookshelf.',a:'Note the location — don\'t enter yet',w:['Enter immediately to explore','Seal it shut and pretend you didn\'t see it','Tell the whole group loudly']},
+    {q:'The monster has a weakness you discovered.',a:'Exploit it calmly with a clear escape plan',w:['Attack immediately without a plan','Tell everyone so they can all attack','Keep it secret and do nothing']},
+    {q:'You\'re the only one who knows the killer\'s identity.',a:'Get evidence first then expose them safely',w:['Accuse them loudly in public immediately','Confront them alone','Say nothing — it\'s safer']},
+    {q:'You hear a jump scare — a cat knocks something over.',a:'Exhale slowly and refocus — don\'t panic',w:['Scream and reveal your position','Throw something at the cat','Run immediately']},
+    {q:'The only exit is through a room the monster just entered.',a:'Find another exit — window, roof, anything',w:['Wait for it to leave — however long it takes','Rush through as fast as possible','Make a loud noise elsewhere to lure it out then rush through']},
+    {q:'You have one bullet left.',a:'Save it for the last possible moment',w:['Fire immediately to scare it','Give it to the strongest person','Drop the gun — it makes noise']},
+  ]},
+  {id:'prison',tag:'Prison',icon:'PRI',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'First day. Dangerous inmate approaches.',a:'Stay calm, hold eye contact, say nothing',w:['Challenge them','Run to the guard','Offer your food']},
+    {q:'You witnessed something you shouldn\'t have.',a:'See nothing. Say nothing.',w:['Report to warden','Tell your cellmate','Write home about it']},
+    {q:'Gang wants you to join.',a:'Respectfully decline, stay neutral',w:['Join immediately','Loudly refuse in front of others','Ask for more time publicly']},
+    {q:'Fight breaks out near you in the yard.',a:'Walk away slowly without looking',w:['Watch from close up','Try to stop it','Cheer from the side']},
+    {q:'You overhear a detailed escape plan.',a:'Act like you heard nothing',w:['Ask to join','Tell guards for a deal','Write it down']},
+    {q:'Guard offers a deal — snitch for privileges.',a:'Decline politely — it\'s a trap',w:['Accept immediately','Ask who else snitched','Demand witness protection']},
+    {q:'New cellmate asks lots of personal questions.',a:'Give vague answers and change the subject',w:['Tell them everything','Refuse to speak at all','Report them to the guard']},
+    {q:'You find contraband hidden in your cell.',a:'Get rid of it immediately and quietly',w:['Keep it — it\'s useful','Report it to a guard','Trade it for protection']},
+    {q:'You\'re in solitary. Guard slides food under door.',a:'Take it calmly and say nothing',w:['Refuse food as protest','Push it back out','Ask why you\'re there']},
+    {q:'Your release date is tomorrow. Someone threatens you.',a:'Stay visible with guards and count the hours',w:['Threaten them back','Sleep in the common area','Ask for early release']},
+    {q:'You accidentally disrespect a senior inmate.',a:'Apologise once calmly and don\'t grovel',w:['Apologise repeatedly and loudly','Pretend it didn\'t happen','Challenge them to save face']},
+    {q:'Someone slides a weapon under your door at night.',a:'Leave it untouched and report it anonymously',w:['Keep it for protection','Throw it out immediately','Use it as leverage']},
+    {q:'A guard clearly dislikes you and is targeting you.',a:'Document everything and stay disciplined',w:['Confront them directly','Get other inmates to back you up','Retaliate']},
+    {q:'You\'re offered drugs to hold for another inmate.',a:'Refuse firmly — it\'s a setup',w:['Do it — they\'ll protect you','Agree but flush them later','Accept and tell a guard']},
+    {q:'Riot breaks out in the dining hall.',a:'Get low, get to a wall, and wait it out',w:['Join in to avoid being a target','Run to the nearest guard','Stand on a table to look non-threatening']},
+    {q:'You have evidence that could exonerate you.',a:'Contact your lawyer immediately and only your lawyer',w:['Tell every inmate to build support','Give it to a guard for safekeeping','Announce it at dinner']},
+    {q:'An inmate collapses in the yard.',a:'Call for a guard — don\'t touch them',w:['Perform CPR immediately','Walk away — not your problem','Gather a crowd to help']},
+    {q:'You\'re moved to a new cell with a known violent inmate.',a:'Set clear boundaries calmly on day one',w:['Pretend to be tougher than you are','Request a transfer loudly','Sleep with one eye open and say nothing']},
+    {q:'Another inmate wants to pay you to deliver a message.',a:'Refuse — you don\'t know what\'s in the message',w:['Do it — easy money','Ask what the message says first','Deliver it and tell a guard after']},
+    {q:'You\'re up for parole. A fight is brewing near you.',a:'Remove yourself immediately — your record is everything',w:['Break up the fight to impress the board','Watch from a safe distance','Film it on a contraband phone']},
+  ]},
+  {id:'aliens',tag:'Alien Invasion',icon:'ALN',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'Alien ships appear over every city.',a:'Leave the city immediately',w:['Head downtown to watch','Stay home and stream it','Drive toward the ships']},
+    {q:'Alien device broadcasting a signal.',a:'Record it. Don\'t touch it.',w:['Broadcast back on same frequency','Smash it to silence it','Carry it with you']},
+    {q:'Lone alien — seems passive.',a:'Back away slowly. No sudden moves.',w:['Try to communicate loudly','Take a photo with flash','Throw something at it']},
+    {q:'Military rounding people up for safety.',a:'Comply but stay alert and don\'t separate from family',w:['Resist loudly','Trust them completely','Flee into the forest alone']},
+    {q:'All electronics are down. You have a map.',a:'Go off-grid immediately with the map',w:['Wait for signal to return','Drive until your phone works','Stay in the city center']},
+    {q:'Aliens seem to avoid water.',a:'Head for the coast or a lake',w:['Avoid water too','Stay in the mountains','Ignore the pattern']},
+    {q:'An alien is clearly following you.',a:'Enter a crowded area and blend in',w:['Confront it directly','Run into the wilderness','Signal for help loudly']},
+    {q:'You find a crashed alien ship.',a:'Observe from distance and note everything',w:['Enter the ship immediately','Call the government','Share the location online']},
+    {q:'Other humans are fighting each other for resources.',a:'Avoid the conflict and find your own resources',w:['Join the strongest side','Try to negotiate peace','Report it to authorities']},
+    {q:'You\'re offered sanctuary by the government.',a:'Go but keep an escape route in mind',w:['Refuse — it\'s a trap','Broadcast the location to help others','Go and tell everyone where it is']},
+    {q:'An alien is trying to communicate with hand gestures.',a:'Mirror its gestures slowly and stay calm',w:['Run while it\'s distracted','Respond with words loudly','Call others over immediately']},
+    {q:'You find an alien weapon on the ground.',a:'Don\'t touch it — you don\'t know how it works',w:['Pick it up for protection','Dismantle it to study it','Hand it to the nearest soldier']},
+    {q:'The alien ships begin landing in rural areas.',a:'Avoid rural areas — move to dense forest cover',w:['Go to a rural area — safer than cities','Drive toward a landing site to observe','Stay exactly where you are']},
+    {q:'Aliens appear to be scanning for heat signatures.',a:'Find cold shelter and reduce body heat output',w:['Stay near a fire for warmth','Move fast to generate heat','Wear reflective clothing']},
+    {q:'A global broadcast claims peace has been established.',a:'Treat it as unverified until you see evidence',w:['Celebrate and come out of hiding','Ignore it completely','Broadcast your location to join others']},
+    {q:'You have 10 minutes before aliens reach your location.',a:'Move quietly and leave no trail',w:['Barricade and defend','Make noise to draw attention away','Call for extraction loudly']},
+    {q:'Aliens appear to learn from every encounter with humans.',a:'Behave unpredictably and change patterns constantly',w:['Be consistent so they can predict you\'re harmless','Challenge them repeatedly to gather data','Do nothing — inaction is safest']},
+    {q:'You find a human collaborating with aliens.',a:'Observe what they\'re exchanging before acting',w:['Confront them immediately','Report to authorities right away','Join them — they might have a deal']},
+    {q:'Your child asks if the aliens are friendly.',a:'Stay honest but calm — prepare them without causing panic',w:['Tell them it\'s all fine — no need to worry','Explain every detail of the threat fully','Tell them to hide and never come out']},
+    {q:'You\'re the last human in a 10-mile radius.',a:'Move toward population quietly using back roads',w:['Stay put and wait for rescue','Build a signal fire immediately','Broadcast your location on every frequency']},
+  ]},
+  {id:'war',tag:'War Zone',icon:'WAR',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'Artillery getting closer by the minute.',a:'Find low ground and cover fast',w:['Stay open to assess','Run in a straight line','Drive toward the sound']},
+    {q:'Food in an abandoned building.',a:'Check for booby traps before touching anything',w:['Eat immediately','Share location on radio','Leave it, too risky']},
+    {q:'Checkpoint ahead — unknown allegiance.',a:'Observe from distance before approaching',w:['Approach with hands up fast','Drive through fast','Assume friendly']},
+    {q:'Injured civilian asks for help.',a:'Help quickly then keep moving',w:['Set up camp to treat them','Ignore them','Announce your position to call help']},
+    {q:'Comms but enemy may be listening.',a:'Use code words — keep it short',w:['Broadcast full location','Speak freely — signal seems weak','Discard the radio']},
+    {q:'Building under fire. Street or roof exit?',a:'Roof — higher ground, more options',w:['Street — faster escape','Stay put and wait','Barricade the door']},
+    {q:'You find an enemy soldier wounded and unarmed.',a:'Secure them and call for medics',w:['Leave them','Execute them for safety','Give them your weapon to be fair']},
+    {q:'Your convoy needs to cross an open field.',a:'Wait for nightfall to cross',w:['Sprint across in daylight','Drive at full speed and hope','Send a scout first in daylight']},
+    {q:'You receive conflicting orders from two commanders.',a:'Follow the order from the higher-ranking officer',w:['Follow whichever order is safer','Ignore both and improvise','Ask the enemy what to do']},
+    {q:'You\'re captured. They ask for information.',a:'Give only name and rank — say nothing else',w:['Tell them everything for safety','Lie about everything','Pretend you don\'t speak the language']},
+    {q:'Sniper fire is coming from an unknown direction.',a:'Drop flat and crawl toward solid cover',w:['Run in a zigzag pattern','Stand still to locate the source','Return fire immediately']},
+    {q:'You find a map of enemy positions.',a:'Secure it and report to command immediately',w:['Study it alone and act on it','Leave it — could be a trap','Photograph it and share on radio']},
+    {q:'A civilian is running toward your position.',a:'Signal them to stop and drop — then assess',w:['Open fire immediately','Let them run right into your position','Ignore them completely']},
+    {q:'Your unit is surrounded.',a:'Hold position and call for extraction',w:['Break out in every direction simultaneously','Surrender immediately','Attack the largest group head-on']},
+    {q:'You find a tunnel system under the city.',a:'Map it carefully and report before using it',w:['Move through it immediately','Block it to prevent enemy use','Ignore it — tunnels are traps']},
+    {q:'Night vision equipment malfunctions.',a:'Switch to natural concealment and move slowly',w:['Continue moving at normal speed','Use a torch — no one will see','Stop and wait until dawn']},
+    {q:'You witness a war crime.',a:'Document it and report through proper channels',w:['Intervene immediately alone','Ignore it — war is war','Broadcast it on open comms']},
+    {q:'Medic is down. Soldier is bleeding heavily.',a:'Apply direct pressure and call for another medic',w:['Perform surgery with what you have','Move them immediately to safety','Prioritise the mission over the casualty']},
+    {q:'Drone overhead — unclear if friendly.',a:'Take cover and don\'t move until identified',w:['Wave to identify yourself','Shoot it down','Ignore it and continue moving']},
+    {q:'You have one day of rations left for three people.',a:'Ration evenly and find food within 12 hours',w:['Give it all to the strongest person','Eat it all yourself — you need energy to lead','Abandon the slowest person to stretch supplies']},
+  ]},
+  {id:'disaster',tag:'Natural Disaster',icon:'DIS',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'Earthquake starts while you\'re inside.',a:'Drop under a sturdy table and hold on',w:['Run outside immediately','Stand in a doorframe','Lie flat on the floor in the open']},
+    {q:'Tsunami warning siren goes off.',a:'Get to high ground immediately — inland and up',w:['Go to the beach to watch','Wait for an official update','Drive along the coast road']},
+    {q:'Wildfire approaching. Which way do you go?',a:'Perpendicular to the fire path not against it',w:['Run directly away from it','Drive toward the smoke to find the edge','Shelter in place with wet towels']},
+    {q:'Caught in a flash flood in a car.',a:'Get out of the car before the water rises higher',w:['Stay in the car — it floats','Drive toward the current','Call for help and wait']},
+    {q:'Tornado forms half a mile away.',a:'Get to the lowest floor interior room immediately',w:['Run outside to a ditch','Stay by the window to watch','Drive perpendicular to the tornado']},
+    {q:'Volcanic ash is falling heavily.',a:'Cover mouth and nose and shelter indoors',w:['Go outside to collect samples','Drive through it fast','Ignore it — it\'s just dust']},
+    {q:'Trapped under rubble after a collapse.',a:'Make noise periodically and conserve energy',w:['Scream constantly until rescued','Move rubble aggressively','Stay completely silent to save air']},
+    {q:'Hurricane is 12 hours away. You have a car.',a:'Evacuate immediately using inland routes',w:['Board up windows and stay','Drive to the coast for shelter','Wait another 6 hours before deciding']},
+    {q:'You\'re caught in a rip current.',a:'Swim parallel to shore to escape the current',w:['Swim directly back to shore against it','Float and wait for help','Dive under waves to get back']},
+    {q:'Lightning storm while hiking in open terrain.',a:'Get low in a ditch and stay away from trees',w:['Lie flat on the ground','Shelter under the tallest tree','Run downhill as fast as possible']},
+    {q:'Building is on fire. Stairwell is blocked.',a:'Wet a cloth cover your mouth and find another exit',w:['Take the lift to the ground floor','Break through the stairwell door','Shelter in place and wait']},
+    {q:'Avalanche starts above you on a ski slope.',a:'Move perpendicular to the avalanche path immediately',w:['Ski straight downhill as fast as possible','Drop and curl into a ball','Grab a tree and hold on']},
+    {q:'Flooding has cut off your road home.',a:'Turn around and find higher ground',w:['Drive through — it looks shallow','Wait for the water to recede in your car','Call emergency services and sit in floodwater']},
+    {q:'You\'re stranded after an earthquake with no phone signal.',a:'Stay near a landmark and signal for aircraft',w:['Walk in a random direction to find help','Dig through rubble alone to find others','Wait in an unstable building']},
+    {q:'Gas leak detected in your building.',a:'Don\'t use any switches — evacuate calmly immediately',w:['Open windows then evacuate','Call emergency services from inside','Turn off the electricity at the fusebox first']},
+    {q:'You\'re in a desert with 1 litre of water.',a:'Move only at night and rest in shade during the day',w:['Walk fast during the day to cover ground','Drink it all immediately to maintain strength','Ration to small sips and keep walking in the sun']},
+    {q:'Blizzard hits and you\'re in your car on a highway.',a:'Stay in the car — it\'s your best shelter',w:['Walk to the nearest town','Keep the engine running all night without checks','Abandon the car and find a tree for shelter']},
+    {q:'You fall through ice on a frozen lake.',a:'Kick hard and pull yourself out the way you came',w:['Swim toward the middle — thicker ice','Tread water and wait for help','Remove heavy clothes while in the water first']},
+    {q:'Mudslide is heading toward your house.',a:'Evacuate uphill immediately — don\'t wait',w:['Shelter in the strongest room of the house','Drive away along the valley road','Get to the roof and wait']},
+    {q:'Chemical plant explosion nearby. Unknown substance.',a:'Seal windows and doors and shelter in place until advised',w:['Open windows for fresh air','Evacuate immediately in any direction','Go outside to assess the situation']},
+  ]},
+  {id:'plane',tag:'Plane Crash',icon:'PLN',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'Pilot announces emergency landing. Oxygen masks drop.',a:'Put on your own mask before helping others',w:['Help the child next to you first','Pull it down but don\'t put it on yet','Ignore it — the plane is fine']},
+    {q:'Crash landing in ocean. Plane is sinking.',a:'Unbuckle and get to an exit before water rises',w:['Wait for instructions','Stay buckled for safety','Grab all your luggage first']},
+    {q:'Plane crash lands in a jungle. You\'re alive.',a:'Stay near the wreckage — easier to find from air',w:['Walk in a straight line away from it','Build a shelter far from the fuel','Call for help and stay on the phone']},
+    {q:'Cabin is filling with smoke.',a:'Stay low and move to the nearest exit fast',w:['Stand and move quickly','Search for a fire extinguisher','Wait for the crew to guide you']},
+    {q:'You\'re on a life raft in the ocean.',a:'Stay together and signal passing aircraft',w:['Swim toward land','Drink seawater to survive','Split up to cover more ocean']},
+    {q:'Stranded on a mountain after crash. Night approaches.',a:'Use debris to build a windbreak and stay together',w:['Hike down immediately in the dark','Start a large fire immediately','Sleep in the plane wreckage no matter what']},
+    {q:'Injured passenger is panicking and screaming.',a:'Calm them firmly — panic spreads fast',w:['Sedate them if you find medication','Ignore them and focus on survival','Leave them behind']},
+    {q:'You spot a river from the crash site.',a:'Follow it downstream — rivers lead to civilization',w:['Cross it immediately','Avoid it — danger of predators','Build a raft and go upstream']},
+    {q:'Plane is going down. Brace position or run to the back?',a:'Brace position in your seat — it\'s proven to save lives',w:['Run to the back of the plane','Stand in the aisle and hold on','Lie on the floor between seats']},
+    {q:'You survived but you\'re injured and alone.',a:'Treat the most life-threatening injury first then signal for help',w:['Ignore injury and find food first','Walk to find other survivors immediately','Build a fire before doing anything else']},
+    {q:'You have a flare gun with one shot.',a:'Save it for when you hear or see a rescue aircraft',w:['Fire it immediately to mark your position','Fire it to start a signal fire','Give it to someone else to decide']},
+    {q:'Crash site is in a desert. You have no water.',a:'Stay in the shade of the wreckage and wait for rescue',w:['Start walking immediately','Find the lowest point — water collects there','Drink aviation fuel — it\'s better than nothing']},
+    {q:'You can see a road 10 miles away through binoculars.',a:'Create visible ground signals first — only walk if no rescue in 24 hours',w:['Walk to the road immediately','Stay put and do nothing','Send the fastest person and wait']},
+    {q:'Survivor wants to eat unknown jungle berries.',a:'Stop them — unknown berries can be fatal',w:['Try a tiny amount first','Let them — hunger is more dangerous','Eat them yourself to test safety']},
+    {q:'Radio in the wreckage has partial power.',a:'Broadcast a distress signal on 121.5 MHz and wait',w:['Use it to play music for morale','Broadcast continuously to drain the last power','Dismantle it to build something else']},
+    {q:'A rescue plane flies over but doesn\'t see you.',a:'Use mirror reflection and lay out large ground signals',w:['Fire all remaining flares at once','Chase the plane on foot','Give up — if they missed you once they won\'t come back']},
+    {q:'Temperature is dropping rapidly at night.',a:'Huddle together and insulate with any available material',w:['Keep moving to generate heat','Build a fire regardless of the smoke signal risk','Separate so each person can build their own shelter']},
+    {q:'You find the plane\'s black box.',a:'Leave it in place — its signal helps rescuers find you',w:['Carry it with you as a communication device','Dismantle it for parts','Hide it so it doesn\'t attract danger']},
+    {q:'One survivor refuses to follow the group plan.',a:'Let them make their own choice — keep the group moving',w:['Force them to comply for group safety','Abandon them immediately','Give up your plan to keep the group together']},
+    {q:'It\'s been 5 days and no rescue. Food is almost gone.',a:'Prioritise water over food and prepare to move at dawn',w:['Start walking in any direction immediately','Eat everything left for the energy burst','Send half the group in different directions']},
+  ]},
+  {id:'cyber',tag:'Cyber Attack',icon:'CYB',bg:'#000',tc:'#fff',bc:'#fff',q:[
+    {q:'All bank systems are down nationwide. Your card is declined.',a:'Use cash and stay calm — this will resolve',w:['Transfer everything to crypto immediately','Withdraw cash aggressively','Report your card stolen']},
+    {q:'You get a message: pay now or your files are deleted.',a:'Disconnect from the internet and contact cybersecurity',w:['Pay immediately','Delete all files yourself first','Reply demanding proof']},
+    {q:'Power grid is hacked. City goes dark.',a:'Stay home, conserve battery, and wait for updates',w:['Drive to find a powered area','Charge everything by driving your car non-stop','Post your location publicly for help']},
+    {q:'Someone has your password and is logging into your accounts.',a:'Change passwords from a different device immediately',w:['Log them out from the same device','Wait to see what they do','Call the police first before doing anything']},
+    {q:'Hospital systems are down mid-surgery.',a:'Manual procedures — the team continues without tech',w:['Stop and wait for systems to restore','Transfer the patient mid-surgery','Call tech support']},
+    {q:'Fake emergency alerts flood everyone\'s phones.',a:'Verify through official radio or TV before acting',w:['Follow the alert immediately','Share it to warn others','Ignore all alerts from now on']},
+    {q:'You discover you\'ve been live-streamed without consent.',a:'Locate and cover all cameras and change location',w:['Wave and play along','Post about it on social media','Confront the hacker directly online']},
+    {q:'Self-driving car software is hacked. Speed increasing.',a:'Manually override or hit the emergency brake',w:['Call tech support while driving','Jump out of the moving car','Steer into a soft barrier']},
+    {q:'Your smart home devices are being controlled remotely.',a:'Cut power to the router and reset everything offline',w:['Argue with the voice assistant','Call your ISP and wait on hold','Move out temporarily']},
+    {q:'Deepfake video of you committing a crime goes viral.',a:'Immediately contact a lawyer and report to platform and police',w:['Post a rebuttal video yourself','Ignore it — people will figure it out','Delete all your social media accounts']},
+    {q:'A suspicious link arrives from your boss\'s email.',a:'Verify with your boss via phone before clicking anything',w:['Click it — it\'s from your boss','Forward it to IT and click it anyway','Delete it and say nothing']},
+    {q:'Hackers take control of a city\'s traffic lights.',a:'Pull over safely and wait for manual control to resume',w:['Drive through red lights carefully','Drive on the pavement to avoid lights','Speed up to get through the intersection']},
+    {q:'Your child\'s school app is breached. Data stolen.',a:'Change all passwords associated with that app immediately',w:['Wait for the school to handle it','Post about it on local Facebook groups','Delete the app and assume it\'s fine']},
+    {q:'A "government official" calls demanding your ID number.',a:'Hang up and call the official government number yourself',w:['Provide it — they\'re calling you so it must be real','Ask for their employee ID and accept whatever they say','Give partial information to verify them']},
+    {q:'Your city\'s water treatment plant is under cyber attack.',a:'Switch to bottled water immediately until all-clear',w:['Continue drinking tap water — it\'s probably fine','Boil water for 1 minute and continue as normal','Hoard all available bottled water in the city']},
+    {q:'ATMs across the country are dispensing random amounts.',a:'Avoid ATMs and use only verified banking apps on secure networks',w:['Withdraw as much as possible before it\'s fixed','Assume it\'s in your favour and keep withdrawing','Report it and wait for your bank to fix it']},
+    {q:'Your phone is hacked and sending messages to your contacts.',a:'Factory reset immediately and warn your contacts',w:['Reply to your own hacked messages to confuse the hacker','Remove the SIM only','Change one password and monitor it']},
+    {q:'Critical infrastructure hack — trains stop nationwide.',a:'Stay where you are and wait for official communication',w:['Walk along the train tracks to reach your destination','Find any working vehicle and drive on the tracks','Call media to report it first']},
+    {q:'You find a USB drive labelled "TOP SECRET" on the ground.',a:'Do not plug it in — hand it to authorities',w:['Plug it in to see what\'s on it','Leave it exactly where it is','Sell it online']},
+    {q:'Ransomware encrypts your entire company\'s files.',a:'Isolate infected systems and call a cybersecurity firm immediately',w:['Pay the ransom immediately','Wipe every computer and start again without backup','Post on social media asking for help']},
+  ]},
+];
+const ACHIEVEMENTS=[
+  {id:'first_blood',icon:'01',name:'First Blood',desc:'Survive your first game'},
+  {id:'streak5',icon:'X5',name:'On Fire',desc:'Get a 5x streak'},
+  {id:'streak10',icon:'X10',name:'Unstoppable',desc:'Get a 10x streak'},
+  {id:'streak15',icon:'X15',name:'Legendary Streak',desc:'Get a 15x streak'},
+  {id:'score50',icon:'50',name:'Sharp Mind',desc:'Score 50 points'},
+  {id:'score100',icon:'100',name:'Century',desc:'Score 100 points'},
+  {id:'score150',icon:'150',name:'Legend',desc:'Score 150 points'},
+  {id:'score200',icon:'200',name:'Immortal',desc:'Score 200 points'},
+  {id:'all_scenarios',icon:'ALL',name:'World Survivor',desc:'Survive all scenarios in one run'},
+  {id:'daily_win',icon:'DLY',name:'Daily Champion',desc:'Complete the daily challenge'},
+  {id:'nightmare',icon:'NTM',name:'Nightmare Mode',desc:'Score 20+ on Nightmare'},
+  {id:'sudden_death',icon:'1HP',name:'One Shot',desc:'Score 30+ on Sudden Death'},
+  {id:'zombie_master',icon:'ZMB',name:'Zombie Master',desc:'Answer 10 zombie questions correctly'},
+  {id:'squid_master',icon:'SQD',name:'Squid Master',desc:'Answer 10 Squid Game questions correctly'},
+  {id:'no_wrong',icon:'PRF',name:'Perfect Run',desc:'Score 30+ with zero wrong answers'},
+  {id:'daily_streak3',icon:'D3',name:'Consistent',desc:'3-day daily streak'},
+  {id:'daily_streak7',icon:'D7',name:'Dedicated',desc:'7-day daily streak'},
+  {id:'challenge_win',icon:'VS',name:'Challenger',desc:'Beat a friend challenge'},
+  {id:'level5',icon:'LV5',name:'Levelled Up',desc:'Reach level 5'},
+  {id:'level10',icon:'LV10',name:'Veteran',desc:'Reach level 10'},
+];
+
+const LEVELS=[
+  {name:'Rookie',xp:0},{name:'Survivor',xp:100},{name:'Fighter',xp:250},{name:'Elite',xp:500},
+  {name:'Veteran',xp:900},{name:'Expert',xp:1400},{name:'Master',xp:2000},{name:'Legend',xp:3000},
+  {name:'Immortal',xp:5000},{name:'God Tier',xp:8000},
+];
+
+function getLevel(xp){
+  let lv=0;
+  for(let i=0;i<LEVELS.length;i++){if(xp>=LEVELS[i].xp)lv=i;}
+  return lv;
+}
+function getLevelName(xp){return LEVELS[getLevel(xp)].name;}
+function getXpProgress(xp){
+  const lv=getLevel(xp);
+  const cur=LEVELS[lv].xp;
+  const next=LEVELS[lv+1]?LEVELS[lv+1].xp:cur+1000;
+  return Math.round(((xp-cur)/(next-cur))*100);
+}
+function getXpForScore(score,diff){
+  const mult={easy:1,normal:1.5,nightmare:2,sudden:3};
+  return Math.round(score*(mult[diff]||1));
+}
+
+// ===================== STATE =====================
+let currentUser=null;
+let score=0,streak=0,bestStreak=0,lives=3,tI=null,tL=0,maxT=0,answered=false,curA='',hist=[],pb=0,totalQ=0;
+let killerQuestion=null;let killerCorrect=null;let nearMissGap=0;
+let diff='normal';
+let selectedScenarios=['all'];
+let scenarioCounts={};
+let correctPerScenario={};
+let wrongAnswers=0;
+let xp=0;
+window._isDaily=false;window._isChallenge=false;window._lastScore=0;
+let dailyQueue=[];let dailyIdx=0;
+let challengeQueue=[];let challengeIdx=0;
+let gameQueue=[];let gameIdx=0;
+
+// ===================== INIT =====================
+async function init(){
+  renderScenarioGrid();
+  setDiff('normal');
+  checkChallengeParam();
+  const stored=localStorage.getItem('los_user');
+  if(stored){try{currentUser=JSON.parse(stored);xp=parseInt(localStorage.getItem('los_xp_'+currentUser.id)||'0');updateNav();}catch(e){}}
+  showPage('home');
+}
+
+function checkChallengeParam(){
+  const params=new URLSearchParams(window.location.search);
+  const chal=params.get('challenge');
+  if(chal){
+    try{
+      const data=JSON.parse(atob(chal));
+      challengeQueue=data.questions;
+      challengeIdx=0;
+      window._isChallenge=true;
+      diff=data.diff||'normal';
+      toast('Challenge accepted — beat their score of '+data.score);
+    }catch(e){}
+    window.history.replaceState({},'',window.location.pathname);
+  }
+}
+
+function updateNav(){
+  const nr=document.getElementById('nav-right');
+  if(currentUser){
+    const lv=getLevelName(xp);
+    const coins=getCoins();
+    nr.innerHTML=`<div class="user-chip"><div class="user-dot"></div>${currentUser.username} <span style="color:var(--green);font-size:10px">${lv}</span></div><span style="font-size:11px;color:var(--green);font-weight:700" id="nav-coins">${coins}c</span><span style="width:1px;height:12px;background:var(--di);display:inline-block"></span><button class="nav-btn" onclick="doLogout()">Out</button>`;
+  } else {
+    nr.innerHTML=`<button class="nav-btn" onclick="showPage('auth')">Log in</button><span style="width:1px;height:12px;background:var(--di);display:inline-block"></span><button class="nav-btn primary" onclick="showPage('auth')">Sign up</button>`;
+  }
+}
+function updateCoinDisplay(){
+  const el=document.getElementById('nav-coins');
+  if(el)el.textContent=getCoins()+'c';
+  const sc=document.getElementById('shop-coins');
+  if(sc)sc.textContent=getCoins();
+}
+
+// ===================== PAGES =====================
+function showPage(p){
+  ['auth','home','game','death-screen','lb','profile','versus','contact','intro','shop','hof'].forEach(id=>{
+    const el=document.getElementById('page-'+id)||document.getElementById(id);
+    if(el)el.classList.add('hidden');
+  });
+  const el=document.getElementById('page-'+p)||document.getElementById(p);
+  if(el)el.classList.remove('hidden');
+  ['home','lb','versus','shop','profile','contact'].forEach(n=>{
+    const b=document.getElementById('bn-'+n);
+    if(b)b.classList.toggle('active',n===p);
+  });
+  // Strip surrounding chrome during gameplay for an immersive, full-bleed terminal feel
+  const navEl=document.querySelector('nav'),bnavEl=document.getElementById('bnav');
+  const immersive=(p==='game');
+  if(navEl)navEl.classList.toggle('hidden',immersive);
+  if(bnavEl)bnavEl.classList.toggle('hidden',immersive);
+  if(p==='lb'){renderLbScenarioTabs();loadLeaderboard('all');}
+  if(p==='profile')loadProfile();
+  if(p==='home'){checkDaily();updateXpBar();}
+  if(p==='versus'){
+    document.getElementById('versus-setup')?.classList.remove('hidden');
+    document.getElementById('versus-handoff')?.classList.add('hidden');
+  }
+  if(p==='shop')loadShop();
+  if(p==='hof')loadHof();
+}
+
+// ===================== SCENARIO GRID =====================
+function renderScenarioGrid(){
+  const el=document.getElementById('scenario-grid');
+  el.innerHTML='';
+  // Mixed mode
+  const mixed=document.createElement('div');
+  mixed.className='sc-card selected';
+  mixed.id='sc-all';
+  mixed.style.cssText='border-color:var(--green);background:var(--gbg);grid-column:1/-1';
+  mixed.innerHTML=`<div class="sc-icon">ALL</div><div class="sc-name">Mixed Mode</div><div class="sc-count">All scenarios shuffled together</div><div class="sc-check">✓</div>`;
+  mixed.onclick=()=>selectScenario('all');
+  el.appendChild(mixed);
+  SCENARIOS.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='sc-card';d.id='sc-'+s.id;
+    d.innerHTML=`<div class="sc-icon">${s.icon}</div><div class="sc-name" style="color:#fff">${s.tag}</div><div class="sc-count">${s.q.length} questions</div><div class="sc-check" style="color:#00ff66">✓</div>`;
+    d.style.borderColor='#fff';
+    d.onclick=()=>selectScenario(s.id);
+    el.appendChild(d);
+  });
+}
+
+function selectScenario(id){
+  if(id==='all'){
+    selectedScenarios=['all'];
+    document.querySelectorAll('.sc-card').forEach(c=>c.classList.remove('selected'));
+    const el=document.getElementById('sc-all');
+    if(el){el.classList.add('selected');el.style.background='var(--gbg)';}
+  } else {
+    const mixedEl=document.getElementById('sc-all');
+    if(mixedEl)mixedEl.classList.remove('selected');
+    const idx=selectedScenarios.indexOf('all');
+    if(idx>-1)selectedScenarios.splice(idx,1);
+    const idx2=selectedScenarios.indexOf(id);
+    if(idx2>-1){
+      selectedScenarios.splice(idx2,1);
+      document.getElementById('sc-'+id)?.classList.remove('selected');
+    } else {
+      selectedScenarios.push(id);
+      document.getElementById('sc-'+id)?.classList.add('selected');
+    }
+    if(selectedScenarios.length===0){
+      selectedScenarios=['all'];
+      if(mixedEl)mixedEl.classList.add('selected');
+    }
+  }
+}
+
+// ===================== AUTH =====================
+function switchTab(t){
+  document.getElementById('auth-login').classList.toggle('hidden',t!=='login');
+  document.getElementById('auth-signup').classList.toggle('hidden',t!=='signup');
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-signup').classList.toggle('active',t==='signup');
+}
+
+function switchToSignup(){
+  showPage('auth');
+  switchTab('signup');
+}
+
+let unameTimer=null;
+async function checkUsername(){
+  const v=document.getElementById('su-user').value.trim();
+  clearTimeout(unameTimer);
+  if(v.length<3){document.getElementById('su-user-err').textContent=v.length>0?'Min 3 chars':'';return;}
+  unameTimer=setTimeout(async()=>{
+    const{data}=await sb.from('users').select('id').eq('username',v.toLowerCase()).maybeSingle();
+    const el=document.getElementById('su-user-err');
+    el.textContent=data?'Taken':'Available';
+    el.style.color=data?'var(--red)':'var(--green)';
+  },400);
+}
+
+async function doSignup(){
+  const user=document.getElementById('su-user').value.trim();
+  const pass=document.getElementById('su-pass').value;
+  const pass2=document.getElementById('su-pass2').value;
+  let ok=true;
+  if(user.length<3){document.getElementById('su-user-err').textContent='Min 3 chars';ok=false;}
+  if(pass.length<6){document.getElementById('su-pass-err').textContent='Min 6 characters';ok=false;}
+  if(pass!==pass2){document.getElementById('su-pass2-err').textContent='Passwords don\'t match';ok=false;}
+  if(!ok)return;
+  const btn=document.getElementById('su-btn');btn.disabled=true;btn.textContent='Creating...';
+  const{data:ex}=await sb.from('users').select('id').eq('username',user.toLowerCase()).maybeSingle();
+  if(ex){document.getElementById('su-user-err').textContent='Username taken';btn.disabled=false;btn.textContent='Create account';return;}
+  const hashed=await hashPw(pass);
+  const{data,error}=await sb.from('users').insert({username:user.toLowerCase(),display_name:user,password_hash:hashed,achievements:[],best_score:0}).select().single();
+  if(error){document.getElementById('su-err').textContent=error.message;btn.disabled=false;btn.textContent='Create account';return;}
+  currentUser={id:data.id,username:data.display_name};
+  xp=0;
+  localStorage.setItem('los_user',JSON.stringify(currentUser));
+  updateNav();showPage('home');toast('Welcome, '+user+'!');
+  btn.disabled=false;btn.textContent='Create account';
+}
+
+async function doLogin(){
+  const user=document.getElementById('li-user').value.trim();
+  const pass=document.getElementById('li-pass').value;
+  if(!user){document.getElementById('li-user-err').textContent='Enter username';return;}
+  if(!pass){document.getElementById('li-pass-err').textContent='Enter password';return;}
+  const btn=document.getElementById('li-btn');btn.disabled=true;btn.textContent='Logging in...';
+  const{data}=await sb.from('users').select('*').eq('username',user.toLowerCase()).maybeSingle();
+  if(!data){document.getElementById('li-err').textContent='Username not found';btn.disabled=false;btn.textContent='Log in';return;}
+  const hashed=await hashPw(pass);
+  if(hashed!==data.password_hash){document.getElementById('li-err').textContent='Wrong password';btn.disabled=false;btn.textContent='Log in';return;}
+  currentUser={id:data.id,username:data.display_name};
+  xp=parseInt(localStorage.getItem('los_xp_'+data.id)||'0');
+  localStorage.setItem('los_user',JSON.stringify(currentUser));
+  await loadCosmeticsFromDb();
+  updateNav();showPage('home');toast('Welcome back, '+data.display_name+'!');
+  checkWeeklyReward();
+  btn.disabled=false;btn.textContent='Log in';
+}
+
+function doLogout(){currentUser=null;localStorage.removeItem('los_user');updateNav();showPage('home');toast('Logged out');}
+
+async function hashPw(p){
+  const enc=new TextEncoder().encode(p+'los_salt_2026');
+  const buf=await crypto.subtle.digest('SHA-256',enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ===================== DIFFICULTY =====================
+const DIFF_CONFIG={easy:{time:24000,lives:4,mult:1},normal:{time:16000,lives:3,mult:1.5},nightmare:{time:8000,lives:3,mult:2},sudden:{time:15000,lives:1,mult:3}};
+function setDiff(d){diff=d;['easy','normal','nightmare','sudden'].forEach(x=>document.getElementById('diff-'+x)?.classList.toggle('selected',x===d));}
+
+// ===================== DAILY CHALLENGE =====================
+function getTodaySeed(){const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
+function seededRng(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+
+function checkDaily(){
+  const seed=getTodaySeed();
+  const played=localStorage.getItem('los_daily_'+seed);
+  const badge=document.getElementById('daily-badge');
+  const sub=document.getElementById('daily-sub');
+  if(played){
+    badge.textContent='PLAYED';badge.style.background='none';badge.style.color='var(--green)';badge.style.borderColor='var(--green)';
+    sub.textContent='Score today: '+played+'. Come back tomorrow!';
+    document.getElementById('daily-banner').style.opacity='.6';
+    document.getElementById('daily-banner').onclick=null;
+  } else {
+    badge.textContent='PLAY TODAY';badge.style.background='none';badge.style.color='var(--amber)';badge.style.borderColor='var(--amber)';
+    sub.textContent='Everyone plays the same run today. One attempt.';
+    document.getElementById('daily-banner').style.opacity='1';
+    document.getElementById('daily-banner').onclick=startDaily;
+  }
+  // daily streak
+  const dailyStreak=getDailyStreak();
+  if(dailyStreak>0){
+    document.getElementById('daily-sub').textContent+=' · '+dailyStreak+' day streak';
+  }
+}
+
+function getDailyStreak(){
+  try{return parseInt(localStorage.getItem('los_daily_streak')||'0');}catch(e){return 0;}
+}
+function updateDailyStreak(){
+  const today=getTodaySeed();
+  const yesterday=getYesterdaySeed();
+  const lastDay=parseInt(localStorage.getItem('los_daily_last')||'0');
+  let streak=getDailyStreak();
+  if(lastDay===yesterday)streak++;
+  else if(lastDay!==today)streak=1;
+  localStorage.setItem('los_daily_streak',streak);
+  localStorage.setItem('los_daily_last',today);
+  return streak;
+}
+function getYesterdaySeed(){const d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
+
+function startDaily(){
+  const seed=getTodaySeed();
+  if(localStorage.getItem('los_daily_'+seed)){toast('Already played today! Come back tomorrow.');return;}
+  const rng=seededRng(seed);
+  const all=SCENARIOS.flatMap(s=>s.q.map(q=>({...q,tag:s.tag,icon:s.icon,bg:s.bg,tc:s.tc,bc:s.bc,sid:s.id})));
+  dailyQueue=[...all].sort(()=>rng()-.5).slice(0,20);
+  dailyIdx=0;window._isDaily=true;window._isChallenge=false;
+  setDiff('normal');startGame(true);
+}
+
+// ===================== GAME =====================
+function buildGameQueue(){
+  const pool=selectedScenarios.includes('all')
+    ?SCENARIOS.flatMap(s=>s.q.map(q=>({...q,tag:s.tag,icon:s.icon,bg:s.bg,tc:s.tc,bc:s.bc,sid:s.id})))
+    :SCENARIOS.filter(s=>selectedScenarios.includes(s.id)).flatMap(s=>s.q.map(q=>({...q,tag:s.tag,icon:s.icon,bg:s.bg,tc:s.tc,bc:s.bc,sid:s.id})));
+  return [...pool].sort(()=>Math.random()-.5);
+}
+
+function startGame(isDaily=false){
+  window._isDaily=isDaily;
+  const cfg=DIFF_CONFIG[diff];
+  score=0;streak=0;bestStreak=0;lives=cfg.lives;hist=[];totalQ=0;
+  scenarioCounts={};correctPerScenario={};wrongAnswers=0;_playedQuestions=[];killerQuestion=null;killerCorrect=null;window._totalCorrect=0;
+  window._lastScore=0;pb=getLocalPB();
+  showPage('game');updateStats();renderHearts();updateXpBar();
+  resetTensionVisual();
+  setTimeout(()=>{startAmbience();},500);
+  if(window._isChallenge&&challengeQueue.length>0){challengeIdx=0;nextChallengeQ();}
+  else if(isDaily){dailyIdx=0;nextDailyQ();}
+  else{gameQueue=buildGameQueue();gameIdx=0;nextFromQueue();}
+}
+
+function getLocalPB(){try{return parseInt(localStorage.getItem('los_pb_'+diff)||'0');}catch(e){return 0;}}
+function setLocalPB(v){try{localStorage.setItem('los_pb_'+diff,v);}catch(e){}}
+
+function updateStats(){
+  document.getElementById('score-val').textContent=score;
+  document.getElementById('streak-val').textContent=streak;
+  // Scale heartbeat with score — starts at 5, gets intense fast
+  if(score>=5&&soundEnabled){
+    const bpm=55+Math.min(85,score*1.8);
+    heartbeatVol=0.08+Math.min(0.45,score/60);
+    if(!heartbeatActive)startHeartbeat(bpm);
+  }
+  // Update ghost
+  const ghostBar=document.getElementById('ghost-bar');
+  const ghostScore=document.getElementById('ghost-score');
+  if(ghostBar&&pb>0){
+    ghostBar.style.display='flex';
+    if(ghostScore){
+      ghostScore.textContent=pb;
+      if(score>=pb){
+        ghostScore.style.color='var(--green)';
+        ghostBar.style.borderBottomColor='var(--green)';
+        ghostScore.textContent=pb+' — beaten';
+      } else {
+        const diff2=pb-score;
+        ghostScore.style.color=diff2<=5?'var(--amber)':'var(--mu)';
+        ghostScore.textContent=pb+(diff2<=3?' ('+diff2+' away!)':'');
+      }
+    }
+  } else if(ghostBar){
+    ghostBar.style.display='none';
+  }
+}
+
+function updateXpBar(){
+  const lv=getLevel(xp);const prog=getXpProgress(xp);
+  const el=document.getElementById('xp-fill');const lbl=document.getElementById('xp-label');const val=document.getElementById('xp-val');
+  if(el)el.style.width=prog+'%';
+  if(lbl)lbl.textContent='Lv'+(lv+1)+' '+LEVELS[lv].name;
+  if(val)val.textContent=xp+' XP';
+}
+
+function renderHearts(){
+  const r=document.getElementById('lives-row');r.innerHTML='';
+  const max=DIFF_CONFIG[diff].lives;
+  for(let i=0;i<max;i++){
+    const h=document.createElement('div');
+    h.className='heart'+(i>=lives?' lost':'');
+    h.textContent='I';
+    r.appendChild(h);
+  }
+}
+
+function getTime(){
+  const base=DIFF_CONFIG[diff].time;
+  // Sudden death — fixed time
+  if(diff==='sudden')return base;
+  // All others scale down as score increases — but gently
+  const s=score;
+  const eventMult=getEventTimeMultiplier();
+  if(diff==='easy'){
+    if(s<10)return base*eventMult;
+    if(s<20)return base*0.88;
+    if(s<35)return base*0.75;
+    if(s<50)return base*0.63;
+    if(s<75)return base*0.52;
+    return base*0.44;
+  }
+  if(diff==='normal'){
+    if(s<8)return base;
+    if(s<18)return base*0.87;
+    if(s<30)return base*0.73;
+    if(s<45)return base*0.60;
+    if(s<65)return base*0.50;
+    return base*0.42;
+  }
+  if(diff==='nightmare'){
+    if(s<5)return base;
+    if(s<12)return base*0.88;
+    if(s<22)return base*0.75;
+    if(s<35)return base*0.62;
+    if(s<50)return base*0.52;
+    return base*0.44;
+  }
+  return base;
+}
+
+function updateMilestoneTaunt(){
+  const lbl=document.getElementById('speed-lbl');
+  if(!lbl)return;
+  const gap=pb-score;
+  if(pb>0&&gap>0&&gap<=5){
+    lbl.style.color='var(--amber)';
+    lbl.style.fontWeight='700';
+    if(gap===1)lbl.textContent='ONE MORE AND YOU BEAT YOUR BEST';
+    else if(gap<=3)lbl.textContent=gap+' points from your best...';
+    else lbl.textContent='Getting close to your best ('+pb+')';
+    return;
+  }
+  if(score===pb&&pb>0){
+    lbl.style.color='var(--green)';
+    lbl.style.fontWeight='700';
+    lbl.textContent='YOU JUST MATCHED YOUR BEST — KEEP GOING!';
+    return;
+  }
+  if(score>pb&&pb>0){
+    lbl.style.color='var(--green)';
+    lbl.style.fontWeight='700';
+    lbl.textContent="NEW RECORD! Don't stop now";
+    return;
+  }
+  lbl.style.color='var(--di)';
+  lbl.style.fontWeight='400';
+  lbl.textContent=getSpeedLabel();
+}
+
+function getSpeedLabel(){
+  if(diff==='nightmare')return'Nightmare Mode';
+  if(diff==='sudden')return'Sudden Death';
+  if(score<5)return'';if(score<12)return'picking up speed...';if(score<22)return'getting faster';
+  if(score<35)return'FAST';if(score<50)return'VERY FAST';if(score<75)return'INTENSE';
+  return'MAXIMUM SPEED';
+}
+
+function nextDailyQ(){if(dailyIdx>=dailyQueue.length){onDead('You completed the daily challenge!');return;}loadQuestion(dailyQueue[dailyIdx++]);}
+function nextChallengeQ(){if(challengeIdx>=challengeQueue.length){onDead('You finished the challenge run!');return;}loadQuestion(challengeQueue[challengeIdx++]);}
+function nextFromQueue(){
+  if(gameIdx>=gameQueue.length)gameQueue=[...buildGameQueue()];
+  // avoid repeat
+  let item=gameQueue[gameIdx++];
+  if(hist.includes(item.q)&&gameQueue.length>5){
+    const fallback=gameQueue.find(i=>!hist.includes(i.q));
+    if(fallback)item=fallback;
+  }
+  loadQuestion(item);
+}
+function next(){
+  if(window._isChallenge)nextChallengeQ();
+  else if(window._isDaily)nextDailyQ();
+  else nextFromQueue();
+}
+
+function loadQuestion(item){
+  answered=false;
+  document.getElementById('feedback').textContent='';
+  document.getElementById('combo-badge').style.opacity='0';
+  document.getElementById('combo-flash').style.opacity='0';
+  // Reset timer tension visuals for new question
+  const bt=document.getElementById('big-timer');if(bt)bt.style.opacity='0';
+  const wrap=document.querySelector('.wrap');if(wrap)wrap.classList.remove('glitching');
+  document.getElementById('speed-lbl').textContent=getSpeedLabel();
+  updateMilestoneTaunt();
+  totalQ++;hist.push(item.q);if(hist.length>40)hist.shift();
+
+  // RANDOM EVENTS — trigger occasionally after score 15
+  if(score>=15&&Math.random()<0.12&&diff!=='sudden'){
+    triggerRandomEvent();
+  }
+  _playedQuestions.push(item);
+  curA=item.a;
+  scenarioCounts[item.sid||item.tag]=(scenarioCounts[item.sid||item.tag]||0)+1;
+
+  const card=document.getElementById('scenario-card');
+  card.style.background='#000';card.style.borderColor='#ffffff';
+  const tag=document.getElementById('s-tag');
+  tag.textContent=(item.tag||'').toUpperCase();
+  tag.style.cssText='font-size:11px;font-weight:700;padding:0 0 5px;text-transform:uppercase;letter-spacing:.18em;background:none;color:var(--green);border:none;border-bottom:1px solid var(--green);font-family:\'Space Mono\',monospace';
+  document.getElementById('s-text').textContent=item.q;
+
+  const opts=[...item.w].sort(()=>Math.random()-.5).slice(0,3);
+  const all=[item.a,...opts].sort(()=>Math.random()-.5);
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  all.forEach(opt=>{
+    const b=document.createElement('button');b.className='cb';b.textContent=opt;
+    b.onclick=()=>choose(b,opt);ch.appendChild(b);
+  });
+
+  maxT=getTime();tL=maxT;clearInterval(tI);updateTimer();
+  tI=setInterval(()=>{tL-=80;updateTimer();if(tL<=0){clearInterval(tI);if(!answered)onTimeout();}},80);
+}
+
+function updateTimer(){
+  const pct=Math.max(0,tL/maxT)*100;
+  const secsLeft=Math.max(0,tL)/1000;
+  const fill=document.getElementById('timer-fill');
+  fill.style.width=pct+'%';
+  fill.style.background=pct>60?'var(--green)':pct>30?'var(--amber)':'var(--red)';
+  document.getElementById('timer-secs').textContent=secsLeft.toFixed(1)+'s';
+
+  // BIG TIMER — show last 3 seconds dramatically
+  const bt=document.getElementById('big-timer');
+  if(bt){
+    const sInt=Math.ceil(secsLeft);
+    if(secsLeft<=3&&secsLeft>0&&!answered){
+      bt.style.opacity=pct<8?'0.5':'0.25';
+      bt.textContent=sInt;
+      bt.style.color=secsLeft<=1?'var(--red)':secsLeft<=2?'var(--amber)':'var(--tx)';
+      bt.style.fontSize=secsLeft<=1?'96px':'72px';
+    } else {
+      bt.style.opacity='0';
+    }
+  }
+
+  // TIMER TICKS — urgent sounds in last 3 seconds
+  if(secsLeft<=3&&secsLeft>0&&!answered){
+    if(Math.round(tL/80)%3===0)playSound('urgent_tick');
+  } else if(pct<25&&tL>0&&Math.round(tL/80)%6===0){
+    playSound('tick');
+  }
+
+  // TENSION OVERLAY — red vignette grows as time runs out
+  updateTensionVisual(pct,secsLeft);
+}
+
+let tensionLevel=0;
+function updateTensionVisual(timerPct,secsLeft){
+  // Base tension from score
+  const scoreTension=Math.min(1,score/80);
+  // Timer tension
+  const timerTension=timerPct<40?(1-(timerPct/40)):0;
+  tensionLevel=Math.max(scoreTension*0.4,timerTension*0.9);
+
+  const overlay=document.getElementById('tension-overlay');
+  const ring=document.getElementById('heartbeat-ring');
+  const wrap=document.querySelector('.wrap');
+  if(overlay){
+    const redAlpha=tensionLevel*0.18;
+    overlay.style.background='radial-gradient(ellipse at center,transparent 20%,rgba(255,0,85,'+redAlpha+') 100%)';
+    overlay.style.opacity='1';
+  }
+  if(ring){
+    const borderW=Math.round(tensionLevel*6);
+    const borderA=tensionLevel*0.4;
+    ring.style.border=borderW+'px solid rgba(255,0,85,'+borderA+')';
+    ring.style.boxShadow=tensionLevel>0.5?'inset 0 0 '+(tensionLevel*60)+'px rgba(255,0,85,'+(tensionLevel*0.12)+')':'none';
+  }
+  // Subtle glitch at very low timer
+  if(secsLeft<=1.5&&secsLeft>0&&!answered&&wrap){
+    if(Math.random()<0.15)wrap.classList.add('glitching');
+    else wrap.classList.remove('glitching');
+  } else if(wrap){
+    wrap.classList.remove('glitching');
+  }
+  // Darken at high score
+  if(scoreTension>0.5){
+    document.body.style.filter='brightness('+(1-scoreTension*0.12)+')';
+  }
+  // Heartbeat intensity
+  if(ambienceGain)setAmbienceIntensity(tensionLevel);
+}
+
+function resetTensionVisual(){
+  const overlay=document.getElementById('tension-overlay');
+  const ring=document.getElementById('heartbeat-ring');
+  if(overlay){overlay.style.background='none';overlay.style.opacity='0';}
+  if(ring){ring.style.border='0px solid transparent';ring.style.boxShadow='none';}
+  document.body.style.filter='';
+  const bt=document.getElementById('big-timer');
+  if(bt)bt.style.opacity='0';
+  const wrap=document.querySelector('.wrap');
+  if(wrap)wrap.classList.remove('glitching');
+}
+
+function choose(btn,opt){
+  if(answered)return;
+  // Resume audio context on first user interaction
+  const actx=getAudio();if(actx&&actx.state==='suspended')actx.resume();
+  answered=true;clearInterval(tI);
+  const allBtns=document.querySelectorAll('.cb');
+  if(opt===curA){
+    btn.classList.add('correct','popin');
+    triggerCorrectEffect(btn);
+    const mult=DIFF_CONFIG[diff].mult;
+    const bonus=Math.max(1,Math.round(tL/400*mult));
+    const comboBonus=streak>=4?Math.floor(streak/2):0;
+    const rawTotal=bonus+comboBonus;
+    const total=Math.round(applyEventOnCorrect(rawTotal));
+    score+=total;streak++;awardCorrectAnswerCoins();
+    tickEventCounter();
+    if(streak>bestStreak)bestStreak=streak;
+    const sid=document.getElementById('s-tag').textContent.split(' ').pop().toLowerCase();
+    correctPerScenario[sid]=(correctPerScenario[sid]||0)+1;
+    updateStats();
+    document.getElementById('feedback').textContent=comboBonus>0?'COMBO x'+streak+'! +'+total:'Survived! +'+total;
+    if([3,5,10,15,20].includes(streak)){
+      const fl=document.getElementById('combo-flash');
+      fl.textContent=streak===3?'ON FIRE':streak===5?'UNSTOPPABLE':streak===10?'LEGENDARY':streak===15?'GODLIKE':'x'+streak+'!!!';
+      fl.style.color=streak>=10?'var(--amber)':'var(--green)';fl.style.opacity='1';
+      triggerComboEffect();
+    }
+    if(streak>=3){const badge=document.getElementById('combo-badge');badge.textContent='x'+streak+' streak';badge.style.opacity='1';}
+    setTimeout(next,700);
+  } else {
+    btn.classList.add('wrong','shake');
+    triggerWrongEffect(btn);
+    allBtns.forEach(b=>{if(b.textContent===curA)b.classList.add('reveal');});
+    wrongAnswers++;
+    // HOT STREAK PROTECTION: first wrong answer on a 5+ streak = lose streak but NOT a life
+    if(streak>=5&&diff!=='sudden'){
+      const savedStreak=streak;
+      streak=0;
+      updateStats();
+      document.getElementById('feedback').textContent='Shield used — lost x'+savedStreak+' streak but kept your life.';
+      document.getElementById('feedback').style.color='var(--amber)';
+      setTimeout(()=>{document.getElementById('feedback').style.color='';},1200);
+      setTimeout(next,1300);
+    } else if(useShieldIfAvailable()){
+      streak=0;updateStats();
+      document.getElementById('feedback').textContent='Shield item absorbed the hit! '+getShields()+' left.';
+      document.getElementById('feedback').style.color='var(--green)';
+      setTimeout(()=>{document.getElementById('feedback').style.color='';},1200);
+      setTimeout(next,1300);
+    } else {
+      streak=0;lives--;renderHearts();updateStats();
+      if(lives<=0){killerQuestion=document.getElementById('s-text').textContent;killerCorrect=curA;setTimeout(()=>onDead('Wrong choice — that was fatal.'),1000);}
+      else{document.getElementById('feedback').textContent='Wrong! '+lives+' '+(lives===1?'life':'lives')+' left.';setTimeout(next,1100);}
+    }
+  }
+}
+
+function onTimeout(){
+  answered=true;streak=0;
+  if(useShieldIfAvailable()){
+    renderHearts();updateStats();
+    document.getElementById('feedback').textContent='Too slow! Shield item absorbed it — '+getShields()+' left.';
+    setTimeout(next,1000);
+    return;
+  }
+  lives--;renderHearts();updateStats();
+  if(lives<=0){killerQuestion=document.getElementById('s-text').textContent;killerCorrect=curA;setTimeout(()=>onDead('You froze — clock ran out.'),600);}
+  else{
+    document.getElementById('feedback').textContent='Too slow! '+lives+' '+(lives===1?'life':'lives')+' left.';
+    document.querySelectorAll('.cb').forEach(b=>{if(b.textContent===curA)b.classList.add('reveal');});
+    setTimeout(next,1000);
+  }
+}
+
+function getGrade(s){
+  if(s>=200)return{label:'S+ — GOD TIER',bg:'#000',c:'#00ff66',b:'#00ff66'};
+  if(s>=150)return{label:'S — Unkillable',bg:'#000',c:'#00ff66',b:'#00ff66'};
+  if(s>=80)return{label:'A — Hardcore Survivor',bg:'#000',c:'#00ff66',b:'#00ff66'};
+  if(s>=45)return{label:'B — Solid Instincts',bg:'#000',c:'#ffffff',b:'#ffffff'};
+  if(s>=20)return{label:'C — Almost Had It',bg:'#000',c:'#ffffff',b:'#ffffff'};
+  if(s>=8)return{label:'D — Casual Victim',bg:'#000',c:'#ff0055',b:'#ff0055'};
+  return{label:'F — Didn\'t Even Try',bg:'#000',c:'#ff0055',b:'#ff0055'};
+}
+
+function getDramaticDeathMsg(reason,score,streak,scenario){
+  const scenarioMsgs={
+    zombie:['The noise you made attracted the entire horde.','You trusted the wrong survivor.','Greed killed you. One extra second would have cost nothing.','Your hesitation cost the entire group.','Day '+score+'. You almost made it out of the city.'],
+    squid:['The guards were watching. They always were.','You played it safe. That was your mistake.','Your alliance betrayed you at the worst possible moment.','One wrong step. That is all it took.','You were so close to the prize.'],
+    horror:['You heard the warning signs. You ignored them all.','Rule one: never go alone. You forgot.','The last thing you saw was your own reflection.','It knew your name. It always did.','Some doors should stay locked.'],
+    prison:['Trust nobody. You trusted somebody.','The wrong guard. The wrong deal. The wrong moment.','Day '+score+'. You were getting too comfortable.','Respect is everything in here. You forgot.','One more week and you would have been out.'],
+    aliens:['They had been watching you since day one.','The signal you ignored was a warning.','Earth fell. But you almost made it.','They learn from every encounter. You taught them too much.','The last human in the sector.'],
+    war:['No mission survives contact with the enemy. Yours did not.','Hesitation costs lives. Today it cost yours.','The map was wrong. The intelligence was wrong. Everything was wrong.','You saved three lives before this. Remember that.','Friendly fire. The worst kind of ending.'],
+    disaster:['Nature does not negotiate.','You had thirty seconds. You needed thirty-one.','The forecast was wrong. Or maybe you just ran out of luck.','Survived the initial impact. Did not survive what came after.','Some things cannot be outrun.'],
+    plane:['Ditched the survival manual on day one. Big mistake.','The ocean is undefeated.','Rescue was three miles away.','You built shelter. You found water. Then the jungle found you.','Five days. Most people do not last one.'],
+    cyber:['You clicked the link.','In a city of eight million — you were the one they targeted.','The systems failed. Then the people failed. Then you.','Digital ghost. Gone without a trace.','The password was your birthday. Classic.'],
+    medieval:['The castle fell at dawn.','Betrayed by your own bannerman.','The arrow found the one gap in your armour.','You held for seventeen days. Kingdoms have fallen faster.','Honour cost you your life. Some say it was worth it.'],
+    space:['Houston received your final transmission. It was three words.','The void is indifferent to heroism.','You fixed the reactor. You just did not fix it fast enough.','Lost in the black. No coordinates. No signal.','Mission elapsed time: '+score+' minutes. New station record.'],
+    underwater:['Four hundred metres down. No one heard you.','The hull held for three days. On day four it did not.','The ocean floor was the last thing you saw. It is beautiful down there.','Communication lost. All hands lost.','Depth record broken. Survival record: not so much.'],
+    heist:['They were waiting. They are always waiting.','The plan was perfect. The execution was not.','Sixty seconds from the exit. Story of your life.','You should have taken the deal.','The dye pack was a nice touch. Had to give them that.'],
+    jungle:['The jungle does not care about your survival shows.','Three days without water. Inevitable.','The berries looked harmless. They were not.','Search and rescue found your camp. You were not in it.','You made it further than anyone expected.'],
+  };
+  const generic=['You almost had it.','One wrong move. That is all it ever takes.','Score: '+score+'. It was not enough.','The clock ran out on the wrong question.','This is how most stories end.','Better than '+Math.round(Math.random()*40+30)+'% of players. Not good enough today.'];
+  const sid=Object.keys(scenarioCounts)[0]||'generic';
+  const pool=scenarioMsgs[sid]||generic;
+  if(reason.includes('froze')||reason.includes('clock'))return'The timer ran out. Your instincts failed you.';
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+async function onDead(reason){
+  window._lastScore=score;clearInterval(tI);
+  triggerDeathEffect();
+  stopHeartbeat();stopAmbience();
+  resetTensionVisual();
+
+  // CINEMATIC FLASH — red flash, freeze, then reveal
+  const flash=document.getElementById('death-flash');
+  if(flash){
+    flash.style.transition='opacity .08s';
+    flash.style.opacity='0.85';
+    setTimeout(()=>{flash.style.transition='opacity .6s';flash.style.opacity='0';},120);
+  }
+  // Screen freeze for dramatic pause
+  document.body.style.filter='grayscale(0.6) brightness(0.7)';
+  await new Promise(r=>setTimeout(r,420));
+  document.body.style.filter='';
+
+  // Versus mode handling
+  if(window._versusMode){
+    window._versusMode=false;
+    vScores[vCurrentPlayer-1]=score;
+    if(vCurrentPlayer===1){
+      vCurrentPlayer=2;
+      showPage('versus');
+      document.getElementById('versus-setup').classList.add('hidden');
+      document.getElementById('versus-handoff').classList.remove('hidden');
+      document.getElementById('vh-emoji').textContent='VS';
+      document.getElementById('vh-title').textContent=vPlayer2+"'s Turn!";
+      document.getElementById('vh-sub').textContent=vPlayer1+' scored '+vScores[0]+'. Can '+vPlayer2+' beat it?';
+      document.getElementById('vh-btn').textContent='Bring it on';
+    } else {
+      showPage('versus');
+      document.getElementById('versus-handoff').classList.remove('hidden');
+      const winner=vScores[0]>vScores[1]?vPlayer1:vScores[1]>vScores[0]?vPlayer2:'Nobody';
+      document.getElementById('vh-emoji').textContent=vScores[0]===vScores[1]?'TIE':'WINNER';
+      document.getElementById('vh-title').textContent=winner==='Nobody'?"It's a tie!":winner+' wins!';
+      document.getElementById('vh-sub').textContent=vPlayer1+': '+vScores[0]+' pts  |  '+vPlayer2+': '+vScores[1]+' pts';
+      document.getElementById('vh-btn').textContent='Play again';
+      document.getElementById('vh-btn').onclick=()=>{
+        vScores=[0,0];vCurrentPlayer=1;
+        document.getElementById('versus-setup').classList.remove('hidden');
+        document.getElementById('versus-handoff').classList.add('hidden');
+        document.getElementById('vh-btn').onclick=startVersusRound;
+      };
+      playSound('combo');
+    }
+    return;
+  }
+
+  if(window._isDaily){
+    const seed=getTodaySeed();
+    localStorage.setItem('los_daily_'+seed,score);
+    updateDailyStreak();
+  }
+  const isNewPB=score>pb;
+  if(isNewPB)setLocalPB(score);
+  const newAchs=checkAchievements();
+  const xpGained=getXpForScore(score,diff);
+  xp+=xpGained;
+  if(currentUser)localStorage.setItem('los_xp_'+currentUser.id,xp);
+  if(currentUser){
+    await saveScore(score,diff,window._isDaily,bestStreak);
+    if(newAchs.length>0)await saveAchievements(newAchs);
+  }
+  buildResultsCard(isNewPB);
+  showPage('death-screen');
+  // Animate death card in
+  const dc=document.querySelector('#death-screen .card');
+  if(dc){dc.style.opacity='0';dc.style.transform='scale(0.96) translateY(8px)';setTimeout(()=>{dc.style.transition='all .45s cubic-bezier(.34,1.2,.64,1)';dc.style.opacity='1';dc.style.transform='scale(1) translateY(0)';},50);}
+
+  // Dramatic death message
+  const dramaMsg=getDramaticDeathMsg(reason,score,bestStreak,null);
+  document.getElementById('death-title').textContent=isNewPB?'NEW RECORD':'YOU DIDN\'T MAKE IT';
+  // Show dramatic message in near-miss slot
+  const nearMissEl=document.getElementById('near-miss-msg');
+  if(nearMissEl&&!isNewPB){nearMissEl.style.color='var(--mu)';nearMissEl.style.fontWeight='400';nearMissEl.style.fontSize='12px';nearMissEl.textContent=dramaMsg;}
+
+  document.getElementById('pb-announce').textContent='';
+  const retryBtn=document.getElementById('retry-btn');
+  if(window._isDaily){retryBtn.textContent='Free Play';}
+  else if(isNewPB){retryBtn.textContent='Defend the record';}
+  else if(nearMissGap===1){retryBtn.textContent='ONE MORE — beat it';}
+  else if(nearMissGap<=3&&nearMissGap>0){retryBtn.textContent='So close. One more.';}
+  else{retryBtn.textContent='One more time';}
+  document.getElementById('xp-gained').textContent='+'+xpGained+' XP earned -> '+getLevelName(xp);
+  // Award coins
+  awardGameCoins(isNewPB,window._isDaily);
+  updateCoinDisplay();
+
+  // killer question
+  if(killerQuestion){
+    const kb=document.getElementById('killer-box');
+    const kq=document.getElementById('killer-question');
+    const kc=document.getElementById('killer-correct');
+    if(kb&&kq&&kc){
+      kb.style.display='block';
+      kq.textContent=killerQuestion;
+      kc.textContent='Correct answer: '+killerCorrect;
+    }
+  }
+
+  // survival % — with dramatic copy
+  getSurvivalPct(score,diff).then(pct=>{
+    const el=document.getElementById('rc-survival-pct');
+    if(!el)return;
+    if(pct!==null){
+      if(pct>=90){el.style.color='var(--green)';el.textContent='Top '+( 100-pct)+'% of all players';}
+      else if(pct>=70){el.style.color='var(--green)';el.textContent='Better than '+pct+'% of players';}
+      else if(pct>=40){el.style.color='var(--amber)';el.textContent='Better than '+pct+'% of players';}
+      else{el.style.color='var(--red)';el.textContent='Only '+pct+'% do worse. Most survive longer.';}
+    } else {
+      el.textContent='';
+    }
+  });
+
+  // Play fanfare on new PB, otherwise silence
+  if(isNewPB)setTimeout(()=>playSound('fanfare'),500);
+
+  // challenge link
+  buildChallengeLink();
+
+  // new achievements
+  const achEl=document.getElementById('new-achs');
+  achEl.innerHTML=newAchs.length>0?'<div style="font-size:11px;color:var(--green);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em">Unlocked</div>'+
+    newAchs.map(id=>{const a=ACHIEVEMENTS.find(x=>x.id===id);return`<div class="new-ach-item"><div class="icon">${a.icon}</div><div class="name">${a.name}</div></div>`;}).join(''):'';
+}
+
+// ===================== RESULTS CARD =====================
+function buildResultsCard(isNewPB){
+  const g=getGrade(score);
+  document.getElementById('rc-score').textContent=score;
+  const gradeEl=document.getElementById('rc-grade');
+  gradeEl.textContent=g.label;
+  gradeEl.style.cssText='background:'+g.bg+';color:'+g.c+';border:2px solid '+g.b+';font-size:11px;font-weight:700;padding:5px 14px;text-transform:uppercase;letter-spacing:.06em;display:inline-block;margin:5px 0';
+  document.getElementById('rc-streak').textContent=bestStreak;
+  document.getElementById('rc-questions').textContent=totalQ;
+  document.getElementById('rc-diff').textContent=diff;
+  // scenarios survived
+  const scEl=document.getElementById('rc-scenarios');
+  scEl.innerHTML='';
+  Object.keys(scenarioCounts).forEach(sid=>{
+    const s=SCENARIOS.find(x=>x.id===sid||x.tag.toLowerCase()===sid.toLowerCase());
+    if(!s)return;
+    const sp=document.createElement('span');
+    sp.className='rc-stag';
+    sp.style.cssText='background:#000;color:#00ff66;border:1px solid #00ff66';
+    sp.textContent=s.tag;
+    scEl.appendChild(sp);
+  });
+}
+
+async function getSurvivalPct(myScore,myDiff){
+  try{
+    const{count}=await sb.from('scores').select('id',{count:'exact',head:true}).eq('difficulty',myDiff);
+    const{count:worse}=await sb.from('scores').select('id',{count:'exact',head:true}).eq('difficulty',myDiff).lt('score',myScore);
+    if(count>5)return Math.round((worse/count)*100);
+    return null;
+  }catch(e){return null;}
+}
+
+// ===================== CHALLENGE LINK =====================
+let _playedQuestions=[];
+
+function buildChallengeLink(){
+  if(_playedQuestions.length===0){
+    document.getElementById('challenge-link').value='';
+    return;
+  }
+  try{
+    // strip large fields to keep URL short
+    const slim=_playedQuestions.slice(0,20).map(q=>({q:q.q,a:q.a,w:q.w,tag:q.tag,bg:q.bg,tc:q.tc,bc:q.bc,sid:q.sid,icon:q.icon||''}));
+    const payload={questions:slim,diff,score};
+    const json=JSON.stringify(payload);
+    const encoded=btoa(unescape(encodeURIComponent(json)));
+    const url=window.location.origin+window.location.pathname+'?challenge='+encoded;
+    document.getElementById('challenge-link').value=url;
+  }catch(e){
+    console.log('Challenge link error:',e);
+    document.getElementById('challenge-link').value='';
+  }
+}
+
+function copyChallenge(){
+  const val=document.getElementById('challenge-link').value;
+  if(!val){
+    // rebuild it
+    buildChallengeLink();
+    const val2=document.getElementById('challenge-link').value;
+    if(!val2){toast('Play a game first!');return;}
+    navigator.clipboard.writeText(val2).then(()=>{
+      toast('Challenge link copied!');
+      document.getElementById('copied-msg').textContent='Challenge link copied!';
+      setTimeout(()=>document.getElementById('copied-msg').textContent='',3000);
+    });
+    return;
+  }
+  navigator.clipboard.writeText(val).then(()=>{
+    toast('Link copied — send it to a friend.');
+    document.getElementById('copied-msg').textContent='Challenge link copied!';
+    setTimeout(()=>document.getElementById('copied-msg').textContent='',3000);
+  });
+}
+
+function downloadCard(){
+  // Create a canvas-based downloadable card — Neo-Brutalist Cyberpunk theme
+  const canvas=document.createElement('canvas');
+  canvas.width=600;canvas.height=700;
+  const ctx=canvas.getContext('2d');
+
+  // Pitch black background
+  ctx.fillStyle='#000000';ctx.fillRect(0,0,600,700);
+
+  // Faint grid lines (matches site background texture)
+  ctx.strokeStyle='rgba(0,255,102,0.06)';ctx.lineWidth=1;
+  for(let x=0;x<=600;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,700);ctx.stroke();}
+  for(let y=0;y<=700;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(600,y);ctx.stroke();}
+
+  // Sharp square border, flat offset shadow
+  ctx.fillStyle='#00ff66';ctx.fillRect(17,17,580,680);
+  ctx.fillStyle='#000000';ctx.fillRect(10,10,580,680);
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=3;
+  ctx.strokeRect(10,10,580,680);
+
+  // Logo / label
+  ctx.font='bold 12px "Space Mono", monospace';ctx.fillStyle='#00ff66';ctx.textAlign='center';
+  ctx.fillText('LAST ONE STANDING',300,55);
+
+  ctx.font='bold 36px "Archivo Black", Arial';ctx.fillStyle='#ff0055';
+  ctx.fillText('LOS',300,120);
+
+  // Score — solid neon green, no gradient
+  ctx.font='bold 100px "Archivo Black", Arial';
+  ctx.fillStyle='#00ff66';
+  ctx.fillText(window._lastScore,300,250);
+
+  // Grade pill (text only, square)
+  const grade=document.getElementById('rc-grade').textContent;
+  ctx.font='bold 16px "Space Mono", monospace';ctx.fillStyle='#ffffff';
+  ctx.fillText(grade,300,290);
+
+  // Stats row — square block, white border
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=2;
+  ctx.strokeRect(40,310,520,80);
+  ctx.beginPath();ctx.moveTo(240,310);ctx.lineTo(240,390);ctx.moveTo(360,310);ctx.lineTo(360,390);ctx.stroke();
+
+  ctx.font='bold 28px "Archivo Black", Arial';ctx.fillStyle='#ffffff';
+  ctx.fillText(document.getElementById('rc-streak').textContent,160,350);
+  ctx.fillText(document.getElementById('rc-questions').textContent,300,350);
+  ctx.fillText(diff.toUpperCase(),440,350);
+
+  ctx.font='11px "Space Mono", monospace';ctx.fillStyle='#999999';
+  ctx.fillText('BEST STREAK',160,375);ctx.fillText('SURVIVED',300,375);ctx.fillText('MODE',440,375);
+
+  // Survival pct
+  const pct=document.getElementById('rc-survival-pct').textContent;
+  if(pct){ctx.font='14px "Space Mono", monospace';ctx.fillStyle='#00ff66';ctx.fillText(pct,300,420);}
+
+  // Challenge text
+  ctx.font='bold 18px "Archivo Black", Arial';ctx.fillStyle='#ffffff';
+  ctx.fillText('THINK YOUR FRIENDS WOULD SURVIVE?',300,470);
+  ctx.font='14px "Space Mono", monospace';ctx.fillStyle='#999999';
+  ctx.fillText('Challenge them at:',300,500);
+  ctx.font='bold 14px "Space Mono", monospace';ctx.fillStyle='#00ff66';
+  ctx.fillText('ajoragames.com',300,525);
+
+  // Bottom divider
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,560);ctx.lineTo(560,560);ctx.stroke();
+  ctx.font='11px "Space Mono", monospace';ctx.fillStyle='#999999';
+  ctx.fillText('Would YOU survive? Free to play.',300,585);
+
+  // Download
+  const link=document.createElement('a');
+  link.download='my-survival-score.png';
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+
+  document.getElementById('copied-msg').textContent='Card saved! Post it everywhere.';
+  setTimeout(()=>document.getElementById('copied-msg').textContent='',3000);
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+// ===================== ACHIEVEMENTS =====================
+function getLocalAchs(){try{return JSON.parse(localStorage.getItem('los_achs_'+(currentUser?.id||'guest'))||'[]');}catch(e){return[];}}
+function saveLocalAchs(a){try{localStorage.setItem('los_achs_'+(currentUser?.id||'guest'),JSON.stringify(a));}catch(e){}}
+
+function checkAchievements(){
+  const current=getLocalAchs();const newOnes=[];
+  function check(id,cond){if(cond&&!current.includes(id)){newOnes.push(id);current.push(id);}}
+  check('first_blood',totalQ>=1);
+  check('streak5',bestStreak>=5);check('streak10',bestStreak>=10);check('streak15',bestStreak>=15);
+  check('score50',score>=50);check('score100',score>=100);check('score150',score>=150);check('score200',score>=200);
+  check('all_scenarios',Object.keys(scenarioCounts).length>=6);
+  check('nightmare',diff==='nightmare'&&score>=20);
+  check('sudden_death',diff==='sudden'&&score>=30);
+  check('no_wrong',score>=30&&wrongAnswers===0);
+  if(window._isDaily)check('daily_win',score>0);
+  const streak=getDailyStreak();
+  check('daily_streak3',streak>=3);check('daily_streak7',streak>=7);
+  check('level5',getLevel(xp)>=4);check('level10',getLevel(xp)>=7);
+  // scenario masters
+  Object.entries(correctPerScenario).forEach(([sid,cnt])=>{
+    if(cnt>=10){
+      if(sid.includes('zombie'))check('zombie_master',true);
+      if(sid.includes('squid'))check('squid_master',true);
+    }
+  });
+  if(window._isChallenge)check('challenge_win',score>=window._challengeTargetScore);
+  saveLocalAchs(current);return newOnes;
+}
+
+async function saveAchievements(newIds){
+  if(!currentUser)return;
+  try{
+    const{data}=await sb.from('users').select('achievements').eq('id',currentUser.id).single();
+    const merged=[...new Set([...(data?.achievements||[]),...newIds])];
+    await sb.from('users').update({achievements:merged}).eq('id',currentUser.id);
+  }catch(e){}
+}
+
+// ===================== SCORES =====================
+async function saveScore(s,d,isDaily,bStreak){
+  if(!currentUser)return;
+  try{
+    await sb.rpc('submit_score',{
+      p_user_id:    currentUser.id,
+      p_score:      s,
+      p_difficulty: d,
+      p_best_streak:bStreak,
+      p_is_daily:   isDaily,
+      p_scenario:   selectedScenarios.includes('all')?'mixed':selectedScenarios.join(',')
+    });
+  }catch(e){console.warn('score save failed',e);}
+}
+
+// ===================== LEADERBOARD =====================
+let lbTab='all';let lbScenario='all';
+const LB_SCENARIO_TABS=[{id:'all',label:'All'},...SCENARIOS.map(s=>({id:s.id,label:s.tag.split(' ')[0]}))];
+
+function renderLbScenarioTabs(){
+  const el=document.getElementById('lb-scenario-tabs');el.innerHTML='';
+  LB_SCENARIO_TABS.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='tab'+(lbScenario===t.id?' active':'');
+    b.style.cssText='flex:none;padding:5px 10px;font-size:11px';
+    b.textContent=t.label;
+    b.onclick=()=>{lbScenario=t.id;renderLbScenarioTabs();loadLeaderboard(lbTab);};
+    el.appendChild(b);
+  });
+}
+
+function switchLbTab(t){
+  lbTab=t;
+  ['all','daily','weekly','sudden'].forEach(x=>document.getElementById('lb-tab-'+x)?.classList.toggle('active',x===t));
+  loadLeaderboard(t);
+}
+
+async function loadLeaderboard(type){
+  const el=document.getElementById('lb-content');
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading...</div>';
+  try{
+    let query=sb.from('scores').select('username,score,difficulty,played_at,scenario').order('score',{ascending:false}).limit(100);
+    if(type==='daily'){
+      const today=new Date();today.setHours(0,0,0,0);
+      query=query.eq('is_daily',true).gte('played_at',today.toISOString());
+    } else if(type==='weekly'){
+      const monday=new Date();monday.setDate(monday.getDate()-monday.getDay()+1);monday.setHours(0,0,0,0);
+      query=query.gte('played_at',monday.toISOString());
+    } else if(type==='sudden'){
+      query=query.eq('difficulty','sudden');
+    }
+    if(lbScenario!=='all'){
+      query=query.or('scenario.eq.'+lbScenario+',scenario.ilike.%'+lbScenario+'%');
+    }
+    const{data,error}=await query;
+    if(error||!data||data.length===0){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--di);font-size:12px">No scores yet — be the first!</div>';return;}
+    // dedupe by username
+    const best={};
+    data.forEach(r=>{if(!best[r.username]||r.score>best[r.username].score)best[r.username]=r;});
+    const rows=Object.values(best).sort((a,b)=>b.score-a.score).slice(0,50);
+    el.innerHTML=rows.map((r,i)=>{
+      const isMe=currentUser&&r.username===currentUser.username;
+      const crown=type==='weekly'&&i<3?'*':'';
+      return`<div class="lb-row">
+        <div class="lb-rank ${i<3?'top':''}">#${i+1}</div>
+        <div class="lb-name ${isMe?'me':''}">${r.username}${isMe?' (you)':''}${crown?'<span class="lb-badge">'+crown+'</span>':''}</div>
+        <div><div class="lb-score">${r.score}<span class="lb-diff">${r.difficulty}</span></div></div>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--red);font-size:12px">Error loading. Check connection.</div>';}
+}
+
+// ===================== PROFILE =====================
+async function loadProfile(){
+  if(!currentUser){
+    document.getElementById('profile-card').innerHTML=`<div style="text-align:center;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center"><div style="font-size:12px;color:var(--mu)">Sign in to track your stats</div><button class="form-btn" style="width:auto;padding:9px 22px" onclick="showPage('auth')">Log in / Sign up</button></div>`;
+    document.getElementById('ach-grid').innerHTML='<div style="font-size:11px;color:var(--di);padding:8px">Log in to track achievements</div>';
+    return;
+  }
+  document.getElementById('profile-card').innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const{data:scores}=await sb.from('scores').select('*').eq('user_id',currentUser.id).order('played_at',{ascending:false}).limit(100);
+    const allScores=scores||[];
+    const best=allScores.reduce((m,s)=>s.score>m?s.score:m,0);
+    const bestStrk=allScores.reduce((m,s)=>s.best_streak>m?s.best_streak:m,0);
+    const total=allScores.length;
+    const avgScore=total>0?Math.round(allScores.reduce((s,r)=>s+r.score,0)/total):0;
+    const dailyStreak=getDailyStreak();
+    const lv=getLevel(xp);const prog=getXpProgress(xp);
+    document.getElementById('profile-card').innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="width:42px;height:42px;background:#000;border:2px solid var(--tx);display:flex;align-items:center;justify-content:center;font-family:'Archivo Black',sans-serif;font-size:16px;font-weight:900">${(currentUser.username[0]||'A').toUpperCase()}</div>
+        <div>
+          <div style="font-family:'Archivo Black',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase">${currentUser.username}</div>
+          <div class="level-chip">Lv${lv+1} ${LEVELS[lv].name}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--mu);margin-bottom:4px"><span>XP Progress</span><span>${xp} XP</span></div>
+        <div style="height:6px;background:#000;border:1px solid var(--tx);overflow:hidden"><div style="height:100%;width:${prog}%;background:var(--green);transition:width .4s"></div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-card-val">${best}</div><div class="stat-card-lbl">Best score</div></div>
+        <div class="stat-card"><div class="stat-card-val">${total}</div><div class="stat-card-lbl">Games played</div></div>
+        <div class="stat-card"><div class="stat-card-val">${bestStrk}</div><div class="stat-card-lbl">Best streak</div></div>
+        <div class="stat-card"><div class="stat-card-val">${avgScore}</div><div class="stat-card-lbl">Avg score</div></div>
+        <div class="stat-card"><div class="stat-card-val">${dailyStreak}</div><div class="stat-card-lbl">Daily streak</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="showPage('shop')"><div class="stat-card-val" style="color:var(--green)">${getCoins()}</div><div class="stat-card-lbl">Coins · Shop →</div></div>
+      </div>`;
+    // achievements
+    const localAchs=getLocalAchs();
+    const{data:udata}=await sb.from('users').select('achievements').eq('id',currentUser.id).single();
+    const dbAchs=udata?.achievements||[];
+    const allAchs=[...new Set([...localAchs,...dbAchs])];
+    document.getElementById('ach-count').textContent=allAchs.length+'/'+ACHIEVEMENTS.length;
+    document.getElementById('ach-grid').innerHTML=ACHIEVEMENTS.map(a=>{
+      const unlocked=allAchs.includes(a.id);
+      return`<div class="ach ${unlocked?'unlocked':'locked'}">
+        <div class="ach-icon">${a.icon}</div>
+        <div><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('profile-card').innerHTML='<div style="color:var(--red);font-size:12px;padding:10px">Could not load profile.</div>';}
+}
+
+// ===================== COINS =====================
+const COLOURS=[
+  {id:'green',label:'Green',hex:'#4ade80',cost:50},
+  {id:'purple',label:'Purple',hex:'#a78bfa',cost:50},
+  {id:'gold',label:'Gold',hex:'#fbbf24',cost:50},
+  {id:'red',label:'Red',hex:'#f87171',cost:50},
+  {id:'blue',label:'Blue',hex:'#38bdf8',cost:50},
+  {id:'pink',label:'Pink',hex:'#f472b6',cost:50},
+  {id:'orange',label:'Orange',hex:'#fb923c',cost:50},
+  {id:'white',label:'White',hex:'#f0ede8',cost:50},
+];
+const FLAIRS=[
+  {id:'legend',label:'[LEGEND]',cost:80},
+  {id:'ghost',label:'[GHOST]',cost:80},
+  {id:'survivor',label:'[SURVIVOR]',cost:80},
+  {id:'untouchable',label:'[UNTOUCHABLE]',cost:80},
+  {id:'apex',label:'[APEX]',cost:80},
+  {id:'phantom',label:'[PHANTOM]',cost:80},
+  {id:'reaper',label:'[REAPER]',cost:80},
+  {id:'immortal',label:'[IMMORTAL]',cost:80},
+];
+const AVATARS=['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12'];
+
+function getCoins(){try{return parseInt(localStorage.getItem('los_coins_'+(currentUser?.id||'guest'))||'0');}catch(e){return 0;}}
+function setCoins(v){try{localStorage.setItem('los_coins_'+(currentUser?.id||'guest'),Math.max(0,v));}catch(e){}}
+function addCoins(n,reason='correct_answer'){
+  const prev=getCoins();setCoins(prev+n);
+  toast('+'+n+' coins earned!');
+  if(currentUser){
+    sb.rpc('award_coins',{p_user_id:currentUser.id,p_amount:n,p_reason:reason})
+      .then(({data,error})=>{if(!error&&data!==null)setCoins(data);})
+      .catch(e=>console.warn('coin sync failed',e));
+  }
+}
+async function syncCoinsToDb(){
+  // coins now synced via award_coins rpc only
+}
+
+function getCosmeticVal(key){try{return localStorage.getItem('los_cos_'+key+(currentUser?.id||'guest'))||null;}catch(e){return null;}}
+function setCosmeticVal(key,val){try{localStorage.setItem('los_cos_'+key+(currentUser?.id||'guest'),val);}catch(e){}}
+
+function getUserDisplayName(){
+  if(!currentUser)return null;
+  const colour=getCosmeticVal('colour');
+  const flair=getCosmeticVal('flair');
+  const avatar=getCosmeticVal('avatar')||'A1';
+  const colHex=colour?COLOURS.find(c=>c.id===colour)?.hex:null;
+  const flairLabel=flair?FLAIRS.find(f=>f.id===flair)?.label:'';
+  return{name:currentUser.username,colour:colHex,flair:flairLabel,avatar};
+}
+
+// Coins per 5 correct answers: Easy=1 Normal=2 Nightmare=3 Sudden=4 Daily=5
+function getCoinsPerBlock(){
+  if(window._isDaily)return 5;
+  if(diff==='easy')return 1;
+  if(diff==='normal')return 2;
+  if(diff==='nightmare')return 3;
+  if(diff==='sudden')return 4;
+  return 2;
+}
+function awardCorrectAnswerCoins(){
+  if(typeof window._totalCorrect==='undefined')window._totalCorrect=0;
+  window._totalCorrect++;
+  if(window._totalCorrect%5===0){
+    const earned=getCoinsPerBlock();
+    addCoins(earned,'correct_answer');
+  }
+}
+// Award bonus coins at end of game (new PB only = +20)
+function awardGameCoins(isNewPB,isDaily){
+  if(isNewPB)addCoins(20,'new_pb');
+}
+
+// ===================== SHOP LOGIC =====================
+let selectedColour=null;let selectedFlair=null;let selectedAvatar=null;
+
+function loadShop(){
+  const coinsEl=document.getElementById('shop-coins');
+  if(!currentUser){
+    coinsEl.textContent='Log in to earn coins';
+    coinsEl.style.fontSize='16px';
+    coinsEl.style.lineHeight='1.4';
+    return;
+  }
+  coinsEl.style.fontSize='40px';
+  coinsEl.style.lineHeight='1.05';
+  coinsEl.textContent=getCoins();
+  document.getElementById('shield-count').textContent=parseInt(localStorage.getItem('los_shields_'+(currentUser?.id||'guest'))||'0');
+
+  // Colour grid
+  const cg=document.getElementById('colour-grid');
+  if(cg){
+    cg.innerHTML='';
+    const owned=getCosmeticVal('colour');
+    COLOURS.forEach(c=>{
+      const b=document.createElement('div');
+      b.style.cssText='width:100%;aspect-ratio:1;border-radius:8px;background:'+c.hex+';cursor:pointer;border:2px solid '+(selectedColour===c.id||owned===c.id?'#fff':'transparent')+';transition:border .12s;display:flex;align-items:center;justify-content:center;font-size:10px';
+      if(owned===c.id)b.textContent='✓';
+      b.onclick=()=>{selectedColour=c.id;loadShop();};
+      cg.appendChild(b);
+    });
+  }
+
+  // Flair grid
+  const fg=document.getElementById('flair-grid');
+  if(fg){
+    fg.innerHTML='';
+    const owned=getCosmeticVal('flair');
+    FLAIRS.forEach(f=>{
+      const b=document.createElement('div');
+      b.style.cssText='background:var(--s2);border:0.5px solid '+(selectedFlair===f.id||owned===f.id?'var(--green)':'var(--b1)')+';border-radius:8px;padding:8px;text-align:center;cursor:pointer;font-size:11px;font-weight:600;color:'+(owned===f.id?'var(--green)':'var(--tx)')+';transition:all .12s';
+      b.textContent=f.label+(owned===f.id?' ✓':'');
+      b.onclick=()=>{selectedFlair=f.id;loadShop();};
+      fg.appendChild(b);
+    });
+  }
+
+  // Avatar grid
+  const ag=document.getElementById('avatar-grid');
+  if(ag){
+    ag.innerHTML='';
+    const owned=getCosmeticVal('avatar');
+    AVATARS.forEach(a=>{
+      const b=document.createElement('div');
+      b.style.cssText='width:100%;aspect-ratio:1;border-radius:8px;background:var(--s2);border:2px solid '+(selectedAvatar===a||owned===a?'var(--green)':'transparent')+';cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:border .12s';
+      b.textContent=a;
+      b.onclick=()=>{selectedAvatar=a;loadShop();};
+      ag.appendChild(b);
+    });
+  }
+}
+
+function buyColour(){
+  if(!currentUser){toast('Log in first!');return;}
+  const c=selectedColour;if(!c){toast('Pick a colour first!');return;}
+  const item=COLOURS.find(x=>x.id===c);
+  const coins=getCoins();
+  if(getCosmeticVal('colour')===c){toast('Already using this colour!');return;}
+  if(coins<item.cost){toast('Need '+item.cost+' coins. You have '+coins+'.');return;}
+  setCoins(coins-item.cost);
+  setCosmeticVal('colour',c);
+  toast('Colour unlocked!');
+  loadShop();
+  syncCoinsToDb();
+  saveCosmeticsToDb();
+}
+
+function buyFlair(){
+  if(!currentUser){toast('Log in first!');return;}
+  const f=selectedFlair;if(!f){toast('Pick a flair first!');return;}
+  const item=FLAIRS.find(x=>x.id===f);
+  const coins=getCoins();
+  if(getCosmeticVal('flair')===f){toast('Already using this flair!');return;}
+  if(coins<item.cost){toast('Need '+item.cost+' coins. You have '+coins+'.');return;}
+  setCoins(coins-item.cost);
+  setCosmeticVal('flair',f);
+  toast('Flair unlocked!');
+  loadShop();
+  syncCoinsToDb();
+  saveCosmeticsToDb();
+}
+
+function buyAvatar(){
+  if(!currentUser){toast('Log in first!');return;}
+  const a=selectedAvatar;if(!a){toast('Pick an avatar first!');return;}
+  const coins=getCoins();
+  if(getCosmeticVal('avatar')===a){toast('Already using this avatar!');return;}
+  if(coins<100){toast('Need 100 coins. You have '+coins+'.');return;}
+  setCoins(coins-100);
+  setCosmeticVal('avatar',a);
+  toast('Avatar unlocked!');
+  loadShop();
+  syncCoinsToDb();
+  saveCosmeticsToDb();
+}
+
+function getShields(){try{return parseInt(localStorage.getItem('los_shields_'+(currentUser?.id||'guest'))||'0');}catch(e){return 0;}}
+function useShieldIfAvailable(){
+  const n=getShields();
+  if(n<=0)return false;
+  const k='los_shields_'+(currentUser?.id||'guest');
+  localStorage.setItem(k,n-1);
+  return true;
+}
+
+function buyShield(){
+  if(!currentUser){toast('Log in first!');return;}
+  const coins=getCoins();
+  if(coins<120){toast('Need 120 coins. You have '+coins+'.');return;}
+  setCoins(coins-120);
+  const k='los_shields_'+(currentUser?.id||'guest');
+  const cur=parseInt(localStorage.getItem(k)||'0');
+  localStorage.setItem(k,cur+1);
+  toast('Shield added!');
+  loadShop();
+  syncCoinsToDb();
+}
+
+async function saveCosmeticsToDb(){
+  if(!currentUser)return;
+  try{
+    await sb.from('users').update({
+      colour:getCosmeticVal('colour'),
+      flair:getCosmeticVal('flair'),
+      avatar:getCosmeticVal('avatar'),
+    }).eq('id',currentUser.id);
+  }catch(e){}
+}
+
+// Load cosmetics from DB on login
+async function loadCosmeticsFromDb(){
+  if(!currentUser)return;
+  try{
+    const{data}=await sb.from('users').select('colour,flair,avatar,coins').eq('id',currentUser.id).single();
+    if(data){
+      if(data.colour)setCosmeticVal('colour',data.colour);
+      if(data.flair)setCosmeticVal('flair',data.flair);
+      if(data.avatar)setCosmeticVal('avatar',data.avatar);
+      // DB is always source of truth — overwrite localStorage with DB value
+      if(data.coins!==null&&data.coins!==undefined)setCoins(data.coins);
+    }
+  }catch(e){}
+  updateCoinDisplay();
+}
+
+// Apply cosmetics to leaderboard names
+function applyCosmetic(username,colour,flair,avatar){
+  const f=flair?'<span style="font-size:10px;color:var(--di);margin-right:3px">'+flair+'</span>':'';
+  const av=avatar||'A1';
+  const col=colour?'color:'+colour+';':'';
+  return av+' '+f+'<span style="'+col+'">'+username+'</span>';
+}
+
+// ===================== HALL OF FAME =====================
+async function loadHof(){
+  const el=document.getElementById('hof-content');
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading...</div>';
+  try{
+    const{data,error}=await sb.from('weekly_champions').select('*').order('week_end',{ascending:false}).limit(20);
+    if(error||!data||data.length===0){
+      el.innerHTML='<div style="text-align:center;padding:24px"><div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.18em;margin-bottom:8px;text-transform:uppercase">Nothing here yet</div><div style="font-size:13px;color:var(--mu)">No champions yet — be the first!</div><div style="font-size:11px;color:var(--di);margin-top:6px">Weekly leaderboard resets every Monday.<br>Top 3 earn coins and a permanent badge here.</div></div>';
+      return;
+    }
+    el.innerHTML='<div style="margin-bottom:10px;font-size:11px;color:var(--di)">Top 3 each week earn coins and a permanent spot here.</div>'+
+      data.map(w=>{
+        const coins=w.rank===1?500:w.rank===2?200:100;
+        return`<div class="lb-row">
+          <div class="lb-rank top">#${w.rank}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600">${w.username}</div>
+            <div style="font-size:10px;color:var(--di)">Week of ${new Date(w.week_end).toLocaleDateString()} · +${coins} coins</div>
+          </div>
+          <div class="lb-score">${w.score}</div>
+        </div>`;
+      }).join('');
+  }catch(e){
+    el.innerHTML='<div style="text-align:center;padding:24px"><div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.18em;margin-bottom:8px;text-transform:uppercase">Nothing here yet</div><div style="font-size:13px;color:var(--mu)">No champions yet. Play this week to become the first!</div></div>';
+  }
+}
+
+// Award weekly coins — called on leaderboard load (checks if week just ended)
+async function checkWeeklyReward(){
+  if(!currentUser)return;
+  try{
+    const lastCheck=localStorage.getItem('los_weekly_check');
+    const now=new Date();
+    const monday=new Date(now);
+    monday.setDate(now.getDate()-((now.getDay()+6)%7));
+    monday.setHours(0,0,0,0);
+    if(lastCheck&&new Date(lastCheck)>monday)return;
+    localStorage.setItem('los_weekly_check',now.toISOString());
+    // Check if user was top 3 last week
+    const lastMonday=new Date(monday);lastMonday.setDate(monday.getDate()-7);
+    const{data}=await sb.from('scores').select('username,score').gte('played_at',lastMonday.toISOString()).lt('played_at',monday.toISOString()).order('score',{ascending:false}).limit(100);
+    if(!data)return;
+    const best={};data.forEach(r=>{if(!best[r.username]||r.score>best[r.username])best[r.username]=r.score;});
+    const ranked=Object.entries(best).sort((a,b)=>b[1]-a[1]).slice(0,3);
+    const myRank=ranked.findIndex(([u])=>u===currentUser.username);
+    if(myRank>=0){
+      const rewards=[500,200,100];
+      const prize=rewards[myRank];
+      addCoins(prize,'weekly_reward');
+      toast('You were #'+(myRank+1)+' last week! +'+prize+' coins');
+      // Save to hall of fame
+      const weekEnd=monday.toISOString();
+      await sb.from('weekly_champions').upsert({
+        username:currentUser.username,
+        score:ranked[myRank][1],
+        rank:myRank+1,
+        week_end:weekEnd,
+      },{onConflict:'username,week_end'});
+    }
+  }catch(e){}
+}
+
+// ===================== RANDOM EVENTS =====================
+const RANDOM_EVENTS=[
+  {id:'injured',msg:'INJURED TEAMMATE — Next wrong answer costs 2 lives',effect:'double_damage',icon:'INJ'},
+  {id:'storm',msg:'STORM INCOMING — Timer reduced for next 3 questions',effect:'timer_penalty',icon:'STM'},
+  {id:'betrayal',msg:'BETRAYAL — Your streak is halved',effect:'streak_halve',icon:'BTY'},
+  {id:'fake_supplies',msg:'FAKE SUPPLIES — One life penalty',effect:'lose_life',icon:'FAK'},
+  {id:'adrenaline',msg:'ADRENALINE RUSH — Next correct answer worth 3x',effect:'triple_points',icon:'ADR'},
+  {id:'second_wind',msg:'SECOND WIND — Gained 1 life back!',effect:'gain_life',icon:'SW'},
+  {id:'infected',msg:'INFECTED ALLY — Answer in 50% of the time',effect:'half_timer',icon:'INF'},
+  {id:'lucky_find',msg:'LUCKY FIND — +30 bonus points!',effect:'bonus_points',icon:'LCK'},
+];
+
+let activeEvent=null;let eventQuestionsLeft=0;let triplePending=false;
+
+function triggerRandomEvent(){
+  const e=RANDOM_EVENTS[Math.floor(Math.random()*RANDOM_EVENTS.length)];
+  activeEvent=e;eventQuestionsLeft=3;
+  // Apply immediate effects
+  if(e.effect==='streak_halve'){streak=Math.floor(streak/2);updateStats();}
+  if(e.effect==='lose_life'&&lives>1){lives--;renderHearts();}
+  if(e.effect==='gain_life'&&lives<DIFF_CONFIG[diff].lives+1){lives++;renderHearts();}
+  if(e.effect==='bonus_points'){score+=30;updateStats();}
+  if(e.effect==='triple_points'){triplePending=true;}
+  // Show event banner
+  showEventBanner(e);
+  playSound('combo');
+}
+
+function showEventBanner(e){
+  let banner=document.getElementById('event-banner');
+  if(!banner){
+    banner=document.createElement('div');
+    banner.id='event-banner';
+    banner.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);background:#000;border:2px solid #00ff66;padding:10px 18px;font-size:13px;font-weight:700;color:#00ff66;font-family:"Space Mono",monospace;text-transform:uppercase;letter-spacing:.04em;z-index:200;opacity:0;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center;box-shadow:4px 4px 0px #00ff66';
+    document.body.appendChild(banner);
+  }
+  banner.textContent=e.msg;
+  banner.style.opacity='1';
+  banner.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>{
+    banner.style.opacity='0';
+    banner.style.transform='translateX(-50%) translateY(-10px)';
+  },2500);
+}
+
+function getEventTimeMultiplier(){
+  if(!activeEvent)return 1;
+  if(activeEvent.effect==='timer_penalty')return 0.55;
+  if(activeEvent.effect==='half_timer')return 0.5;
+  return 1;
+}
+
+function applyEventOnCorrect(basePoints){
+  if(!activeEvent)return basePoints;
+  if(activeEvent.effect==='triple_points'&&triplePending){triplePending=false;return basePoints*3;}
+  if(activeEvent.effect==='double_damage')return basePoints; // only affects wrong
+  return basePoints;
+}
+
+function applyEventOnWrong(){
+  if(!activeEvent)return false; // false = normal damage
+  if(activeEvent.effect==='double_damage'){
+    activeEvent=null;
+    return true; // true = handled by event (2 lives lost)
+  }
+  return false;
+}
+
+function tickEventCounter(){
+  if(activeEvent){
+    eventQuestionsLeft--;
+    if(eventQuestionsLeft<=0){activeEvent=null;triplePending=false;}
+  }
+}
+
+// ===================== UTILS =====================
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ===================== SOUND ENGINE =====================
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let audioCtx=null;
+let soundEnabled=true;
+let heartbeatNode=null;let heartbeatGain=null;let ambienceNode=null;let ambienceGain=null;
+
+function getAudio(){
+  if(!audioCtx)try{audioCtx=new AudioCtx();}catch(e){}
+  if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+  return audioCtx;
+}
+
+function playSound(type){
+  if(!soundEnabled)return;
+  const ctx=getAudio();if(!ctx)return;
+  const now=ctx.currentTime;
+  if(type==='correct'){
+    [523,659,784].forEach((freq,i)=>{
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';o.frequency.value=freq;
+      const t=now+i*0.08;
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.18,t+0.02);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);
+      o.start(t);o.stop(t+0.25);
+    });
+  } else if(type==='wrong'){
+    // Shock buzz — two-hit impact
+    const o=ctx.createOscillator();const g=ctx.createGain();const f=ctx.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(ctx.destination);
+    f.type='lowpass';f.frequency.value=500;o.type='sawtooth';
+    o.frequency.setValueAtTime(220,now);o.frequency.exponentialRampToValueAtTime(55,now+0.3);
+    g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.55,now+0.01);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);
+    o.start(now);o.stop(now+0.35);
+    // Noise burst for impact
+    const bufSize2=ctx.sampleRate*0.08;const buf2=ctx.createBuffer(1,bufSize2,ctx.sampleRate);
+    const d2=buf2.getChannelData(0);for(let i=0;i<bufSize2;i++)d2[i]=(Math.random()*2-1)*Math.exp(-i/500);
+    const src2=ctx.createBufferSource();const g2=ctx.createGain();const f2=ctx.createBiquadFilter();
+    src2.buffer=buf2;src2.connect(f2);f2.connect(g2);g2.connect(ctx.destination);
+    f2.type='bandpass';f2.frequency.value=300;f2.Q.value=0.5;
+    g2.gain.setValueAtTime(0.6,now);g2.gain.exponentialRampToValueAtTime(0.001,now+0.1);
+    src2.start(now);
+  } else if(type==='combo'){
+    [400,500,650,850].forEach((freq,i)=>{
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=freq;
+      const t=now+i*0.06;
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.15,t+0.02);g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+      o.start(t);o.stop(t+0.2);
+    });
+  } else if(type==='death'){
+    stopHeartbeat();stopAmbience();
+    // Dramatic death sting — deeper, longer, more cinematic
+    [[180,0.6],[90,0.4],[45,0.25]].forEach(([freq,vol],i)=>{
+      const o=ctx.createOscillator();const g=ctx.createGain();const f=ctx.createBiquadFilter();
+      o.connect(f);f.connect(g);g.connect(ctx.destination);
+      f.type='lowpass';f.frequency.value=600;o.type='sawtooth';
+      o.frequency.setValueAtTime(freq*1.5,now+i*0.04);
+      o.frequency.exponentialRampToValueAtTime(freq*0.2,now+1.8);
+      g.gain.setValueAtTime(0,now+i*0.04);
+      g.gain.linearRampToValueAtTime(vol,now+i*0.04+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001,now+2.0);
+      o.start(now+i*0.04);o.stop(now+2.1);
+    });
+    // Heavy noise impact
+    setTimeout(()=>playSound('impact'),60);
+    // Second boom after silence
+    setTimeout(()=>playSound('impact'),350);
+  } else if(type==='fanfare'){
+    // Survival fanfare — ascending triumphant notes
+    [523,659,784,1047,1319].forEach((freq,i)=>{
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=freq;
+      const t=now+i*0.12;
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.22,t+0.04);g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+      o.start(t);o.stop(t+0.35);
+    });
+  } else if(type==='impact'){
+    const bufSize=ctx.sampleRate*0.1;
+    const buf=ctx.createBuffer(1,bufSize,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<bufSize;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/1000);
+    const src=ctx.createBufferSource();const g=ctx.createGain();const f=ctx.createBiquadFilter();
+    src.buffer=buf;src.connect(f);f.connect(g);g.connect(ctx.destination);
+    f.type='lowpass';f.frequency.value=200;
+    g.gain.setValueAtTime(1.5,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.15);
+    src.start(now);
+  } else if(type==='tick'){
+    // Urgency tick — gets sharper as timer drops
+    const freq=800+(1-Math.max(0,tL/maxT))*800;
+    const o=ctx.createOscillator();const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(0.08,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.06);
+    o.start(now);o.stop(now+0.06);
+  } else if(type==='urgent_tick'){
+    // Last 3 seconds — sharp countdown beep, pitch rises each second
+    const secRemain=Math.ceil(Math.max(0,tL)/1000);
+    const freq=1200+((3-secRemain)*400); // 1200→1600→2000 as time runs out
+    const o=ctx.createOscillator();const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='square';o.frequency.value=freq;
+    g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.18,now+0.005);g.gain.exponentialRampToValueAtTime(0.001,now+0.07);
+    o.start(now);o.stop(now+0.07);
+  }
+}
+
+// HEARTBEAT — starts at score 10, intensifies
+function startHeartbeat(bpm){
+  if(!soundEnabled)return;
+  const ctx=getAudio();if(!ctx)return;
+  stopHeartbeat();
+  const interval=60000/bpm;
+  function beat(){
+    if(!heartbeatActive)return;
+    const now=ctx.currentTime;
+    // thump
+    const o1=ctx.createOscillator();const g1=ctx.createGain();const f1=ctx.createBiquadFilter();
+    o1.connect(f1);f1.connect(g1);g1.connect(ctx.destination);
+    f1.type='lowpass';f1.frequency.value=150;o1.type='sine';
+    o1.frequency.setValueAtTime(80,now);o1.frequency.exponentialRampToValueAtTime(40,now+0.15);
+    g1.gain.setValueAtTime(heartbeatVol,now);g1.gain.exponentialRampToValueAtTime(0.001,now+0.2);
+    o1.start(now);o1.stop(now+0.2);
+    // second thump (lub-dub)
+    setTimeout(()=>{
+      if(!heartbeatActive)return;
+      const ctx2=getAudio();if(!ctx2)return;
+      const now2=ctx2.currentTime;
+      const o2=ctx2.createOscillator();const g2=ctx2.createGain();const f2=ctx2.createBiquadFilter();
+      o2.connect(f2);f2.connect(g2);g2.connect(ctx2.destination);
+      f2.type='lowpass';f2.frequency.value=120;o2.type='sine';
+      o2.frequency.setValueAtTime(60,now2);o2.frequency.exponentialRampToValueAtTime(30,now2+0.12);
+      g2.gain.setValueAtTime(heartbeatVol*0.6,now2);g2.gain.exponentialRampToValueAtTime(0.001,now2+0.15);
+      o2.start(now2);o2.stop(now2+0.15);
+    },150);
+    heartbeatTimer=setTimeout(beat,interval);
+  }
+  heartbeatActive=true;
+  beat();
+}
+let heartbeatActive=false;let heartbeatTimer=null;let heartbeatVol=0.15;
+function stopHeartbeat(){heartbeatActive=false;clearTimeout(heartbeatTimer);}
+
+// AMBIENCE — low drone that intensifies
+function startAmbience(){
+  if(!soundEnabled)return;
+  const ctx=getAudio();if(!ctx)return;
+  stopAmbience();
+  ambienceGain=ctx.createGain();ambienceGain.gain.value=0;ambienceGain.connect(ctx.destination);
+  const osc=ctx.createOscillator();const lfo=ctx.createOscillator();const lfoGain=ctx.createGain();
+  osc.type='sawtooth';osc.frequency.value=55;
+  lfo.type='sine';lfo.frequency.value=0.3;lfoGain.gain.value=8;
+  lfo.connect(lfoGain);lfoGain.connect(osc.frequency);
+  const filt=ctx.createBiquadFilter();filt.type='lowpass';filt.frequency.value=200;
+  osc.connect(filt);filt.connect(ambienceGain);
+  osc.start();lfo.start();
+  ambienceNode={osc,lfo,filt};
+  ambienceGain.gain.linearRampToValueAtTime(0.04,ctx.currentTime+2);
+}
+function stopAmbience(){
+  if(ambienceNode){try{ambienceNode.osc.stop();ambienceNode.lfo.stop();}catch(e){}ambienceNode=null;}
+  ambienceGain=null;
+}
+function setAmbienceIntensity(level){
+  // level 0-1
+  if(!ambienceGain)return;
+  const ctx=getAudio();if(!ctx)return;
+  const vol=0.02+level*0.12;
+  ambienceGain.gain.linearRampToValueAtTime(vol,ctx.currentTime+0.5);
+  if(ambienceNode)ambienceNode.filt.frequency.linearRampToValueAtTime(200+level*600,ctx.currentTime+0.5);
+}
+
+// ===================== PARTICLES =====================
+const canvas=document.getElementById('particles');
+const pctx=canvas?canvas.getContext('2d'):null;
+let particles=[];
+
+function resizeCanvas(){
+  if(!canvas)return;
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+
+function spawnParticles(x,y,color,count){
+  if(!canvas)return;
+  for(let i=0;i<count;i++){
+    const angle=Math.random()*Math.PI*2;
+    const speed=2+Math.random()*5;
+    particles.push({
+      x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-2,
+      life:1,decay:0.02+Math.random()*0.03,
+      size:3+Math.random()*6,color
+    });
+  }
+  canvas.style.opacity='1';
+  animateParticles();
+}
+
+function animateParticles(){
+  if(!pctx)return;
+  pctx.clearRect(0,0,canvas.width,canvas.height);
+  particles=particles.filter(p=>p.life>0);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life-=p.decay;
+    pctx.globalAlpha=p.life;
+    pctx.fillStyle=p.color;
+    pctx.beginPath();pctx.arc(p.x,p.y,p.size,0,Math.PI*2);pctx.fill();
+  });
+  pctx.globalAlpha=1;
+  if(particles.length>0)requestAnimationFrame(animateParticles);
+  else canvas.style.opacity='0';
+}
+
+function triggerCorrectEffect(btn){
+  const rect=btn.getBoundingClientRect();
+  const cx=rect.left+rect.width/2;
+  const cy=rect.top+rect.height/2;
+  spawnParticles(cx,cy,'#00ff66',20);
+  playSound('correct');
+}
+
+function triggerWrongEffect(btn){
+  const rect=btn.getBoundingClientRect();
+  const cx=rect.left+rect.width/2;
+  const cy=rect.top+rect.height/2;
+  spawnParticles(cx,cy,'#ff0055',15);
+  // Screen shake
+  document.querySelector('.wrap').style.animation='none';
+  setTimeout(()=>{
+    document.querySelector('.wrap').style.animation='screenShake 0.3s ease';
+    setTimeout(()=>document.querySelector('.wrap').style.animation='',400);
+  },10);
+  playSound('wrong');
+}
+
+function triggerDeathEffect(){
+  const cx=window.innerWidth/2;
+  const cy=window.innerHeight/2;
+  spawnParticles(cx,cy,'#ff0055',60);
+  spawnParticles(cx,cy,'#ffffff',40);
+  playSound('death');
+}
+
+function triggerComboEffect(){
+  const cx=window.innerWidth/2;
+  const cy=100;
+  spawnParticles(cx,cy,'#00ff66',30);
+  spawnParticles(cx,cy,'#ffffff',20);
+  playSound('combo');
+}
+
+// ===================== INTRO SCREEN =====================
+function showIntro(){
+  const logos = document.getElementById('intro-logos');
+  const glow  = document.getElementById('intro-glow');
+  const sub   = document.getElementById('intro-sub');
+  const bar   = document.getElementById('intro-bar');
+  const prog  = document.getElementById('intro-progress');
+
+  // Step 1 — both logos appear together
+  setTimeout(()=>{
+    if(logos){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';}
+  },150);
+
+  // Step 2 — crimson glow
+  setTimeout(()=>{ if(glow)glow.style.opacity='1'; },500);
+
+  // Step 3 — tagline
+  setTimeout(()=>{ if(sub)sub.style.opacity='1'; },700);
+
+  // Step 4 — loading bar
+  setTimeout(()=>{ if(bar)bar.style.opacity='1'; },880);
+  setTimeout(()=>{ if(prog)prog.style.width='100%'; },920);
+
+  // Step 5 — fade out and launch
+  setTimeout(()=>{
+    const intro=document.getElementById('page-intro');
+    intro.style.transition='opacity .5s ease';
+    intro.style.opacity='0';
+    setTimeout(()=>{intro.style.display='none';init();},500);
+  },2600);
+}
+
+// ===================== VERSUS MODE =====================
+let vDiff='normal';
+let vPlayer1='Player 1';let vPlayer2='Player 2';
+let vCurrentPlayer=1;let vScores=[0,0];let vQueue=[];let vIdx=0;
+
+function setVDiff(d){
+  vDiff=d;
+  ['easy','normal','nightmare','sudden'].forEach(x=>document.getElementById('vdiff-'+x)?.classList.toggle('selected',x===d));
+}
+
+function startVersus(){
+  vPlayer1=document.getElementById('p1-name').value.trim()||'Player 1';
+  vPlayer2=document.getElementById('p2-name').value.trim()||'Player 2';
+  vScores=[0,0];vCurrentPlayer=1;
+  const all=SCENARIOS.flatMap(s=>s.q.map(q=>({...q,tag:s.tag,icon:s.icon,bg:s.bg,tc:s.tc,bc:s.bc,sid:s.id})));
+  vQueue=[...all].sort(()=>Math.random()-.5);
+  vIdx=0;
+  document.getElementById('versus-setup').classList.add('hidden');
+  document.getElementById('versus-handoff').classList.remove('hidden');
+  document.getElementById('vh-title').textContent=vPlayer1+"'s Turn";
+  document.getElementById('vh-sub').textContent='Hand the phone to '+vPlayer1+'. Press ready when set.';
+  document.getElementById('vh-emoji').textContent='VS';
+}
+
+function startVersusRound(){
+  document.getElementById('versus-handoff').classList.add('hidden');
+  diff=vDiff;
+  const cfg=DIFF_CONFIG[diff];
+  score=0;streak=0;bestStreak=0;lives=cfg.lives;hist=[];totalQ=0;
+  scenarioCounts={};correctPerScenario={};wrongAnswers=0;_playedQuestions=[];killerQuestion=null;killerCorrect=null;window._totalCorrect=0;
+  showPage('game');
+  updateStats();renderHearts();
+  // Override onDead for versus
+  window._versusMode=true;
+  gameQueue=[...vQueue];gameIdx=vIdx;
+  nextFromQueue();
+}
+
+// Versus mode death handler — injected into onDead via flag check
+// (handled inside onDead directly — see below)
+
+// Resume audio on first interaction
+function resumeAudio(){
+  const ctx=getAudio();
+  if(ctx&&ctx.state==='suspended')ctx.resume();
+}
+
+
+
+// ===================== SCREEN SHAKE KEYFRAME =====================
+const shakeStyle=document.createElement('style');
+shakeStyle.textContent='@keyframes screenShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}45%{transform:translateX(-6px)}60%{transform:translateX(6px)}75%{transform:translateX(-3px)}90%{transform:translateX(3px)}}';
+document.head.appendChild(shakeStyle);
+
+// Sound toggle button
+function addSoundToggle(){
+  const nav=document.getElementById('nav-right');
+  if(!nav)return;
+  const btn=document.createElement('button');
+  btn.className='nav-btn';btn.id='sound-toggle';
+  btn.style.letterSpacing='.1em';
+  btn.textContent='SND';btn.title='Toggle sound';
+  btn.onclick=()=>{
+    soundEnabled=!soundEnabled;
+    btn.textContent=soundEnabled?'SND':'MUTE';
+    toast(soundEnabled?'Sound on':'Sound off');
+  };
+  const div=document.createElement('span');
+  div.style.cssText='width:1px;height:12px;background:var(--di);display:inline-block';
+  nav.insertBefore(div,nav.firstChild);
+  nav.insertBefore(btn,nav.firstChild);
+}
+
+// Contact link in footer
+function addFooterLinks(){
+  const wrap=document.querySelector('.wrap');
+  if(!wrap)return;
+  const footer=document.createElement('div');
+  footer.style.cssText='text-align:center;padding:16px 0 4px;font-size:11px;color:var(--di);border-top:0.5px solid var(--b1);margin-top:8px';
+  footer.innerHTML='© 2026 Ajora Games · <span style="cursor:pointer;color:var(--green);text-decoration:underline" onclick="showPage(\"contact\")">Contact & Legal</span> · All rights reserved';
+  wrap.appendChild(footer);
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  showIntro();
+  setTimeout(addSoundToggle,2500);
+  setTimeout(addFooterLinks,2500);
+});
+</script>
+</body>
+</html>

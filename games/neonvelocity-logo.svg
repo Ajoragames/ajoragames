@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="nvBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0f2e"/>
+      <stop offset="100%" stop-color="#0D0221"/>
+    </linearGradient>
+    <filter id="nvGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#nvBg)"/>
+  <rect x="24" y="24" width="464" height="464" rx="88" fill="none" stroke="#A124FF" stroke-width="4" stroke-opacity="0.35"/>
+  <!-- speed chevrons -->
+  <g stroke-linecap="round" fill="none">
+    <path d="M120 340 L210 340 L280 230" stroke="#A124FF" stroke-width="14" opacity="0.4"/>
+    <path d="M160 360 L250 360 L320 250" stroke="#A124FF" stroke-width="16" opacity="0.7"/>
+  </g>
+  <!-- player square avatar leaping -->
+  <g transform="translate(300,210) rotate(-18)">
+    <rect x="-26" y="-26" width="52" height="52" rx="10" fill="#00F0FF" filter="url(#nvGlow)"/>
+  </g>
+  <!-- hazard spike -->
+  <path d="M370 380 L400 320 L430 380 Z" fill="#FF0055" filter="url(#nvGlow)"/>
+</svg>

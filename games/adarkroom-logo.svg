@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0d0d" />
+      <stop offset="100%" stop-color="#1c1108" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <rect x="24" y="24" width="464" height="464" rx="88" fill="none" stroke="#FF9A3D" stroke-width="4" stroke-opacity="0.25" />
+  <g transform="translate(256,200)" filter="url(#glow)">
+    <path d="M 0,-70 C 30,-30 30,10 0,30 C -30,10 -30,-30 0,-70 Z" fill="#FF9A3D"/>
+    <path d="M 0,-30 C 12,-10 12,10 0,20 C -12,10 -12,-10 0,-30 Z" fill="#FFD98A"/>
+  </g>
+  <text x="256" y="445" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="32" letter-spacing="10" opacity="0.9">A DARK</text>
+  <text x="256" y="475" text-anchor="middle" fill="#FF9A3D" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="22" letter-spacing="16" filter="url(#glow)">ROOM</text>
+</svg>

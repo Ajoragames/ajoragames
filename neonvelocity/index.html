@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+<title>Neon Velocity | Ajora Games</title>
+<meta name="description" content="An endless neon runner. Double-jump the rooftops, dodge the hazards, chase your high score."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0D0221;--platform:#241734;--trim:#A124FF;
+  --player:#00F0FF;--hazard:#FF0055;--ui:#FFE600;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Share Tech Mono',monospace;color:#fff;
+  -webkit-font-smoothing:antialiased;touch-action:none;
+}
+#nv-wrap{position:relative;width:min(100vw, 177.78vh);height:min(100vh, 56.25vw);margin:auto;background:var(--bg);overflow:hidden}
+canvas{display:block;width:100%;height:100%}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important}}
+
+/* INTRO SPLASH (matches site convention) */
+#nv-intro{position:fixed;inset:0;background:#0D0221;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;overflow:hidden}
+#nv-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(161,36,255,0.14),transparent 70%)}
+#ni-logos{display:flex;align-items:center;gap:22px;opacity:0;transform:scale(.92) translateY(12px);transition:all .85s cubic-bezier(.34,1.1,.64,1)}
+#ni-logos img{height:min(64px,13vw);width:min(64px,13vw);object-fit:contain}
+#ni-div{width:1px;height:44px;background:linear-gradient(180deg,transparent,rgba(161,36,255,.7),transparent)}
+#ni-title{font-family:'Orbitron',sans-serif;font-weight:800;font-size:15px;letter-spacing:.08em;color:#fff;margin-top:20px;opacity:0;transition:opacity .5s ease .65s;text-transform:uppercase}
+#ni-sub{font-family:'Share Tech Mono',monospace;font-weight:400;font-size:10px;color:#8a7ab0;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .72s}
+#ni-bar{width:min(160px,44vw);height:5px;background:#1a1030;border-radius:8px;margin-top:28px;overflow:hidden;opacity:0;transition:opacity .3s ease .8s}
+#ni-progress{height:100%;width:0%;background:#A124FF;box-shadow:0 0 12px #A124FF;transition:width 1.05s ease .88s}
+
+/* TOP BAR (overlaid, minimal, fades on play) */
+#nv-topbar{
+  position:absolute;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;pointer-events:none;
+}
+#nv-topbar a{pointer-events:auto}
+.nv-brand{display:flex;align-items:center;gap:8px;opacity:.85}
+.nv-brand img{width:22px;height:22px;object-fit:contain;border-radius:5px}
+.nv-brand b{font-family:'Orbitron',sans-serif;font-weight:800;font-size:11px;letter-spacing:.06em;color:#fff}
+.nv-back{
+  font-family:'Share Tech Mono',monospace;font-size:11px;color:#c9baf0;
+  padding:5px 10px;border:1px solid rgba(161,36,255,0.4);border-radius:6px;background:rgba(13,2,33,0.5);
+}
+
+/* START / GAME OVER OVERLAYS */
+.nv-overlay{
+  position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  background:rgba(13,2,33,0.88);gap:14px;padding:20px;
+}
+.nv-overlay.hidden{display:none}
+.nv-logo-big{width:min(96px,20vw);height:min(96px,20vw);object-fit:contain;margin-bottom:6px}
+.nv-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(26px,6vw,44px);color:var(--player);letter-spacing:.03em;text-shadow:0 0 18px rgba(0,240,255,0.6)}
+.nv-title.dead{color:var(--hazard);text-shadow:0 0 18px rgba(255,0,85,0.6)}
+.nv-sub{font-size:12px;color:#c9baf0;letter-spacing:.05em;max-width:340px;line-height:1.6}
+.nv-score-row{display:flex;gap:22px;margin:6px 0}
+.nv-score-box{text-align:center}
+.nv-score-box .lbl{font-size:9px;letter-spacing:.14em;color:#8a7ab0;text-transform:uppercase}
+.nv-score-box .val{font-family:'Orbitron',sans-serif;font-weight:800;font-size:20px;color:var(--ui)}
+.nv-btn{
+  font-family:'Orbitron',sans-serif;font-weight:800;font-size:13px;letter-spacing:.05em;
+  text-transform:uppercase;color:#0D0221;background:var(--player);
+  border:none;border-radius:8px;padding:12px 26px;margin-top:6px;
+  box-shadow:0 0 24px rgba(0,240,255,0.5);
+}
+.nv-btn:active{transform:scale(0.97)}
+.nv-hint{font-size:10px;color:#6b5c8c;letter-spacing:.05em;margin-top:4px}
+
+/* MOBILE TAP ZONE (invisible, full-canvas tap-to-jump, works during play) */
+#nv-tapzone{position:absolute;inset:0;z-index:40}
+</style>
+</head>
+<body>
+
+<div id="nv-intro">
+  <div id="ni-logos">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+    <div id="ni-div"></div>
+    <img src="../games/neonvelocity-logo.svg" alt="Neon Velocity"/>
+  </div>
+  <div id="ni-title">Neon Velocity</div>
+  <div id="ni-sub">An Ajora Games Original</div>
+  <div id="ni-bar"><div id="ni-progress"></div></div>
+</div>
+
+<div id="nv-wrap">
+  <canvas id="nv-canvas" width="1280" height="720"></canvas>
+  <div id="nv-tapzone"></div>
+
+  <div id="nv-topbar">
+    <div class="nv-brand">
+      <img src="../ajora-logo-transparent.png" alt=""/>
+      <b>NEON VELOCITY</b>
+    </div>
+    <a href="../games/" class="nv-back">&larr; Arcade</a>
+  </div>
+
+  <div class="nv-overlay" id="nv-start-overlay">
+    <img class="nv-logo-big" src="../games/neonvelocity-logo.svg" alt="Neon Velocity"/>
+    <div class="nv-title">NEON VELOCITY</div>
+    <div class="nv-sub">Double-jump the rooftops. Dodge the hazards. The signal never stops.</div>
+    <button class="nv-btn" id="nv-start-btn">Start Run</button>
+    <div class="nv-hint">Tap / Click / Space to jump &middot; Tap again mid-air to double-jump</div>
+  </div>
+
+  <div class="nv-overlay hidden" id="nv-gameover-overlay">
+    <div class="nv-title dead">SIGNAL LOST</div>
+    <div class="nv-score-row">
+      <div class="nv-score-box"><div class="lbl">Distance</div><div class="val" id="nv-final-score">000,000m</div></div>
+      <div class="nv-score-box"><div class="lbl">Best</div><div class="val" id="nv-final-best">000,000m</div></div>
+    </div>
+    <button class="nv-btn" id="nv-retry-btn">Retry</button>
+    <div class="nv-hint">Space / Tap to retry instantly</div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('nv-canvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+const COLORS = {
+  bg: '#0D0221', platform: '#241734', trim: '#A124FF',
+  player: '#00F0FF', hazard: '#FF0055', ui: '#FFE600'
+};
+
+const PHYSICS = {
+  GRAVITY: 0.6,
+  JUMP_FORCE: -14,
+  DOUBLE_JUMP_FORCE: -11,
+  BASE_SPEED: 7,
+  MAX_SPEED: 18,
+  ACCELERATION: 0.001,
+  PLAYER_X: 150
+};
+
+const SAVE_KEY = 'ajora_neonvelocity_best';
+
+const STATE = { START_MENU:'START_MENU', PLAYING:'PLAYING', GAME_OVER:'GAME_OVER', PAUSED:'PAUSED' };
+let gameState = STATE.START_MENU;
+
+let player, platforms, hazards, particles, worldSpeed, distance, best;
+let screenShakeFrames = 0;
+let lastTime = 0;
+let warningBlink = 0;
+
+function loadBest(){
+  try{ return parseInt(localStorage.getItem(SAVE_KEY) || '0', 10); }catch(e){ return 0; }
+}
+function saveBest(v){
+  try{ localStorage.setItem(SAVE_KEY, String(v)); }catch(e){}
+}
+
+function resetWorld(){
+  player = {
+    x: PHYSICS.PLAYER_X, y: 400, width: 36, height: 36,
+    vy: 0, grounded: false, jumpsUsed: 0
+  };
+  platforms = [
+    { x: 0, y: 550, width: 500, height: 170 }
+  ];
+  hazards = [];
+  particles = [];
+  worldSpeed = PHYSICS.BASE_SPEED;
+  distance = 0;
+  screenShakeFrames = 0;
+  generateAhead();
+}
+
+const TIERS = [550, 450, 350]; // Low, Mid, High
+
+function generateAhead(){
+  // ensure platforms exist up to a buffer beyond the right edge
+  let rightMost = platforms.reduce((m,p)=>Math.max(m, p.x + p.width), 0);
+  while(rightMost < W + 600){
+    const minGap = 100;
+    const maxGap = Math.min(worldSpeed * 40, 420);
+    const gap = minGap + Math.random() * Math.max(0, maxGap - minGap);
+    const tierY = TIERS[Math.floor(Math.random()*TIERS.length)];
+    const width = 220 + Math.random() * 260;
+    const newX = rightMost + gap;
+    platforms.push({ x:newX, y:tierY, width:width, height: 720 - tierY });
+    // chance to spawn a hazard on top of this platform, away from edges
+    if(Math.random() < 0.55 && width > 160){
+      const hz = 34;
+      const hx = newX + width*0.35 + Math.random()*width*0.3;
+      hazards.push({ x:hx, y:tierY-hz, width:hz, height:hz, warned:false });
+    }
+    rightMost = newX + width;
+  }
+  // cleanup off-screen platforms/hazards to the left
+  platforms = platforms.filter(p => p.x + p.width > -50);
+  hazards = hazards.filter(h => h.x + h.width > -50);
+}
+
+function checkCollision(a, b){
+  return (
+    a.x + 5 < b.x + b.width &&
+    a.x + a.width - 5 > b.x &&
+    a.y + 5 < b.y + b.height &&
+    a.y + a.height - 5 > b.y
+  );
+}
+
+function doJump(){
+  if(gameState !== STATE.PLAYING) return;
+  if(player.grounded || player.jumpsUsed === 0){
+    player.vy = PHYSICS.JUMP_FORCE;
+    player.jumpsUsed = 1;
+    player.grounded = false;
+  } else if(player.jumpsUsed === 1){
+    player.vy = PHYSICS.DOUBLE_JUMP_FORCE;
+    player.jumpsUsed = 2;
+  }
+}
+
+function spawnParticle(x, y){
+  particles.push({
+    x, y,
+    vx: -(Math.random()*1.5 + 0.5) - worldSpeed*0.15,
+    vy: -(Math.random()*0.6),
+    r: 1 + Math.random()*3,
+    alpha: 1
+  });
+}
+
+function update(dt){
+  if(gameState !== STATE.PLAYING) return;
+
+  worldSpeed = Math.min(PHYSICS.MAX_SPEED, worldSpeed + PHYSICS.ACCELERATION * dt);
+  distance += worldSpeed * dt * 0.06;
+
+  // physics — track pre-move bottom for a tunnel-proof swept landing check
+  const prevBottom = player.y + player.height;
+  player.vy += PHYSICS.GRAVITY * dt;
+  player.y += player.vy * dt;
+  const newBottom = player.y + player.height;
+
+  // scroll world
+  platforms.forEach(p => p.x -= worldSpeed * dt);
+  hazards.forEach(h => h.x -= worldSpeed * dt);
+
+  // ground collision against platforms (land on top only) — swept check:
+  // did the player's bottom edge cross the platform's surface Y this frame?
+  // this stays correct at any fall speed, unlike a fixed-pixel buffer.
+  player.grounded = false;
+  for(const p of platforms){
+    const withinX = player.x + player.width - 5 > p.x && player.x + 5 < p.x + p.width;
+    const crossedSurface = player.vy >= 0 && prevBottom <= p.y && newBottom >= p.y;
+    if(withinX && crossedSurface){
+      player.y = p.y - player.height;
+      player.vy = 0;
+      player.grounded = true;
+      player.jumpsUsed = 0;
+    }
+  }
+
+  // particle trail while grounded
+  if(player.grounded && Math.random() < 0.6){
+    spawnParticle(player.x + player.width*0.2, player.y + player.height - 2);
+  }
+
+  // fall off bottom = death
+  if(player.y > H + 100){
+    endRun();
+    return;
+  }
+
+  // hazard collisions
+  for(const hz of hazards){
+    if(checkCollision(player, hz)){
+      endRun();
+      return;
+    }
+  }
+
+  // warning blink timer
+  warningBlink += dt;
+
+  // particles update
+  particles.forEach(pt=>{ pt.x += pt.vx*dt; pt.y += pt.vy*dt; pt.alpha -= 0.05*dt; });
+  particles = particles.filter(pt => pt.alpha > 0);
+
+  // screen shake decay
+  if(screenShakeFrames > 0) screenShakeFrames -= dt;
+
+  generateAhead();
+}
+
+function endRun(){
+  gameState = STATE.GAME_OVER;
+  screenShakeFrames = 10;
+  const finalDist = Math.floor(distance);
+  if(finalDist > best){ best = finalDist; saveBest(best); }
+  document.getElementById('nv-final-score').textContent = formatDistance(finalDist);
+  document.getElementById('nv-final-best').textContent = formatDistance(best);
+  document.getElementById('nv-gameover-overlay').classList.remove('hidden');
+}
+
+function formatDistance(n){
+  return String(Math.floor(n)).padStart(6,'0') + 'm';
+}
+
+/* ============ RENDER ============ */
+function render(){
+  ctx.save();
+  if(screenShakeFrames > 0){
+    const dx = Math.random()*8-4, dy = Math.random()*8-4;
+    ctx.translate(dx, dy);
+  }
+
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(-10,-10,W+20,H+20);
+
+  // platforms
+  platforms.forEach(p=>{
+    ctx.fillStyle = COLORS.platform;
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+    ctx.strokeStyle = COLORS.trim;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = COLORS.trim;
+    ctx.shadowBlur = 10;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+    ctx.shadowBlur = 0;
+  });
+
+  // hazards + warning system
+  hazards.forEach(hz=>{
+    ctx.fillStyle = COLORS.hazard;
+    ctx.shadowColor = COLORS.hazard;
+    ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.moveTo(hz.x, hz.y+hz.height);
+    ctx.lineTo(hz.x+hz.width/2, hz.y);
+    ctx.lineTo(hz.x+hz.width, hz.y+hz.height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // incoming warning indicator near right edge
+    if(hz.x > W - 40 && hz.x < W + 400){
+      const blinkOn = Math.floor(warningBlink*6) % 2 === 0;
+      if(blinkOn){
+        ctx.fillStyle = COLORS.hazard;
+        ctx.font = "bold 22px 'Share Tech Mono', monospace";
+        ctx.fillText('!', W - 34, hz.y - hz.height + 20);
+      }
+    }
+  });
+
+  // particles
+  particles.forEach(pt=>{
+    ctx.globalAlpha = Math.max(0, pt.alpha);
+    ctx.fillStyle = COLORS.trim;
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+
+  // player
+  ctx.fillStyle = COLORS.player;
+  ctx.shadowColor = COLORS.player;
+  ctx.shadowBlur = 16;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+  ctx.shadowBlur = 0;
+
+  ctx.restore();
+
+  // HUD
+  if(gameState === STATE.PLAYING){
+    ctx.fillStyle = COLORS.ui;
+    ctx.font = "bold 28px 'Share Tech Mono', monospace";
+    ctx.textAlign = 'left';
+    ctx.fillText('SCORE: ' + formatDistance(distance), 24, 46);
+    ctx.textAlign = 'right';
+    ctx.fillText('BEST: ' + formatDistance(best), W-24, 46);
+    ctx.textAlign = 'left';
+  }
+}
+
+/* ============ LOOP ============ */
+function loop(t){
+  if(!lastTime) lastTime = t;
+  const dt = Math.min(2.2, (t - lastTime) / (1000/60)); // normalized to 60fps frame units, capped
+  lastTime = t;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+
+/* ============ STATE TRANSITIONS ============ */
+function startRun(){
+  resetWorld();
+  gameState = STATE.PLAYING;
+  document.getElementById('nv-start-overlay').classList.add('hidden');
+  document.getElementById('nv-gameover-overlay').classList.add('hidden');
+}
+
+/* ============ INPUT ============ */
+function handleActivate(){
+  if(gameState === STATE.START_MENU){ startRun(); }
+  else if(gameState === STATE.PLAYING){ doJump(); }
+  else if(gameState === STATE.GAME_OVER){ startRun(); }
+}
+
+document.getElementById('nv-start-btn').addEventListener('click', (e)=>{ e.stopPropagation(); startRun(); });
+document.getElementById('nv-retry-btn').addEventListener('click', (e)=>{ e.stopPropagation(); startRun(); });
+
+document.getElementById('nv-tapzone').addEventListener('mousedown', handleActivate);
+document.getElementById('nv-tapzone').addEventListener('touchstart', (e)=>{ e.preventDefault(); handleActivate(); }, {passive:false});
+
+window.addEventListener('keydown', (e)=>{
+  if(e.code === 'Space'){ e.preventDefault(); handleActivate(); }
+});
+
+/* ============ INIT ============ */
+best = loadBest();
+resetWorld();
+requestAnimationFrame(loop);
+
+/* ============ INTRO TIMING ============ */
+(function(){
+  const startOverlay = document.getElementById('nv-start-overlay');
+  startOverlay.style.opacity = '0';
+  const logos=document.getElementById('ni-logos');
+  const title=document.getElementById('ni-title');
+  const sub=document.getElementById('ni-sub');
+  const bar=document.getElementById('ni-bar');
+  const prog=document.getElementById('ni-progress');
+  setTimeout(()=>{ logos.style.opacity='1'; logos.style.transform='scale(1) translateY(0)'; },120);
+  setTimeout(()=>{ title.style.opacity='1'; },650);
+  setTimeout(()=>{ sub.style.opacity='1'; },720);
+  setTimeout(()=>{ bar.style.opacity='1'; },800);
+  setTimeout(()=>{ prog.style.width='100%'; },840);
+  setTimeout(()=>{
+    const intro=document.getElementById('nv-intro');
+    intro.style.transition='opacity .45s ease';
+    intro.style.opacity='0';
+    startOverlay.style.transition='opacity .4s ease';
+    startOverlay.style.opacity='1';
+    setTimeout(()=>{ intro.style.display='none'; },450);
+  },2100);
+})();
+</script>
+
+</body>
+</html>

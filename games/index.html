@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Arcade | Ajora Games</title>
+<meta name="description" content="Free browser games. No download, no login. Pick a ticket and play."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0d0c0c;
+  --ink2:#161413;
+  --ink3:#211e1b;
+  --paper:#ede7dc;
+  --paper-dim:#c9c1b2;
+  --red:#c81d3a;
+  --red2:#8f1428;
+  --orange:#ff5a36;
+  --amber:#ffb020;
+  --line:#3f3a34;
+  --display:'Big Shoulders Display',sans-serif;
+  --mono:'Space Mono',monospace;
+  --data:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--ink);color:var(--paper);
+  font-family:var(--mono);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+::selection{background:var(--red);color:var(--paper)}
+
+/* focus visibility, kept simple & visible */
+a:focus-visible,button:focus-visible,.stamp:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;}
+}
+
+/* ========== MARQUEE TICKER ========== */
+.marquee-wrap{
+  background:var(--ink);
+  border-bottom:2px solid var(--line);
+  overflow:hidden;
+  position:relative;
+  padding:9px 0;
+}
+.marquee-wrap::before,.marquee-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;
+  background-image:radial-gradient(circle, var(--amber) 2px, transparent 2.4px);
+  background-size:18px 100%;
+  width:100%;height:3px;
+  opacity:.55;
+}
+.marquee-wrap::before{top:0}
+.marquee-wrap::after{bottom:0}
+.marquee-track{
+  display:flex;white-space:nowrap;width:max-content;
+  animation:scrollmarquee 22s linear infinite;
+}
+.marquee-track span{
+  font-family:var(--display);font-weight:900;font-size:20px;
+  letter-spacing:.05em;text-transform:uppercase;
+  padding:0 22px;color:var(--paper);
+}
+.marquee-track span.hot{color:var(--red)}
+.marquee-track span.amber{color:var(--amber)}
+@keyframes scrollmarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ========== NAV ========== */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 28px;border-bottom:2px solid var(--line);
+  background:var(--ink);position:sticky;top:0;z-index:500;
+}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo img{width:32px;height:32px;object-fit:contain}
+.nav-logo b{font-family:var(--display);font-weight:900;font-size:19px;letter-spacing:.03em;text-transform:uppercase}
+nav ul{list-style:none;display:flex;gap:26px;margin:0;padding:0}
+nav ul a{font-family:var(--data);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim);transition:color .15s}
+nav ul a:hover,nav ul a.active{color:var(--red)}
+.nav-right{display:flex;align-items:center;gap:20px}
+#menu-toggle{display:none}
+
+/* ========== HERO ========== */
+.hero{
+  padding:46px 28px 34px;text-align:center;
+  border-bottom:2px dashed var(--line);
+}
+.hero-badge{
+  display:inline-block;font-family:var(--data);font-size:11px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--ink);
+  background:var(--amber);padding:5px 14px;transform:rotate(-2deg);
+  margin-bottom:18px;
+}
+.hero h1{
+  font-family:var(--display);font-weight:900;font-size:clamp(38px,7vw,84px);
+  line-height:.92;letter-spacing:.01em;text-transform:uppercase;margin:0 0 10px;
+}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p{
+  font-family:var(--mono);font-size:14px;color:var(--paper-dim);
+  max-width:480px;margin:0 auto;line-height:1.6;
+}
+
+/* ========== SECTION LABELS ========== */
+.section{padding:50px 28px 20px;max-width:1280px;margin:0 auto}
+.section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+.section-head h2{
+  font-family:var(--display);font-weight:900;font-size:clamp(26px,4vw,42px);
+  text-transform:uppercase;letter-spacing:.02em;margin:0;
+}
+.section-head .rule{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px);min-width:40px}
+.section-head .tag{font-family:var(--data);font-size:11px;letter-spacing:.1em;color:var(--paper-dim);text-transform:uppercase}
+
+/* ========== OG TIER — GOLDEN TICKETS ========== */
+.og-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:26px}
+.og-card{
+  position:relative;background:var(--ink2);border:2px solid var(--amber);
+  padding:22px 20px 26px;
+  box-shadow:8px 8px 0 rgba(255,176,32,0.28);
+  display:flex;flex-direction:column;gap:14px;
+  transition:transform .15s ease;
+}
+.og-card:hover{transform:translate(-3px,-3px)}
+.og-kicker{
+  font-family:var(--data);font-size:10px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--amber);
+}
+.og-top{display:flex;align-items:center;gap:14px}
+.og-logo{width:64px;height:64px;object-fit:contain;border:2px solid var(--amber);flex-shrink:0;background:var(--ink)}
+.og-card h3{font-family:var(--display);font-weight:900;font-size:26px;text-transform:uppercase;margin:0;line-height:1.02}
+.og-card p{font-size:12.5px;color:var(--paper-dim);line-height:1.55;margin:0;flex:1}
+.og-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+
+/* ========== TICKET WALL ========== */
+.wall{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:34px 22px;padding-top:6px;
+}
+.stub{
+  position:relative;background:var(--paper);color:var(--ink);
+  padding:16px 16px 30px;
+  clip-path:polygon(0% 0%, 100% 0%, 100% 88%, 92.86% 96%, 85.71% 88%, 78.57% 96%, 71.43% 88%, 64.29% 96%, 57.14% 88%, 50% 96%, 42.86% 88%, 35.71% 96%, 28.57% 88%, 21.43% 96%, 14.29% 88%, 7.14% 96%, 0% 88%);
+  transition:transform .18s ease;
+}
+.stub:hover{transform:scale(1.025) rotate(0deg) !important;z-index:20}
+.wall a{display:block;height:100%}
+.stub-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.stub-num{font-family:var(--data);font-size:11px;font-weight:700;color:var(--red2);letter-spacing:.05em}
+.stub-logo{width:46px;height:46px;object-fit:contain;border:2px solid var(--ink);flex-shrink:0}
+.stub h3{font-family:var(--display);font-weight:900;font-size:21px;text-transform:uppercase;margin:0 0 6px;line-height:1}
+.stub p{font-size:11px;line-height:1.5;color:#4a453e;margin:0 0 10px}
+.stub-credit{font-family:var(--data);font-size:9px;color:#8a8378;letter-spacing:.02em;margin-bottom:12px;display:block}
+.stub-perf{position:relative;height:0;border-top:2px dashed rgba(13,12,12,.3);margin:0 -16px 12px}
+.stub-perf::before,.stub-perf::after{content:'';position:absolute;top:-7px;width:14px;height:14px;border-radius:50%;background:var(--ink)}
+.stub-perf::before{left:-7px}
+.stub-perf::after{right:-7px}
+.stub-foot{display:flex;align-items:center;justify-content:space-between}
+.stub-admit{font-family:var(--data);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8a8378}
+
+/* ========== STAMP BUTTON ========== */
+.stamp{
+  display:inline-block;font-family:var(--display);font-weight:900;
+  font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--paper);background:var(--red);
+  padding:8px 16px;border:2px solid var(--ink);
+  box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink);
+  transform:rotate(-1.5deg);
+}
+.og-card .stamp{background:var(--amber);color:var(--ink);font-size:14px;padding:9px 18px}
+
+/* ========== FOOTER ========== */
+footer{
+  border-top:2px solid var(--line);margin-top:60px;padding:30px 28px 40px;
+  display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;
+}
+footer ul{list-style:none;display:flex;gap:22px;margin:0;padding:0}
+footer ul a{font-family:var(--data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim)}
+footer ul a:hover{color:var(--red)}
+footer .copy{font-family:var(--data);font-size:10px;color:#57524b;letter-spacing:.05em}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:900px){
+  .og-grid{grid-template-columns:1fr}
+  nav ul{display:none}
+}
+@media(max-width:560px){
+  .wall{grid-template-columns:1fr 1fr;gap:22px 12px}
+  .stub:hover{transform:none !important}
+  .hero{padding:34px 18px 26px}
+}
+</style>
+</head>
+<body>
+
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee-track"></div>
+</div>
+
+<nav id="nav">
+  <a href="../home/" class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+    <b>Ajora Games</b>
+  </a>
+  <ul>
+    <li><a href="../home/">Home</a></li>
+    <li><a href="../games/" class="active">Arcade</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="../lastonestanding/" class="stamp" style="font-size:11px;padding:7px 14px">Play Now</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="hero-badge">Free &middot; No Download &middot; No Login</span>
+  <h1>Insert Coin.<br>Pick a <em>Ticket.</em></h1>
+  <p>Fifteen games, zero paywalls. The originals we built, and the arcade classics we keep running.</p>
+</header>
+
+<section class="section" id="og-section">
+  <div class="section-head">
+    <h2>Ajora Originals</h2>
+    <div class="rule"></div>
+    <span class="tag">Built in-house</span>
+  </div>
+  <div class="og-grid" id="og-grid"></div>
+</section>
+
+<section class="section" id="arcade-section">
+  <div class="section-head">
+    <h2>Arcade Classics</h2>
+    <div class="rule"></div>
+    <span class="tag" id="arcade-count">Loading&hellip;</span>
+  </div>
+  <div class="wall" id="wall-grid"></div>
+</section>
+
+<footer>
+  <div class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="" style="width:22px;height:22px"/>
+    <span class="copy">&copy; Ajora Games</span>
+  </div>
+  <ul>
+    <li><a href="../home/">Home</a></li>
+    <li><a href="../games/">Arcade</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/">Contact</a></li>
+  </ul>
+</footer>
+
+<script>
+// Marquee ticker content — duplicated for a seamless loop
+(function(){
+  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','26 GAMES','HIGH SCORE AWAITS'];
+  const track = document.getElementById('marquee-track');
+  let html = '';
+  for(let r=0;r<2;r++){
+    items.forEach((t,i)=>{
+      const cls = i%3===0 ? 'hot' : (i%3===1 ? 'amber' : '');
+      html += `<span class="${cls}">${t}</span><span>&#9670;</span>`;
+    });
+  }
+  track.innerHTML = html;
+})();
+
+// Render games from games.json, grouped by tier
+fetch('games.json')
+  .then(r=>r.json())
+  .then(games=>{
+    const ogGrid = document.getElementById('og-grid');
+    const wallGrid = document.getElementById('wall-grid');
+    const ogGames = games.filter(g=>g.tier==='og');
+    const arcadeGames = games.filter(g=>g.tier!=='og');
+
+    ogGames.forEach(g=>{
+      const el = document.createElement('a');
+      el.href = g.path;
+      el.className = 'og-card';
+      el.innerHTML = `
+        <span class="og-kicker">&#9733; Ajora Original</span>
+        <div class="og-top">
+          <img class="og-logo" src="${g.logo}" alt="${g.title}"/>
+          <h3>${g.title}</h3>
+        </div>
+        <p>${g.desc}</p>
+        <div class="og-foot"><span class="stamp">Play</span></div>
+      `;
+      ogGrid.appendChild(el);
+    });
+
+    const rotations = ['-1.6deg','1.2deg','-0.8deg','2deg','-2.2deg','1deg','-1.1deg','1.8deg'];
+    arcadeGames.forEach((g,i)=>{
+      const num = String(i+1).padStart(2,'0');
+      const rot = rotations[i % rotations.length];
+      const lift = (i % 3 === 0) ? '10px' : (i % 3 === 1 ? '-6px' : '2px');
+      const wrap = document.createElement('div');
+      wrap.style.marginTop = lift;
+      const el = document.createElement('a');
+      el.href = g.path;
+      el.innerHTML = `
+        <div class="stub" style="transform:rotate(${rot})">
+          <div class="stub-top">
+            <span class="stub-num">NO.${num}</span>
+            <img class="stub-logo" src="${g.logo}" alt="${g.title}"/>
+          </div>
+          <h3>${g.title}</h3>
+          <p>${g.desc}</p>
+          ${g.credit ? `<span class="stub-credit">${g.credit}</span>` : ''}
+          <div class="stub-perf"></div>
+          <div class="stub-foot">
+            <span class="stub-admit">Admit One</span>
+            <span class="stamp" style="background:${i%2===0?'var(--red)':'var(--orange)'}">Play</span>
+          </div>
+        </div>
+      `;
+      wrap.appendChild(el);
+      wallGrid.appendChild(wrap);
+    });
+
+    document.getElementById('arcade-count').textContent = arcadeGames.length + ' games';
+  })
+  .catch(err=>{
+    console.error('Failed to load games.json', err);
+    document.getElementById('arcade-count').textContent = 'Failed to load';
+  });
+</script>
+</body>
+</html>

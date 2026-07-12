@@ -1,0 +1,255 @@
+[
+  {
+    "id": "lastonestanding",
+    "title": "Last One Standing",
+    "path": "../lastonestanding/",
+    "logo": "../los-logo-transparent.png",
+    "desc": "A survival scenario quiz. Every choice matters. Choose wrong and you're dead. How far can you go?",
+    "featured": true,
+    "tier": "og"
+  },
+  {
+    "id": "higherorlower",
+    "title": "Higher or Lower",
+    "path": "../higherorlower/",
+    "logo": "hol-logo.svg",
+    "desc": "Populations, box office, streams, heights \u2014 guess if the next one's higher or lower. One wrong guess ends the streak.",
+    "accent": "#39ff5a",
+    "tier": "og"
+  },
+  {
+    "id": "wouldyourather",
+    "title": "Would You Rather Ranked",
+    "path": "../wouldyourather/",
+    "logo": "wyr-logo.svg",
+    "desc": "Pick a side, see what the world chose. 30 brutal dilemmas ranked by real player votes.",
+    "accent": "#FF0055",
+    "tier": "og"
+  },
+  {
+    "id": "2048",
+    "title": "2048",
+    "path": "../2048/",
+    "logo": "2048-logo.png",
+    "desc": "Slide the tiles, merge the numbers, chase the 2048 tile before the board fills up.",
+    "accent": "#f2b179",
+    "credit": "Original by Gabriele Cirulli \u00b7 MIT License",
+    "tier": "arcade"
+  },
+  {
+    "id": "hextris",
+    "title": "Hextris",
+    "path": "../hextris/",
+    "logo": "hextris-logo.png",
+    "desc": "A hexagonal spin on block-stacking. Rotate the core, match colors, survive the speed-up.",
+    "accent": "#00d1c1",
+    "credit": "Original by the Hextris Team \u00b7 GPLv3 License",
+    "tier": "arcade"
+  },
+  {
+    "id": "clumsybird",
+    "title": "Clumsy Bird",
+    "path": "../clumsybird/",
+    "logo": "clumsybird-logo.png",
+    "desc": "Tap to flap, dodge the pipes, and try not to faceplant on your very first attempt.",
+    "accent": "#5ec9f7",
+    "credit": "Original by Ken Wheeler \u00b7 GPLv3 License",
+    "tier": "arcade"
+  },
+  {
+    "id": "pacman",
+    "title": "Pac-Man",
+    "path": "../pacman/",
+    "logo": "pacman-logo.svg",
+    "desc": "Chomp every pellet, dodge four ghosts with minds of their own, and chase the high score.",
+    "accent": "#FFD400",
+    "credit": "Original by Dale Harvey \u00b7 WTFPL License",
+    "tier": "arcade"
+  },
+  {
+    "id": "tenbyten",
+    "title": "Ten by Ten",
+    "path": "../tenbyten/",
+    "logo": "tenbyten-logo.svg",
+    "desc": "Drop blocks onto a 10x10 grid, clear full rows and columns, and keep the board from filling up.",
+    "accent": "#FF8A00",
+    "credit": "Original by Jos\u00e9 Pedro Dias \u00b7 No license declared, used with attribution",
+    "tier": "arcade"
+  },
+  {
+    "id": "galaxyinvaders",
+    "title": "Galaxy Invaders",
+    "path": "../galaxyinvaders/",
+    "logo": "galaxyinvaders-logo.svg",
+    "desc": "A galaxian-style shooter. Wipe out the formation before they wipe out you.",
+    "accent": "#8B5CF6",
+    "credit": "Original by Shekhar Patnaik \u00b7 No license declared, used with attribution",
+    "tier": "arcade"
+  },
+  {
+    "id": "candymatch",
+    "title": "Candy Match",
+    "path": "../candy-match/",
+    "logo": "candymatch-logo.svg",
+    "desc": "Swap and match colorful candies in rows and columns to rack up combos before you run out of moves.",
+    "accent": "#FF4FA3",
+    "credit": "Original by Mia (MiaLearnsToCode) \u00b7 No license declared, used with attribution",
+    "tier": "arcade"
+  },
+  {
+    "id": "brickgame",
+    "title": "Brick Game",
+    "path": "../brickgame/",
+    "logo": "brickgame-logo.svg",
+    "desc": "Break every brick with a bouncing ball and a paddle you control. A classic arcade breakout.",
+    "accent": "#39ff5a",
+    "credit": "Original by Chan Meng \u00b7 MIT License",
+    "tier": "arcade"
+  },
+  {
+    "id": "slimevolleyball",
+    "title": "Slime Volleyball",
+    "path": "../slimevolleyball/",
+    "logo": "slimevolleyball-logo.svg",
+    "desc": "Bounce the ball over the net and keep it off your side. First to the win condition takes the set.",
+    "accent": "#4FD1FF",
+    "credit": "Original by Turing School / dtinianow \u00b7 MIT License",
+    "tier": "arcade"
+  },
+  {
+    "id": "racer",
+    "title": "Racer",
+    "path": "../javascript-racer/",
+    "logo": "racer-logo.svg",
+    "desc": "A pseudo-3D road racer. Weave through traffic, ride the hills, and don't spin out on the curves.",
+    "accent": "#FF6B35",
+    "credit": "Original by Jake Gordon \u00b7 MIT License",
+    "tier": "arcade"
+  },
+  {
+    "id": "pong",
+    "title": "Pong",
+    "path": "../pong/",
+    "logo": "pong-logo.svg",
+    "desc": "The original arcade classic. Mouse controls your paddle, AI controls the other. First to miss loses the rally.",
+    "accent": "#39ff5a",
+    "credit": "Original by Harsha Verma \u00b7 No license declared, used with attribution",
+    "tier": "arcade"
+  },
+  {
+    "id": "adarkroom",
+    "title": "A Dark Room",
+    "path": "../adarkroom/",
+    "logo": "adarkroom-logo.svg",
+    "desc": "Stoke a fire, build a settlement, and uncover what's waiting outside in this text-driven survival adventure.",
+    "accent": "#FF9A3D",
+    "credit": "Original by Doublespeak Games \u00b7 MPL-2.0 License",
+    "tier": "arcade"
+  },
+  {
+    "id": "quantumforge",
+    "title": "Quantum Forge",
+    "path": "../quantumforge/",
+    "logo": "quantumforge-logo.svg",
+    "desc": "Tap the quantum core, automate an energy empire, and melt it all down for permanent Antimatter.",
+    "accent": "#66FCF1",
+    "tier": "og"
+  },
+  {
+    "id": "neonvelocity",
+    "title": "Neon Velocity",
+    "path": "../neonvelocity/",
+    "logo": "neonvelocity-logo.svg",
+    "desc": "An endless neon runner. Double-jump the rooftops, dodge the hazards, chase your high score.",
+    "accent": "#00F0FF",
+    "tier": "og"
+  },
+  {
+    "id": "reflexrush",
+    "title": "Reflex Rush",
+    "path": "../reflexrush/",
+    "logo": "reflexrush-logo.svg",
+    "desc": "Five lights, one reaction. Tap the instant it turns green \u2014 jump early and you're disqualified. How fast are you, really?",
+    "accent": "#ff2d3a",
+    "tier": "og"
+  },
+  {
+    "id": "aimrush",
+    "title": "Aim Rush",
+    "path": "../aimrush/",
+    "logo": "aimrush-logo.svg",
+    "desc": "30 seconds on the range. Pop as many targets as you can before time runs out and track your accuracy.",
+    "accent": "#2ff5d0",
+    "tier": "og"
+  },
+  {
+    "id": "wordstreak",
+    "title": "Word Streak",
+    "path": "../wordstreak/",
+    "logo": "wordstreak-logo.svg",
+    "desc": "One five-letter word a day. Six guesses. Come back tomorrow and keep the streak alive.",
+    "accent": "#4ADE80",
+    "credit": "Original concept and implementation by Ajora Games",
+    "tier": "og"
+  },
+  {
+    "id": "solitaire",
+    "title": "Solitaire",
+    "path": "../solitaire/",
+    "logo": "solitaire-logo.svg",
+    "desc": "The classic Klondike deal. Drag, tap, and clear all four foundations.",
+    "accent": "#1FAA59",
+    "credit": "Original by John Hatzimalis \u00b7 MIT License",
+    "tier": "arcade"
+  },
+  {
+    "id": "sudoku",
+    "title": "Sudoku",
+    "path": "../sudoku/",
+    "logo": "sudoku-logo.svg",
+    "desc": "Fill the 9x9 grid, break no rules. Three difficulties and a saved best time.",
+    "accent": "#3B82F6",
+    "credit": "Classic puzzle concept \u00b7 original implementation by Ajora Games",
+    "tier": "og"
+  },
+  {
+    "id": "tetris",
+    "title": "Tetris",
+    "path": "../tetris/",
+    "logo": "tetris-logo.svg",
+    "desc": "Stack the falling blocks, clear the lines, and try not to top out.",
+    "accent": "#A855F7",
+    "credit": "Original by Jake Gordon \u00b7 MIT License",
+    "tier": "arcade"
+  },
+  {
+    "id": "chess",
+    "title": "Chess",
+    "path": "../chess/",
+    "logo": "chess-logo.svg",
+    "desc": "Play white against an on-board AI. Adjustable search depth, undo and redo included.",
+    "accent": "#D4AF37",
+    "credit": "Original by Zhang Zeyu \u00b7 MIT License",
+    "tier": "arcade"
+  },
+  {
+    "id": "snake",
+    "title": "Snake",
+    "path": "../snake/",
+    "logo": "snake-logo.svg",
+    "desc": "The classic. Eat the pellets, grow longer, don't bite yourself or hit the wall.",
+    "accent": "#39ff5a",
+    "credit": "Classic arcade concept \u00b7 original implementation by Ajora Games",
+    "tier": "arcade"
+  },
+  {
+    "id": "minesweeper",
+    "title": "Minesweeper",
+    "path": "../minesweeper/",
+    "logo": "minesweeper-logo.svg",
+    "desc": "Clear the grid without triggering a mine. Tap to reveal, flag what you suspect, trust the numbers.",
+    "accent": "#ffb020",
+    "credit": "Classic puzzle concept \u00b7 original implementation by Ajora Games",
+    "tier": "arcade"
+  }
+]

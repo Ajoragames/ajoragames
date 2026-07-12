@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Would You Rather Ranked — Ajora Games</title>
+<meta name="description" content="Pick your choice, see what the world chose. 30+ dilemmas ranked by real player votes."/>
+<link rel="canonical" href="https://ajoragames.com/wouldyourather/"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%230B0C10'/%3E%3Crect x='4' y='4' width='10' height='24' fill='%2300F0FF' opacity='.7'/%3E%3Crect x='18' y='12' width='10' height='16' fill='%23FF0055' opacity='.7'/%3E%3C/svg%3E"/>
+<meta name="google-adsense-account" content="ca-pub-3421312807231714">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3421312807231714" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* CLAYMORPHISM — cool greige/sand/taupe palette */
+  --bg:#E6E0D4;
+  --bg-soft:#EDE8DC;
+  --clay-a:#D7CDB9;
+  --clay-a-deep:#BFB29B;
+  --clay-b:#C9BCA8;
+  --clay-b-deep:#AC9D87;
+  --ink:#3E3830;
+  --muted:#8C8273;
+  --accent:#B07A52;
+  --accent-deep:#8F5F3E;
+  --paper:#F2EDE1;
+  --shadow-d:rgba(61,53,40,0.28);
+  --shadow-d-soft:rgba(61,53,40,0.16);
+  --shadow-l:rgba(255,253,247,0.85);
+}
+html,body{height:100%;background:var(--bg);overflow-x:hidden}
+body{
+  font-family:'Fredoka',sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:radial-gradient(ellipse 120% 80% at 50% -10%,var(--bg-soft),var(--bg));
+}
+
+/* NAV */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 24px;
+  flex-shrink:0;position:relative;z-index:50;
+  background:var(--paper);
+  margin:14px 14px 0;
+  border-radius:28px;
+  box-shadow:7px 7px 16px var(--shadow-d-soft),-6px -6px 14px var(--shadow-l);
+}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.nav-logo img{height:30px;width:30px;object-fit:contain;border-radius:10px}
+.nav-logo-name{font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.55}
+.nav-right{display:flex;align-items:center;gap:16px}
+.game-logo{display:flex;align-items:center;gap:8px}
+.game-logo img{height:30px;width:30px;object-fit:contain;border-radius:10px}
+.game-logo-name{font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;letter-spacing:.02em;color:var(--ink);line-height:1.15}
+.game-logo-name small{display:block;font-family:'Fredoka',sans-serif;font-weight:500;font-size:9px;letter-spacing:.08em;color:var(--accent-deep);opacity:.95}
+.nav-back{
+  font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;color:var(--muted);text-decoration:none;
+  letter-spacing:.04em;transition:color .2s,transform .15s;
+  padding:6px 14px;border-radius:14px;background:var(--bg-soft);
+  box-shadow:3px 3px 7px var(--shadow-d-soft),-2px -2px 6px var(--shadow-l);
+}
+.nav-back:hover{color:var(--accent-deep);transform:translateY(-1px)}
+.nav-counter{font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.02em}
+.nav-counter span{color:var(--accent-deep);font-weight:700}
+
+/* PROGRESS BAR */
+#progress-track{
+  height:14px;background:var(--bg-soft);
+  margin:10px 14px 0;border-radius:10px;
+  box-shadow:inset 3px 3px 6px var(--shadow-d-soft),inset -2px -2px 5px var(--shadow-l);
+  flex-shrink:0;overflow:hidden;
+}
+#progress-bar{
+  height:100%;background:linear-gradient(135deg,var(--accent),var(--accent-deep));
+  width:0%;transition:width .5s cubic-bezier(.4,0,.2,1);
+  border-radius:10px;
+  box-shadow:1px 1px 3px rgba(255,255,255,0.35) inset;
+}
+
+/* MAIN */
+main{
+  flex:1;display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+
+/* DILEMMA */
+#dilemma-text{
+  text-align:center;
+  padding:18px 24px 8px;
+  font-family:'Fredoka',sans-serif;font-weight:600;
+  font-size:clamp(13px,2vw,17px);
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);
+  position:relative;z-index:10;
+}
+
+/* SPLIT */
+#split{
+  flex:1;display:flex;
+  flex-direction:row;
+  gap:16px;
+  padding:0 14px 14px;
+  position:relative;
+  min-height:0;
+}
+#split::before{
+  content:'';
+  position:absolute;inset:0;
+  border-radius:38px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Ccircle cx='1' cy='1' r='.6' fill='rgba(61,53,40,0.055)'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+@media(max-width:600px){
+  #split{flex-direction:column}
+  .half{min-height:38vh}
+}
+
+.half{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px 28px;
+  position:relative;overflow:hidden;
+  cursor:pointer;
+  border-radius:38px;
+  background:var(--clay-a);
+  box-shadow:
+    12px 12px 28px var(--shadow-d),
+    -8px -8px 20px var(--shadow-l),
+    inset 0 2px 0 rgba(255,253,247,0.7);
+  transition:flex .6s cubic-bezier(.4,0,.2,1),transform .18s,box-shadow .18s;
+}
+#half-b{background:var(--clay-b)}
+.half:not(.chosen):hover{
+  transform:translateY(-4px);
+  box-shadow:
+    16px 16px 32px var(--shadow-d),
+    -10px -10px 24px var(--shadow-l),
+    inset 0 2px 0 rgba(255,253,247,0.7);
+}
+.half.chosen{flex:1.4}
+.half.unchosen{flex:.6;opacity:.55}
+
+/* liquid fill */
+.half-fill{
+  position:absolute;bottom:0;left:0;right:0;
+  height:0%;
+  transition:height 1.2s cubic-bezier(.4,0,.2,1);
+  z-index:0;
+  opacity:0;
+  border-radius:38px 38px 0 0;
+}
+.half-fill.show{opacity:1}
+#half-a .half-fill{background:linear-gradient(180deg,rgba(143,95,62,0),rgba(143,95,62,0.22))}
+#half-b .half-fill{background:linear-gradient(180deg,rgba(100,72,48,0),rgba(100,72,48,0.26))}
+
+/* Pressed-clay state on chosen — deep inset groove + accent ring */
+#half-a.chosen{box-shadow:inset 6px 6px 14px var(--shadow-d),inset -4px -4px 10px rgba(255,253,247,0.5),0 0 0 3px var(--accent)}
+#half-b.chosen{box-shadow:inset 6px 6px 14px var(--shadow-d),inset -4px -4px 10px rgba(255,253,247,0.5),0 0 0 3px var(--accent-deep)}
+
+.half-label{
+  font-family:'Fredoka',sans-serif;font-weight:700;
+  font-size:clamp(10px,1.4vw,12px);
+  letter-spacing:.14em;text-transform:uppercase;
+  margin-bottom:16px;
+  position:relative;z-index:2;
+  transition:opacity .3s;
+  padding:7px 20px;border-radius:20px;
+  background:var(--bg-soft);
+  color:var(--accent-deep);
+  box-shadow:
+    3px 3px 7px var(--shadow-d-soft),
+    -2px -2px 5px var(--shadow-l),
+    inset 0 1px 0 rgba(255,253,247,0.85);
+}
+#half-a .half-label{color:var(--accent-deep)}
+#half-b .half-label{color:var(--accent-deep)}
+
+.half-text{
+  font-family:'Fredoka',sans-serif;font-weight:600;
+  font-size:clamp(22px,4vw,40px);
+  line-height:1.18;text-align:center;
+  max-width:420px;
+  position:relative;z-index:2;
+  letter-spacing:-.01em;
+  color:var(--ink);
+}
+
+/* PCT */
+.half-pct{
+  font-family:'Fredoka',sans-serif;font-weight:700;
+  font-size:clamp(58px,12vw,110px);
+  line-height:1;
+  position:relative;z-index:2;
+  margin-top:16px;
+  opacity:0;
+  transition:opacity .25s;
+  letter-spacing:-.025em;
+  color:var(--accent-deep);
+  text-shadow:2px 3px 0 rgba(61,53,40,0.12);
+}
+.half-pct.show{opacity:1}
+
+.half-pct-label{
+  font-family:'Fredoka',sans-serif;font-weight:500;font-size:clamp(9px,1.2vw,11px);
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);
+  position:relative;z-index:2;
+  margin-top:4px;opacity:0;
+  transition:opacity .3s .4s;
+}
+.half-pct-label.show{opacity:1}
+
+/* OR ORB — sculpted clay button sitting in the seam */
+#or-pill{
+  position:absolute;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  z-index:20;
+  background:var(--paper);
+  border:none;
+  border-radius:50%;
+  width:80px;height:80px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka',sans-serif;font-weight:700;
+  font-size:17px;letter-spacing:.05em;
+  color:var(--accent-deep);
+  box-shadow:
+    8px 8px 18px var(--shadow-d),
+    -6px -6px 16px var(--shadow-l),
+    inset 0 2px 0 rgba(255,253,247,0.9),
+    inset 0 -2px 4px rgba(61,53,40,0.12);
+  transition:opacity .3s, transform .2s;
+  pointer-events:none;
+}
+.half:not(.chosen):hover ~ #or-pill,
+.half:not(.chosen):hover + .half ~ #or-pill{
+  transform:translate(-50%,-50%) scale(1.06);
+}
+@media(max-width:600px){
+  #or-pill{top:38vh;left:50%}
+  nav{padding:8px 16px;margin:10px 10px 0}
+  .nav-right{gap:8px}
+  .game-logo-name{display:none}
+  .game-logo img{height:24px;width:24px}
+  .nav-counter{font-size:10px}
+}
+
+/* NEXT BTN */
+#next-btn{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  z-index:100;
+  padding:15px 48px;
+  background:var(--accent);
+  border:none;border-radius:24px;
+  color:var(--paper);
+  font-family:'Fredoka',sans-serif;font-weight:700;font-size:13px;
+  letter-spacing:.04em;
+  cursor:pointer;
+  opacity:0;pointer-events:none;
+  box-shadow:6px 6px 14px var(--shadow-d-soft),-5px -5px 12px var(--shadow-l);
+  transition:opacity .4s .8s,transform .15s,box-shadow .15s;
+}
+#next-btn.show{opacity:1;pointer-events:all}
+#next-btn:hover{
+  transform:translateX(-50%) translateY(-2px);
+  box-shadow:8px 8px 18px var(--shadow-d-soft),-6px -6px 14px var(--shadow-l);
+}
+#next-btn:active{
+  transform:translateX(-50%) translateY(0px);
+  box-shadow:inset 4px 4px 9px var(--shadow-d),inset -3px -3px 8px rgba(255,255,255,0.15);
+}
+
+/* ROUND COUNTER */
+#round-label{
+  position:fixed;top:58px;right:18px;
+  font-family:'Fredoka',sans-serif;font-weight:600;font-size:10px;
+  letter-spacing:.06em;color:var(--muted);
+  z-index:30;
+}
+
+/* GAME OVER */
+#gameover{
+  position:fixed;inset:0;z-index:900;
+  background:radial-gradient(ellipse 120% 80% at 50% -10%,var(--bg-soft),var(--bg));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:32px;
+  opacity:0;pointer-events:none;
+  transition:opacity .5s;
+}
+#gameover.show{opacity:1;pointer-events:all}
+.go-eyebrow{
+  font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:22px;
+  padding:6px 18px;border-radius:14px;background:var(--bg-soft);
+  box-shadow:3px 3px 7px var(--shadow-d-soft),-2px -2px 6px var(--shadow-l);
+}
+.go-title{font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(38px,8vw,76px);line-height:1.05;letter-spacing:-.01em;color:var(--ink)}
+.go-title span.a{color:var(--accent-deep)}
+.go-title span.b{color:var(--accent)}
+.go-sub{font-family:'Fredoka',sans-serif;font-weight:500;font-size:15px;color:var(--muted);margin-top:14px;max-width:400px;line-height:1.6}
+.go-agree{
+  font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(40px,8vw,68px);color:var(--accent-deep);margin-top:30px;
+  width:clamp(110px,18vw,150px);height:clamp(110px,18vw,150px);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:var(--clay-a);
+  box-shadow:9px 9px 18px var(--shadow-d-soft),-7px -7px 16px var(--shadow-l);
+}
+.go-agree-lbl{font-family:'Fredoka',sans-serif;font-weight:500;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+.go-play-btn{
+  margin-top:32px;
+  padding:15px 48px;
+  background:var(--accent);
+  border:none;border-radius:24px;color:var(--paper);
+  font-family:'Fredoka',sans-serif;font-weight:700;font-size:13px;
+  letter-spacing:.04em;cursor:pointer;
+  box-shadow:6px 6px 14px var(--shadow-d-soft),-5px -5px 12px var(--shadow-l);
+  transition:transform .15s,box-shadow .15s;
+}
+.go-play-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:8px 8px 18px var(--shadow-d-soft),-6px -6px 14px var(--shadow-l);
+}
+.go-play-btn:active{
+  transform:translateY(0);
+  box-shadow:inset 4px 4px 9px var(--shadow-d),inset -3px -3px 8px rgba(255,255,255,0.15);
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING / INTRO SCREEN -->
+<div id="page-intro" style="position:fixed;inset:0;background:#E6E0D4;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;overflow:hidden">
+  <div style="position:absolute;inset:0;opacity:.25;background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.05%22/%3E%3C/svg%3E');pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(230,224,212,0.9) 100%);pointer-events:none"></div>
+  <div id="intro-glow" style="position:absolute;width:500px;height:250px;border-radius:50%;background:radial-gradient(ellipse,rgba(176,122,82,0.22) 0%,transparent 70%);filter:blur(40px);opacity:0;transition:opacity 1.2s ease .6s;pointer-events:none"></div>
+
+  <div id="intro-logos" style="display:flex;align-items:center;justify-content:center;gap:24px;opacity:0;transform:scale(0.92) translateY(14px);transition:all .85s cubic-bezier(.34,1.1,.64,1)">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games" style="height:min(72px,14vw);width:min(72px,14vw);object-fit:contain;display:block"/>
+    <div style="width:1px;height:min(54px,11vw);background:linear-gradient(180deg,transparent,rgba(176,122,82,0.6),transparent);flex-shrink:0"></div>
+    <img src="wyr-logo.svg" alt="Would You Rather" style="height:min(72px,14vw);width:min(72px,14vw);object-fit:contain;display:block;border-radius:18px;box-shadow:6px 6px 14px rgba(61,53,40,0.16),-5px -5px 12px rgba(255,253,247,0.85)"/>
+  </div>
+
+  <div id="intro-sub" style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;color:#9c9282;letter-spacing:.16em;text-transform:uppercase;margin-top:28px;opacity:0;transition:opacity .5s ease .68s">PICK A SIDE</div>
+
+  <div id="intro-bar" style="width:min(180px,44vw);height:8px;background:#DAD3C3;border-radius:8px;margin-top:36px;overflow:hidden;opacity:0;transition:opacity .3s ease .82s;box-shadow:inset 2px 2px 4px rgba(61,53,40,0.12)">
+    <div id="intro-progress" style="height:100%;width:0%;background:linear-gradient(135deg,#B07A52,#8F5F3E);transition:width 1.2s ease .94s;border-radius:8px"></div>
+  </div>
+</div>
+
+<nav>
+  <a href="../home/" class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="Ajora"/>
+    <span class="nav-logo-name">Ajora</span>
+  </a>
+  <div class="nav-right">
+    <div class="game-logo">
+      <img src="wyr-logo.svg" alt="Would You Rather"/>
+      <span class="game-logo-name">WOULD YOU<br/><small>RATHER</small></span>
+    </div>
+    <div class="nav-counter">Round <span id="nav-round">1</span> / 30</div>
+    <a href="../games/" class="nav-back">← Games</a>
+  </div>
+</nav>
+<div id="progress-track"><div id="progress-bar"></div></div>
+
+<main>
+  <div id="dilemma-text">Would you rather…</div>
+
+  <div id="split">
+    <div class="half" id="half-a" onclick="choose('a')">
+      <div class="half-label">Option A</div>
+      <div class="half-text" id="text-a"></div>
+      <div class="half-pct" id="pct-a">0%</div>
+      <div class="half-pct-label" id="pct-label-a">of players chose this</div>
+      <div class="half-fill" id="fill-a"></div>
+    </div>
+
+    <div id="or-pill">OR</div>
+
+    <div class="half" id="half-b" onclick="choose('b')">
+      <div class="half-label">Option B</div>
+      <div class="half-text" id="text-b"></div>
+      <div class="half-pct" id="pct-b">0%</div>
+      <div class="half-pct-label" id="pct-label-b">of players chose this</div>
+      <div class="half-fill" id="fill-b"></div>
+    </div>
+  </div>
+</main>
+
+<button id="next-btn" onclick="nextRound()">Next Dilemma →</button>
+
+<div id="gameover">
+  <div class="go-eyebrow">You've seen them all</div>
+  <div class="go-title">
+    <span class="a">Would</span> <span class="b">You</span><br>Rather?
+  </div>
+  <div class="go-sub">You answered all 30 dilemmas. Think the world agrees with you?</div>
+  <div class="go-agree" id="go-agree">0%</div>
+  <div class="go-agree-lbl">Average agreement with the majority</div>
+  <button class="go-play-btn" onclick="startGame()">Play Again</button>
+</div>
+
+<script>
+const DILEMMAS = [
+  {a:"Always be 10 years older than your real age",b:"Always be 10 years younger than your real age",pctA:32},
+  {a:"Have the ability to fly",b:"Have the ability to be invisible",pctA:54},
+  {a:"Eat only pizza for the rest of your life",b:"Eat only sushi for the rest of your life",pctA:61},
+  {a:"Know how you will die",b:"Know when you will die",pctA:38},
+  {a:"Be the funniest person in every room",b:"Be the smartest person in every room",pctA:43},
+  {a:"Never use social media again",b:"Never watch TV or streaming again",pctA:47},
+  {a:"Have unlimited money but no free time",b:"Have unlimited free time but no money",pctA:55},
+  {a:"Be able to speak every language fluently",b:"Be able to play every musical instrument",pctA:72},
+  {a:"Live in the city forever",b:"Live in the countryside forever",pctA:51},
+  {a:"Always say everything on your mind",b:"Never be able to speak again",pctA:63},
+  {a:"Have a rewind button for your life",b:"Have a pause button for your life",pctA:58},
+  {a:"Fight 100 duck-sized horses",b:"Fight 1 horse-sized duck",pctA:64},
+  {a:"Go back in time and meet your ancestors",b:"Go forward and meet your great-grandchildren",pctA:39},
+  {a:"Be famous but broke",b:"Be rich but completely unknown",pctA:28},
+  {a:"Never feel cold again",b:"Never feel hot again",pctA:44},
+  {a:"Have a photographic memory",b:"Have an IQ of 200",pctA:67},
+  {a:"Be able to teleport anywhere instantly",b:"Be able to stop time whenever you want",pctA:41},
+  {a:"Only ever eat your favourite food",b:"Never eat your favourite food again",pctA:53},
+  {a:"Know every secret about everyone you meet",b:"Have everyone you meet trust you completely",pctA:48},
+  {a:"Be a famous musician",b:"Be a famous athlete",pctA:56},
+  {a:"Never sleep but feel fully rested",b:"Sleep 20 hours a day and feel amazing",pctA:71},
+  {a:"Live without music",b:"Live without the internet",pctA:29},
+  {a:"Be able to read minds",b:"Be able to control minds",pctA:44},
+  {a:"Have the body of a 20-year-old forever",b:"Have the mind of a 20-year-old forever",pctA:68},
+  {a:"Always have to whisper",b:"Always have to shout",pctA:52},
+  {a:"Never be able to lie",b:"Never be able to tell the truth",pctA:74},
+  {a:"Only be able to text, never call",b:"Only be able to call, never text",pctA:57},
+  {a:"Be incredibly skilled at cooking",b:"Be incredibly skilled at building things",pctA:59},
+  {a:"Experience your best memory on repeat",b:"Delete your worst memory forever",pctA:45},
+  {a:"Have your internal monologue always broadcast out loud",b:"Never be able to think silently — thoughts always out loud to everyone",pctA:38},
+];
+
+let queue,idx,chosen,totalAgreements;
+
+function startGame(){
+  document.getElementById('gameover').classList.remove('show');
+  queue=[...DILEMMAS].sort(()=>Math.random()-.5);
+  idx=0;chosen=false;totalAgreements=0;
+  loadRound();
+}
+
+function loadRound(){
+  if(idx>=queue.length){endGame();return}
+  chosen=false;
+  const d=queue[idx];
+
+  document.getElementById('nav-round').textContent=idx+1;
+  document.getElementById('progress-bar').style.width=((idx/queue.length)*100)+'%';
+
+  document.getElementById('text-a').textContent=d.a;
+  document.getElementById('text-b').textContent=d.b;
+
+  // Reset halves
+  const ha=document.getElementById('half-a'),hb=document.getElementById('half-b');
+  ha.className='half';hb.className='half';
+  ha.style.transform='';hb.style.transform='';
+  ha.onclick=()=>choose('a');hb.onclick=()=>choose('b');
+
+  // Reset pct
+  ['a','b'].forEach(s=>{
+    document.getElementById('pct-'+s).textContent='0%';
+    document.getElementById('pct-'+s).classList.remove('show');
+    document.getElementById('pct-label-'+s).classList.remove('show');
+    document.getElementById('fill-'+s).classList.remove('show');
+    document.getElementById('fill-'+s).style.height='0%';
+  });
+
+  document.getElementById('or-pill').style.opacity='1';
+  document.getElementById('next-btn').classList.remove('show');
+}
+
+function choose(side){
+  if(chosen)return;
+  chosen=true;
+  const d=queue[idx];
+
+  const pctA=d.pctA, pctB=100-pctA;
+  const pickedPct=side==='a'?pctA:pctB;
+  const majority=pctA>=pctB?'a':'b';
+  if(side===majority) totalAgreements++;
+
+  // Disable clicks
+  document.getElementById('half-a').onclick=null;
+  document.getElementById('half-b').onclick=null;
+
+  // Scale chosen
+  const chosen_el=document.getElementById('half-'+side);
+  const other_el=document.getElementById('half-'+(side==='a'?'b':'a'));
+  chosen_el.classList.add('chosen');
+  other_el.classList.add('unchosen');
+
+  document.getElementById('or-pill').style.opacity='0';
+
+  // Animate percentages
+  animatePct('a',0,pctA,900);
+  animatePct('b',0,pctB,900);
+
+  // Liquid fill
+  setTimeout(()=>{
+    const fa=document.getElementById('fill-a'),fb=document.getElementById('fill-b');
+    fa.classList.add('show');fb.classList.add('show');
+    fa.style.height=pctA+'%';
+    fb.style.height=pctB+'%';
+  },200);
+
+  document.getElementById('next-btn').classList.add('show');
+  idx++;
+}
+
+function animatePct(side,from,to,duration){
+  const el=document.getElementById('pct-'+side);
+  const lbl=document.getElementById('pct-label-'+side);
+  el.classList.add('show');
+  lbl.classList.add('show');
+
+  const start=performance.now();
+  function frame(now){
+    const t=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-t,3);
+    const val=Math.round(from+(to-from)*ease);
+    el.textContent=val+'%';
+    if(t<1) requestAnimationFrame(frame);
+    else el.textContent=to+'%';
+  }
+  requestAnimationFrame(frame);
+}
+
+function nextRound(){loadRound()}
+
+function endGame(){
+  const agr=Math.round((totalAgreements/queue.length)*100);
+  document.getElementById('go-agree').textContent=agr+'%';
+  document.getElementById('progress-bar').style.width='100%';
+  document.getElementById('gameover').classList.add('show');
+}
+
+function showIntro(){
+  const logos=document.getElementById('intro-logos');
+  const glow=document.getElementById('intro-glow');
+  const sub=document.getElementById('intro-sub');
+  const bar=document.getElementById('intro-bar');
+  const prog=document.getElementById('intro-progress');
+
+  setTimeout(()=>{ if(logos){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';} },150);
+  setTimeout(()=>{ if(glow)glow.style.opacity='1'; },500);
+  setTimeout(()=>{ if(sub)sub.style.opacity='1'; },700);
+  setTimeout(()=>{ if(bar)bar.style.opacity='1'; },880);
+  setTimeout(()=>{ if(prog)prog.style.width='100%'; },920);
+  setTimeout(()=>{
+    const intro=document.getElementById('page-intro');
+    intro.style.transition='opacity .5s ease';
+    intro.style.opacity='0';
+    setTimeout(()=>{intro.style.display='none';startGame();},500);
+  },2600);
+}
+
+showIntro();
+</script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Contact — Ajora Games</title>
+<meta name="description" content="Get in touch with Ajora Games — partnerships, sponsorships, press, feedback and bug reports."/>
+<link rel="canonical" href="https://ajoragames.com/contact/"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Cpath d='M16 4.5 L26.5 27 L22.3 27 L16 13 L9.7 27 L5.5 27 Z' fill='%23911A30'/%3E%3Cpath d='M11.3 19.5 L20.7 19.5 L19.4 22.5 L12.6 22.5 Z' fill='%23911A30'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0d0c0c;--ink2:#161413;--ink3:#211e1b;
+  --paper:#ede7dc;--paper-dim:#c9c1b2;
+  --red:#c81d3a;--red2:#8f1428;--orange:#ff5a36;--amber:#ffb020;
+  --line:#3f3a34;
+  --display:'Big Shoulders Display',sans-serif;
+  --mono:'Space Mono',monospace;
+  --data:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--mono);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+::selection{background:var(--red);color:var(--paper)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
+
+/* MARQUEE */
+.marquee-wrap{background:var(--ink);border-bottom:2px solid var(--line);overflow:hidden;position:relative;padding:9px 0}
+.marquee-wrap::before,.marquee-wrap::after{content:'';position:absolute;top:0;bottom:0;background-image:radial-gradient(circle, var(--amber) 2px, transparent 2.4px);background-size:18px 100%;width:100%;height:3px;opacity:.55}
+.marquee-wrap::before{top:0}
+.marquee-wrap::after{bottom:0}
+.marquee-track{display:flex;white-space:nowrap;width:max-content;animation:scrollmarquee 22s linear infinite}
+.marquee-track span{font-family:var(--display);font-weight:900;font-size:20px;letter-spacing:.05em;text-transform:uppercase;padding:0 22px;color:var(--paper)}
+.marquee-track span.hot{color:var(--red)}
+.marquee-track span.amber{color:var(--amber)}
+@keyframes scrollmarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:2px solid var(--line);background:var(--ink);position:sticky;top:0;z-index:500}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo img{width:32px;height:32px;object-fit:contain}
+.nav-logo b{font-family:var(--display);font-weight:900;font-size:19px;letter-spacing:.03em;text-transform:uppercase}
+nav ul{list-style:none;display:flex;gap:26px;margin:0;padding:0}
+nav ul a{font-family:var(--data);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim);transition:color .15s}
+nav ul a:hover,nav ul a.active{color:var(--red)}
+@media(max-width:900px){nav ul{display:none}}
+
+/* HERO */
+.hero{padding:50px 28px 36px;text-align:center;border-bottom:2px dashed var(--line)}
+.hero-badge{display:inline-block;font-family:var(--data);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);background:var(--amber);padding:5px 14px;transform:rotate(-2deg);margin-bottom:20px}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(30px,6vw,58px);line-height:.95;letter-spacing:.01em;text-transform:uppercase;margin:0 0 14px}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p{font-family:var(--mono);font-size:14px;color:var(--paper-dim);max-width:480px;margin:0 auto;line-height:1.6}
+
+/* STAMP */
+.stamp{display:inline-block;font-family:var(--display);font-weight:900;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);background:var(--red);padding:10px 20px;border:2px solid var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink);transform:rotate(-1.5deg)}
+
+/* SECTION */
+.section{padding:56px 28px 20px;max-width:1120px;margin:0 auto}
+
+/* CONTACT LAYOUT */
+.contact-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:56px;align-items:start}
+.c-links{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.c-link{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--ink2);border:2px dashed var(--line);transition:border-color .18s,transform .18s}
+.c-link:hover{border-color:var(--amber);transform:translateX(4px)}
+.c-link-icon{font-size:19px;width:26px;text-align:center;flex-shrink:0}
+.c-link-title{font-family:var(--data);font-size:12px;font-weight:700;letter-spacing:.04em}
+.c-link-val{font-family:var(--data);font-size:10.5px;color:var(--paper-dim)}
+.c-note{position:relative;background:var(--paper);color:var(--ink);padding:18px 20px 24px;transform:rotate(-.8deg);clip-path:polygon(0% 0%, 100% 0%, 100% 88%, 92.86% 96%, 85.71% 88%, 78.57% 96%, 71.43% 88%, 64.29% 96%, 57.14% 88%, 50% 96%, 42.86% 88%, 35.71% 96%, 28.57% 88%, 21.43% 96%, 14.29% 88%, 7.14% 96%, 0% 88%);box-shadow:8px 8px 0 rgba(255,176,32,.25)}
+.c-note .n-kicker{font-family:var(--data);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--red2);margin-bottom:8px}
+.c-note p{font-size:12.5px;line-height:1.7;margin:0}
+.c-note em{font-style:normal;font-weight:700;color:var(--red2)}
+
+/* TICKET FORM PANEL */
+.ticket-panel{position:relative;background:var(--paper);color:var(--ink);padding:30px 30px 40px;transform:rotate(-.6deg);clip-path:polygon(0% 0%, 100% 0%, 100% 88%, 92.86% 96%, 85.71% 88%, 78.57% 96%, 71.43% 88%, 64.29% 96%, 57.14% 88%, 50% 96%, 42.86% 88%, 35.71% 96%, 28.57% 88%, 21.43% 96%, 14.29% 88%, 7.14% 96%, 0% 88%);box-shadow:10px 10px 0 rgba(200,29,58,.22)}
+.tp-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.tp-admit{font-family:var(--data);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8a8378}
+.tp-num{font-family:var(--data);font-size:10px;font-weight:700;color:var(--red2);letter-spacing:.05em}
+.tp-title{font-family:var(--display);font-weight:900;font-size:28px;text-transform:uppercase;margin:2px 0 22px;line-height:.95}
+.tp-title em{font-style:normal;color:var(--red2)}
+.cf{display:flex;flex-direction:column;gap:16px}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ff{display:flex;flex-direction:column;gap:6px}
+.ff label{font-family:var(--data);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6b665e}
+.ff input,.ff select,.ff textarea{background:rgba(13,12,12,.04);border:none;border-bottom:2px solid var(--line);border-radius:0;padding:11px 10px;font-size:13px;color:var(--ink);font-family:var(--mono);outline:none;transition:border-color .18s,background .18s;-webkit-appearance:none}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-bottom-color:var(--red2);background:rgba(200,29,58,.05)}
+.ff select{cursor:pointer}
+.ff textarea{min-height:110px;resize:vertical;line-height:1.6}
+.ff input::placeholder,.ff textarea::placeholder{color:#a29b8d}
+.submit-stamp{font-family:var(--display);font-weight:900;font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--paper);background:var(--red);border:2px solid var(--ink);cursor:pointer;padding:14px 20px;box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink);transition:transform .15s ease;width:100%;margin-top:4px}
+.submit-stamp:hover{transform:translate(-2px,-2px)}
+.submit-stamp:disabled{opacity:.6;cursor:wait}
+.form-msg{display:none;padding:16px 18px;text-align:center;font-family:var(--data);font-size:12px;line-height:1.7;border:2px dashed}
+.form-msg.ok{border-color:#3f8f5c;color:#2f6b45;background:rgba(63,143,92,.08)}
+.form-msg.err{border-color:var(--red2);color:var(--red2);background:rgba(143,20,40,.06)}
+.perf{position:relative;height:0;border-top:2px dashed rgba(13,12,12,.25);margin:20px -30px}
+.perf::before,.perf::after{content:'';position:absolute;top:-7px;width:14px;height:14px;border-radius:50%;background:var(--ink)}
+.perf::before{left:-7px}.perf::after{right:-7px}
+
+/* FOOTER */
+footer{border-top:2px solid var(--line);margin-top:60px;padding:30px 28px 40px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+footer .copy{font-family:var(--data);font-size:10px;color:var(--paper-dim)}
+footer ul{list-style:none;display:flex;gap:22px;margin:0;padding:0;flex-wrap:wrap}
+footer ul a{font-family:var(--data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim)}
+footer ul a:hover{color:var(--red)}
+.footer-copy{font-family:var(--data);font-size:9.5px;color:#57524b;letter-spacing:.03em;line-height:1.7;width:100%;margin-top:18px;padding-top:18px;border-top:1px dashed var(--line)}
+
+@media(max-width:900px){
+  .contact-layout{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .section{padding:40px 20px 20px}
+  .ticket-panel{padding:22px 20px 30px}
+  .perf{margin:20px -20px}
+  .cf-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="marquee-wrap"><div class="marquee-track" id="marquee-track"></div></div>
+
+<nav id="nav">
+  <a href="../home/" class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+    <b>Ajora Games</b>
+  </a>
+  <ul>
+    <li><a href="../home/">Home</a></li>
+    <li><a href="../games/">Arcade</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/" class="active">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="../lastonestanding/" class="stamp" style="font-size:11px;padding:7px 14px">Play Now</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="hero-badge">Get In Touch</span>
+  <h1>Send Us A <em>Ticket</em></h1>
+  <p>Partnerships, sponsorships, press, feedback, bug reports &mdash; we're open. We reply to every serious inquiry within 48 hours.</p>
+</header>
+
+<section class="section" id="contact">
+  <div class="contact-layout">
+    <div>
+      <div class="c-links">
+        <a href="mailto:ajoragames@gmail.com" class="c-link">
+          <span class="c-link-icon">&#128231;</span>
+          <div><div class="c-link-title">Email</div><div class="c-link-val">ajoragames@gmail.com</div></div>
+        </a>
+        <a href="https://instagram.com/ajoragames" target="_blank" rel="noopener" class="c-link">
+          <span class="c-link-icon">&#128248;</span>
+          <div><div class="c-link-title">Instagram</div><div class="c-link-val">@ajoragames</div></div>
+        </a>
+      </div>
+      <div class="c-note">
+        <div class="n-kicker">Note</div>
+        <p>For partnership and monetisation inquiries, select <em>Partnership / Business</em> below &mdash; those go straight to the front of the line.</p>
+      </div>
+    </div>
+
+    <div class="ticket-panel">
+      <div class="tp-row">
+        <span class="tp-admit">Admit One</span>
+        <span class="tp-num" id="ticketNum">NO. 001</span>
+      </div>
+      <div class="tp-title">Send A <em>Message</em></div>
+
+      <form class="cf" id="contact-form">
+        <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY_HERE"/>
+        <input type="hidden" name="subject" value="New message from Ajora Games contact form"/>
+        <input type="hidden" name="from_name" value="Ajora Games Website"/>
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off"/>
+
+        <div class="cf-row">
+          <div class="ff"><label for="fn">Name</label><input type="text" id="fn" name="name" placeholder="Your name" required/></div>
+          <div class="ff"><label for="fe">Email</label><input type="email" id="fe" name="email" placeholder="your@email.com" required/></div>
+        </div>
+        <div class="ff">
+          <label for="ftype">Inquiry Type</label>
+          <select id="ftype" name="type" required>
+            <option value="" disabled selected>Select a reason&hellip;</option>
+            <option>Partnership / Business</option>
+            <option>Sponsorship</option>
+            <option>Press / Media</option>
+            <option>Creator Collab</option>
+            <option>Game Feedback</option>
+            <option>Bug Report</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="ff"><label for="fm">Message</label><textarea id="fm" name="message" placeholder="Tell us what you have in mind&hellip;" required></textarea></div>
+
+        <div class="perf"></div>
+
+        <button type="submit" class="submit-stamp" id="submitBtn">Send Message &rarr;</button>
+        <div class="form-msg ok" id="msgOk">&#10003; Sent! Your ticket's in &mdash; we'll get back to you within 48 hours.</div>
+        <div class="form-msg err" id="msgErr">Couldn't send automatically. Opening your email app instead&hellip;</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="" style="width:22px;height:22px"/>
+    <span class="copy">&copy; Ajora Games</span>
+  </div>
+  <ul>
+    <li><a href="../home/">Home</a></li>
+    <li><a href="../games/">Arcade</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/">Contact</a></li>
+    <li><a href="https://instagram.com/ajoragames" target="_blank">Instagram</a></li>
+  </ul>
+  <div class="footer-copy">
+    &copy; 2026 Ajora Games. All rights reserved.<br/>
+    Original titles are the IP of Ajora Games. Open-source titles are credited on their game cards.
+  </div>
+</footer>
+
+<script>
+(function(){
+  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','26 GAMES','HIGH SCORE AWAITS'];
+  const track = document.getElementById('marquee-track');
+  let html = '';
+  for(let r=0;r<2;r++){
+    items.forEach((t,i)=>{
+      const cls = i%3===0 ? 'hot' : (i%3===1 ? 'amber' : '');
+      html += `<span class="${cls}">${t}</span><span>&#9670;</span>`;
+    });
+  }
+  track.innerHTML = html;
+})();
+
+document.getElementById('ticketNum').textContent = 'NO. ' + (100 + Math.floor(Math.random()*899));
+
+// Contact form: tries a real, serverless email send via Web3Forms first.
+// If no access key has been set yet, or the request fails, it falls back
+// to opening the visitor's own email client addressed to ajoragames@gmail.com.
+const form = document.getElementById('contact-form');
+const btn = document.getElementById('submitBtn');
+const msgOk = document.getElementById('msgOk');
+const msgErr = document.getElementById('msgErr');
+
+function mailtoFallback(data){
+  const subject = encodeURIComponent('[Ajora Games] ' + (data.get('type') || 'Contact'));
+  const body = encodeURIComponent('Name: ' + data.get('name') + '\nEmail: ' + data.get('email') + '\n\n' + data.get('message'));
+  window.location.href = 'mailto:ajoragames@gmail.com?subject=' + subject + '&body=' + body;
+  msgErr.style.display = 'block';
+}
+
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  const data = new FormData(form);
+  const accessKey = data.get('access_key');
+
+  if (!accessKey || accessKey === 'YOUR_WEB3FORMS_ACCESS_KEY_HERE'){
+    mailtoFallback(data);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  msgOk.style.display = 'none';
+  msgErr.style.display = 'none';
+
+  try{
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(data))
+    });
+    const result = await res.json();
+    if (result.success){
+      form.style.display = 'none';
+      msgOk.style.display = 'block';
+    } else {
+      throw new Error(result.message || 'Send failed');
+    }
+  } catch(err){
+    mailtoFallback(data);
+    btn.disabled = false;
+    btn.textContent = 'Send Message →';
+  }
+});
+</script>
+</body>
+</html>

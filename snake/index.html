@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+<title>Snake | Ajora Games</title>
+<meta name="description" content="The classic snake game. Eat, grow, don't bite yourself. How long can you get?"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#020402; --scanline:rgba(57,255,90,0.045);
+  --phos:#39ff5a; --phos-dim:#0f5c22; --amber:#ffb020; --red:#ff3b3b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;color:var(--phos);
+  -webkit-font-smoothing:antialiased;touch-action:none;
+}
+#wrap{position:relative;width:min(100vw,100vh);height:min(100vw,100vh);margin:auto;background:var(--bg);overflow:hidden;
+  box-shadow:0 0 80px rgba(57,255,90,0.08) inset;}
+#wrap::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:60;
+  background:repeating-linear-gradient(0deg,var(--scanline) 0px,var(--scanline) 1px,transparent 2px,transparent 3px);
+  mix-blend-mode:overlay;
+}
+#wrap::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:61;
+  background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 55%,rgba(0,0,0,0.55) 100%);
+}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+
+/* INTRO SPLASH (matches site convention) */
+#nv-intro{position:fixed;inset:0;background:#020402;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;overflow:hidden}
+#nv-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(57,255,90,0.14),transparent 70%)}
+#ni-logos{display:flex;align-items:center;gap:22px;opacity:0;transform:scale(.92) translateY(12px);transition:all .85s cubic-bezier(.34,1.1,.64,1)}
+#ni-logos img{height:min(64px,13vw);width:min(64px,13vw);object-fit:contain}
+#ni-div{width:1px;height:44px;background:linear-gradient(180deg,transparent,rgba(57,255,90,.7),transparent)}
+#ni-title{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:15px;letter-spacing:.08em;color:#fff;margin-top:20px;opacity:0;transition:opacity .5s ease .65s;text-transform:uppercase}
+#ni-sub{font-family:'JetBrains Mono',monospace;font-weight:400;font-size:10px;color:#5a8a63;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .72s}
+#ni-bar{width:min(160px,44vw);height:5px;background:#0a1a0d;border-radius:8px;margin-top:28px;overflow:hidden;opacity:0;transition:opacity .3s ease .8s}
+#ni-progress{height:100%;width:0%;background:var(--phos);box-shadow:0 0 12px var(--phos);transition:width 1.05s ease .88s}
+
+/* TOP BAR */
+#topbar{position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;pointer-events:none}
+#topbar a{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:8px;opacity:.85}
+.brand img{width:20px;height:20px;object-fit:contain;border-radius:5px}
+.brand b{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:11px;letter-spacing:.06em;color:var(--phos)}
+.hud{display:flex;gap:14px;font-size:12px;font-weight:700;color:var(--phos);letter-spacing:.05em;background:rgba(2,10,4,0.6);padding:5px 12px;border:1px solid rgba(57,255,90,0.3);border-radius:6px}
+.hud span b{color:#fff}
+
+/* OVERLAYS */
+.overlay{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(2,6,3,0.9);gap:12px;padding:20px}
+.overlay.hidden{display:none}
+.overlay h1{font-size:clamp(28px,7vw,42px);margin:0;letter-spacing:.03em;text-shadow:0 0 18px var(--phos)}
+.overlay p{margin:0;color:#7ad98a;font-size:13px;max-width:280px;line-height:1.5}
+.overlay .score-big{font-size:clamp(40px,10vw,60px);font-weight:800;color:#fff;text-shadow:0 0 20px var(--phos);margin:2px 0}
+.btn{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:.04em;
+  background:var(--phos);color:#02170a;border:none;padding:12px 30px;border-radius:4px;cursor:pointer;
+  text-transform:uppercase;box-shadow:0 0 24px rgba(57,255,90,0.4);
+}
+.btn:active{transform:scale(.97)}
+.hint{font-size:11px;color:#4a7a52;letter-spacing:.03em}
+
+/* MOBILE DPAD */
+#dpad{position:absolute;bottom:16px;left:0;right:0;z-index:40;display:none;justify-content:center;align-items:center;pointer-events:none}
+#dpad.show{display:flex}
+.dpad-grid{display:grid;grid-template-columns:52px 52px 52px;grid-template-rows:52px 52px 52px;gap:4px;pointer-events:auto}
+.dpad-btn{background:rgba(57,255,90,0.12);border:1px solid rgba(57,255,90,0.35);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--phos);font-size:18px;user-select:none}
+.dpad-btn:active{background:rgba(57,255,90,0.32)}
+
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important}}
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <div id="nv-intro">
+    <div id="ni-logos">
+      <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+      <div id="ni-div"></div>
+      <img src="../games/snake-logo.svg" alt="Snake" style="border-radius:16px;box-shadow:0 0 24px rgba(57,255,90,0.35)"/>
+    </div>
+    <div id="ni-title">SNAKE</div>
+    <div id="ni-sub">An Ajora Games Arcade Title</div>
+    <div id="ni-bar"><div id="ni-progress"></div></div>
+  </div>
+  <script>
+  (function(){
+    var logos=document.getElementById('ni-logos');
+    setTimeout(function(){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';},120);
+    var title=document.getElementById('ni-title'),sub=document.getElementById('ni-sub'),bar=document.getElementById('ni-bar'),prog=document.getElementById('ni-progress');
+    setTimeout(function(){title.style.opacity='1';},650);
+    setTimeout(function(){sub.style.opacity='1';},720);
+    setTimeout(function(){bar.style.opacity='1';},800);
+    setTimeout(function(){prog.style.width='100%';},840);
+    setTimeout(function(){
+      var intro=document.getElementById('nv-intro');
+      intro.style.transition='opacity .45s ease';
+      intro.style.opacity='0';
+      setTimeout(function(){intro.style.display='none';},450);
+    },2100);
+  })();
+  </script>
+
+  <canvas id="game"></canvas>
+
+  <div id="topbar">
+    <div class="brand"><img src="../ajora-logo-transparent.png" alt=""/><b>SNAKE</b></div>
+    <div class="hud"><span>SCORE <b id="hudScore">0</b></span><span>BEST <b id="hudBest">0</b></span></div>
+  </div>
+
+  <div id="startOverlay" class="overlay">
+    <h1>SNAKE</h1>
+    <p>Arrow keys or swipe to steer. Eat the pellets, don't hit yourself or the walls.</p>
+    <button class="btn" id="startBtn">START</button>
+    <div class="hint">Best: <span id="startBest">0</span></div>
+  </div>
+
+  <div id="overOverlay" class="overlay hidden">
+    <p style="color:#ff6b6b;letter-spacing:.15em;font-weight:700">GAME OVER</p>
+    <div class="score-big" id="finalScore">0</div>
+    <p id="newBestMsg" style="color:var(--phos);display:none">NEW BEST!</p>
+    <button class="btn" id="retryBtn">RETRY</button>
+  </div>
+
+  <div id="dpad">
+    <div class="dpad-grid">
+      <div></div><div class="dpad-btn" data-dir="up">▲</div><div></div>
+      <div class="dpad-btn" data-dir="left">◀</div><div></div><div class="dpad-btn" data-dir="right">▶</div>
+      <div></div><div class="dpad-btn" data-dir="down">▼</div><div></div>
+    </div>
+  </div>
+</div>
+
+<a href="../games/" id="ajora-back-badge" style="position:fixed;top:14px;right:14px;z-index:2147483647;display:flex;align-items:center;gap:7px;background:rgba(2,10,4,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(57,255,90,0.25);border-radius:999px;padding:6px 14px 6px 6px;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.02em;color:#e8ffe8;opacity:.78;transition:opacity .15s ease,background .15s ease;line-height:1;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.78'">
+  <img src="../ajora-logo-transparent.png" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:5px;display:block;pointer-events:none"/>
+  <span style="pointer-events:none">Ajora Games</span>
+</a>
+
+<script>
+(function(){
+  var canvas=document.getElementById('game');
+  var ctx=canvas.getContext('2d');
+  var wrap=document.getElementById('wrap');
+  var GRID=20;
+  var cell, snake, dir, nextDir, food, score, best, alive, loopId, speed;
+
+  var BEST_KEY='ajora_snake_best';
+  best=parseInt(localStorage.getItem(BEST_KEY)||'0',10);
+  document.getElementById('hudBest').textContent=best;
+  document.getElementById('startBest').textContent=best;
+
+  function resize(){
+    var size=Math.min(wrap.clientWidth,wrap.clientHeight);
+    canvas.width=size; canvas.height=size;
+    cell=size/GRID;
+  }
+  window.addEventListener('resize',resize);
+  resize();
+
+  function isTouch(){ return 'ontouchstart' in window || navigator.maxTouchPoints>0; }
+  if(isTouch()) document.getElementById('dpad').classList.add('show');
+
+  function reset(){
+    snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+    dir={x:1,y:0}; nextDir={x:1,y:0};
+    score=0; alive=true; speed=140;
+    placeFood();
+    document.getElementById('hudScore').textContent=score;
+  }
+
+  function placeFood(){
+    while(true){
+      var fx=Math.floor(Math.random()*GRID), fy=Math.floor(Math.random()*GRID);
+      if(!snake.some(function(s){return s.x===fx&&s.y===fy;})){ food={x:fx,y:fy}; return; }
+    }
+  }
+
+  function tick(){
+    if(!alive) return;
+    dir=nextDir;
+    var head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(head.x<0||head.y<0||head.x>=GRID||head.y>=GRID||snake.some(function(s){return s.x===head.x&&s.y===head.y;})){
+      die(); return;
+    }
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){
+      score++;
+      document.getElementById('hudScore').textContent=score;
+      placeFood();
+      if(speed>60) speed-=3;
+    } else {
+      snake.pop();
+    }
+    draw();
+    loopId=setTimeout(tick,speed);
+  }
+
+  function die(){
+    alive=false;
+    if(score>best){
+      best=score; localStorage.setItem(BEST_KEY,best);
+      document.getElementById('hudBest').textContent=best;
+      document.getElementById('newBestMsg').style.display='block';
+    } else {
+      document.getElementById('newBestMsg').style.display='none';
+    }
+    document.getElementById('finalScore').textContent=score;
+    document.getElementById('overOverlay').classList.remove('hidden');
+  }
+
+  function draw(){
+    ctx.fillStyle='#020402';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='rgba(57,255,90,0.05)';
+    for(var i=0;i<=GRID;i++){
+      ctx.beginPath(); ctx.moveTo(i*cell,0); ctx.lineTo(i*cell,canvas.height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,i*cell); ctx.lineTo(canvas.width,i*cell); ctx.stroke();
+    }
+    ctx.fillStyle='#ffb020';
+    ctx.shadowColor='#ffb020'; ctx.shadowBlur=14;
+    ctx.beginPath();
+    ctx.arc(food.x*cell+cell/2,food.y*cell+cell/2,cell*0.35,0,Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur=0;
+    for(var j=0;j<snake.length;j++){
+      var s=snake[j];
+      ctx.fillStyle = j===0 ? '#39ff5a' : 'rgba(57,255,90,'+(0.85-Math.min(j*0.03,0.5))+')';
+      if(j===0){ ctx.shadowColor='#39ff5a'; ctx.shadowBlur=10; }
+      ctx.fillRect(s.x*cell+1,s.y*cell+1,cell-2,cell-2);
+      ctx.shadowBlur=0;
+    }
+  }
+
+  function setDir(nx,ny){
+    if(dir.x===-nx&&dir.y===-ny) return;
+    nextDir={x:nx,y:ny};
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowUp'||e.key==='w') setDir(0,-1);
+    else if(e.key==='ArrowDown'||e.key==='s') setDir(0,1);
+    else if(e.key==='ArrowLeft'||e.key==='a') setDir(-1,0);
+    else if(e.key==='ArrowRight'||e.key==='d') setDir(1,0);
+  });
+
+  document.querySelectorAll('.dpad-btn').forEach(function(btn){
+    btn.addEventListener('touchstart',function(e){
+      e.preventDefault();
+      var d=btn.getAttribute('data-dir');
+      if(d==='up')setDir(0,-1); else if(d==='down')setDir(0,1);
+      else if(d==='left')setDir(-1,0); else if(d==='right')setDir(1,0);
+    },{passive:false});
+  });
+
+  var touchStart=null;
+  canvas.addEventListener('touchstart',function(e){ touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
+  canvas.addEventListener('touchend',function(e){
+    if(!touchStart) return;
+    var dx=e.changedTouches[0].clientX-touchStart.x, dy=e.changedTouches[0].clientY-touchStart.y;
+    if(Math.abs(dx)>Math.abs(dy)){ setDir(dx>0?1:-1,0); } else { setDir(0,dy>0?1:-1); }
+    touchStart=null;
+  },{passive:true});
+
+  function start(){
+    document.getElementById('startOverlay').classList.add('hidden');
+    document.getElementById('overOverlay').classList.add('hidden');
+    reset(); draw();
+    clearTimeout(loopId);
+    loopId=setTimeout(tick,speed);
+  }
+
+  document.getElementById('startBtn').addEventListener('click',start);
+  document.getElementById('retryBtn').addEventListener('click',start);
+  draw();
+})();
+</script>
+</body>
+</html>

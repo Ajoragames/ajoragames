@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<title>Higher or Lower Game | Ajora Games</title>
+<meta name="description" content="Is it higher or lower? Test your knowledge of world records, populations, box office hits and more."/>
+<link rel="canonical" href="https://ajoragames.com/higherorlower/"/>
+
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Higher or Lower Game | Ajora Games"/>
+<meta property="og:description" content="Test your knowledge of world records, populations, box office hits and more! Can you score high?"/>
+<meta property="og:url" content="https://ajoragames.com/higherorlower/"/>
+<meta property="og:image" content="https://ajoragames.com/assets/higher-lower-preview.png"/>
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Higher or Lower Game | Ajora Games"/>
+<meta name="twitter:description" content="Test your knowledge of world records, populations, box office hits and more!"/>
+<meta name="twitter:image" content="https://ajoragames.com/assets/higher-lower-preview.png"/>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Higher or Lower Game",
+  "url": "https://ajoragames.com/higherorlower/",
+  "genre": "Trivia",
+  "author": {
+    "@type": "Organization",
+    "name": "Ajora Games",
+    "url": "https://ajoragames.com"
+  },
+  "description": "An interactive higher or lower guessing game tracking populations, box office gross, heights, and streams.",
+  "playMode": "SinglePlayer",
+  "applicationCategory": "Game"
+}
+</script>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%230B1F0F'/%3E%3Cpath d='M16 6 L26 26 L6 26 Z' fill='%2339ff5a'/%3E%3C/svg%3E"/>
+<script>
+// ===== PER-SESSION THEME =====
+// Picks one accent+tint pair per browser session, stable for the visit, fresh on a new session.
+// Drives UI chrome (buttons, streak, nav highlights) only — never the logo, never the data.
+(function(){
+  var THEMES=[
+    {name:'signal-green', a:'#39ff5a', tint:'57,255,90'},
+    {name:'cyber-pink',   a:'#ff4d8d', tint:'255,77,141'},
+    {name:'arc-blue',     a:'#3ea7ff', tint:'62,167,255'},
+    {name:'acid-yellow',  a:'#e3ff3e', tint:'227,255,62'},
+    {name:'ultraviolet',  a:'#b478ff', tint:'180,120,255'},
+    {name:'molten-orange',a:'#ff8a3e', tint:'255,138,62'},
+    {name:'glacier-cyan', a:'#3effe0', tint:'62,255,224'},
+  ];
+  var KEY='hol_theme_v1';
+  var picked;
+  try{
+    var saved=sessionStorage.getItem(KEY);
+    picked=saved?JSON.parse(saved):null;
+  }catch(e){picked=null;}
+  if(!picked){
+    picked=THEMES[Math.floor(Math.random()*THEMES.length)];
+    try{sessionStorage.setItem(KEY,JSON.stringify(picked));}catch(e){}
+  }
+  var root=document.documentElement.style;
+  root.setProperty('--a',picked.a);
+  root.setProperty('--a-tint',picked.tint);
+  window._holTheme=picked;
+})();
+</script>
+<meta name="google-adsense-account" content="ca-pub-3421312807231714">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3421312807231714" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Syne+Mono&display=swap" rel="stylesheet"/>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --a:#39ff5a;--b:#0B3C26;
+  --streak-color:var(--a);
+  --a-tint:57,255,90;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Syne',sans-serif;
+  background:#0B3C26;
+  color:#fff;
+  cursor:none;
+  user-select:none;
+  overflow:hidden;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* CURSOR */
+#cur{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--a);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .1s,height .1s}
+@media(hover:none){#cur{display:none}body{cursor:auto}}
+
+/* NAV */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:56px;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+.nav-logo img{height:28px;width:28px;object-fit:contain}
+.nav-logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+.nav-right{display:flex;align-items:center;gap:18px}
+.game-logo{display:flex;align-items:center;gap:9px}
+.game-logo img{height:26px;width:26px;object-fit:contain;border-radius:6px}
+.game-logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#fff;line-height:1.1}
+.game-logo-name small{display:block;font-family:'Syne Mono',monospace;font-weight:400;font-size:9px;letter-spacing:.12em;color:var(--a);opacity:.85}
+.nav-center-modes{display:flex;gap:16px}
+.mode-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:#fff;font-family:'Syne Mono',monospace;font-size:11px;padding:4px 12px;cursor:pointer;letter-spacing:0.05em;transition:all 0.2s}
+.mode-btn:hover,.mode-btn.active{background:var(--a);color:#000;border-color:var(--a)}
+.nav-back{font-family:'Syne Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5);text-decoration:none;letter-spacing:.1em;transition:color .2s}
+.nav-back:hover{color:var(--a)}
+.nav-hs{font-family:'Syne Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:.08em}
+.nav-hs span{color:var(--a);font-weight:700}
+
+/* AD CONTAINER SIZING (Priority 5) */
+.ad-container{width:100%;max-width:728px;margin:0 auto;height:60px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.3);overflow:hidden}
+#top-ad-placement{margin-top:64px;position:relative;z-index:210}
+
+/* STREAK BADGE */
+#streak-badge{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:300;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;
+  transition:opacity .3s;
+}
+#streak-num{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(80px,14vw,160px);
+  line-height:1;
+  color:#fff;
+  opacity:0.06;
+  letter-spacing:-.03em;
+  transition:all .3s;
+}
+#streak-badge.milestone #streak-num{
+  opacity:0.18;
+  color:var(--a);
+  animation:shake .5s cubic-bezier(.36,.07,.19,.97);
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0) scale(1)}
+  15%{transform:translateX(-10px) scale(1.04)}
+  30%{transform:translateX(10px) scale(1.02)}
+  45%{transform:translateX(-8px) scale(1.03)}
+  60%{transform:translateX(8px) scale(1.01)}
+  75%{transform:translateX(-4px)}
+}
+#streak-label{
+  font-family:'Syne Mono',monospace;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,0.25);
+  margin-top:-12px;
+  transition:all .3s;
+}
+#streak-badge.milestone #streak-label{color:rgba(var(--a-tint),0.6)}
+
+/* LIVE STATS STRING — raw data, no boxes */
+#stats-line{
+  position:relative;z-index:150;width:100%;
+  text-align:center;pointer-events:none;
+  font-family:'Syne Mono',monospace;font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,0.3);
+  padding:14px 0 4px;
+}
+#stats-line span{color:var(--a);font-weight:700;opacity:.9}
+
+/* TECHNICAL WATERMARK — micro-copy as design */
+#sys-tag{
+  position:fixed;bottom:10px;left:14px;z-index:150;
+  font-family:'Syne Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,0.12);
+  pointer-events:none;
+}
+
+/* HISTORY LOG — receipt stream, no container box */
+#history-log{
+  position:fixed;top:120px;right:18px;z-index:150;
+  width:200px;max-height:50vh;overflow:hidden;
+  font-family:'Syne Mono',monospace;
+  pointer-events:none;
+}
+#history-log-title{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,0.3);
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  padding-bottom:6px;margin-bottom:8px;
+}
+#history-log-rows{display:flex;flex-direction:column-reverse;gap:5px}
+.log-row{font-size:11px;line-height:1.5;color:rgba(255,255,255,0.55);opacity:0;transform:translateY(-4px);transition:opacity .3s,transform .3s}
+.log-row.show{opacity:1;transform:translateY(0)}
+.log-row .log-tag{font-weight:700}
+.log-row.ok .log-tag{color:var(--a)}
+.log-row.tie{background:rgba(255,210,60,0.85);color:#1a1400;padding:2px 5px;margin:0 -5px}
+.log-row.tie .log-tag{color:#1a1400}
+.log-row.bad{background:rgba(255,80,80,0.85);color:#1a0000;padding:2px 5px;margin:0 -5px}
+.log-row.bad .log-tag{color:#1a0000}
+@media(max-width:900px){#history-log{display:none}}
+@media(max-width:640px){#stats-line{font-size:10px;padding:10px 0 2px}}
+
+/* SPLIT LAYOUT */
+#game-wrap{
+  position:relative;
+  flex:1;
+  width:100%;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.half{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.8s cubic-bezier(.4,0,.2,1);
+  padding:20px;
+}
+#top-half{background:var(--bg-top,#0B3C26)}
+#bot-half{background:var(--bg-bot,#2E081B)}
+
+.divider{
+  position:absolute;left:0;right:0;top:50%;
+  height:2px;
+  background:rgba(255,255,255,0.08);
+  z-index:10;
+  pointer-events:none;
+}
+.divider-label{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;color:#000;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:13px;
+  letter-spacing:.2em;padding:6px 16px;
+  z-index:20;pointer-events:none;
+}
+
+.item-category{
+  font-family:'Syne Mono',monospace;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;
+  opacity:.45;margin-bottom:14px;
+}
+.item-name{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(24px,4.5vw,48px);
+  line-height:1.05;text-align:center;
+  max-width:680px;padding:0 32px;
+  letter-spacing:-.02em;
+}
+.item-value{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(38px,6.5vw,76px);
+  line-height:1;margin-top:12px;
+  letter-spacing:-.04em;
+  transition:all .3s;
+}
+.item-unit{
+  font-family:'Syne Mono',monospace;font-size:13px;
+  letter-spacing:.15em;opacity:.5;margin-top:6px;
+}
+#top-half .item-value{opacity:1}
+
+.choice-btns{
+  display:flex;gap:16px;margin-top:20px;
+  position:relative;z-index:5;
+}
+.choice-btn{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(13px,2vw,18px);
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:14px 36px;
+  background:rgba(255,255,255,0.07);
+  border:1.5px solid rgba(255,255,255,0.2);
+  color:#fff;cursor:none;
+  transition:background .18s,border-color .18s,transform .12s;
+}
+.choice-btn:hover{
+  background:rgba(255,255,255,0.14);
+  border-color:rgba(255,255,255,0.5);
+  transform:scale(1.03);
+}
+.choice-btn.higher{border-color:rgba(var(--a-tint),0.4)}
+.choice-btn.lower{border-color:rgba(255,80,80,0.4)}
+
+#flash{position:fixed;inset:0;z-index:500;pointer-events:none;opacity:0;transition:opacity .12s}
+#flash.green{background:rgba(var(--a-tint),0.18);opacity:1}
+#flash.red{background:rgba(255,50,50,0.25);opacity:1}
+#flash.tie{background:rgba(255,210,60,0.22);opacity:1}
+
+/* OVERLAYS & GAME OVER INTERFACES */
+#gameover{
+  position:fixed;inset:0;z-index:600;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:#0a0a0a;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s;
+  overflow-y:auto;
+}
+#gameover.show{opacity:1;pointer-events:all}
+
+.go-left-panel{
+  padding:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-right:1px solid rgba(255,255,255,0.05);
+}
+.go-right-panel{
+  padding:40px;display:flex;flex-direction:column;justify-content:flex-start;background:#111;overflow-y:auto;text-align:left;
+}
+
+.go-label{font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.25em;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:10px}
+.go-score{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(64px,14vw,130px);line-height:1;color:var(--a);letter-spacing:-.04em}
+.go-sub{font-family:'Syne Mono',monospace;font-size:13px;letter-spacing:.15em;color:rgba(255,255,255,0.4);margin-top:4px}
+.go-wrong{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(14px,2.2vw,20px);color:rgba(255,255,255,0.7);max-width:480px;margin-top:24px;line-height:1.4}
+.go-wrong em{color:#fff;font-style:normal}
+
+/* SHARING & SOCIAL BUTTONS */
+.share-zone{margin-top:24px;width:100%;max-width:400px}
+.share-title{font-family:'Syne Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em}
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.share-btn{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
+.share-btn:hover{background:rgba(255,255,255,0.15);border-color:var(--a)}
+.share-btn.tiktok{background:#fe2c55;color:#fff;border-color:#fe2c55}
+.share-btn.tiktok:hover{background:#ff436a}
+
+.go-btn{
+  margin-top:30px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;letter-spacing:.15em;text-transform:uppercase;padding:16px 48px;background:var(--a);color:#000;border:none;cursor:pointer;transition:transform .12s,box-shadow .12s;
+}
+.go-btn:hover{transform:scale(1.04);box-shadow:0 0 30px rgba(var(--a-tint),0.4)}
+
+/* PANEL SUBSECTIONS */
+.panel-section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;letter-spacing:0.05em;margin-bottom:16px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:6px}
+.stats-grid{display:flex;flex-wrap:wrap;align-items:baseline;gap:0;margin-bottom:32px;font-family:'Syne Mono',monospace}
+.stat-box{background:none;border:none;padding:0;display:inline-flex;align-items:baseline;gap:6px}
+.stat-box:not(:last-child)::after{content:'/';color:rgba(255,255,255,0.2);margin:0 14px;font-weight:400}
+.stat-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em}
+.stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--a);margin-top:0}
+
+.leaderboard-list{display:flex;flex-direction:column;gap:0;margin-bottom:32px}
+.leaderboard-row{display:flex;align-items:center;gap:10px;background:none;padding:9px 0;border-left:none;border-bottom:1px solid rgba(255,255,255,0.08)}
+.leaderboard-row.highlight{border-bottom-color:var(--a);background:none}
+.lb-rank{font-family:'Syne Mono',monospace;color:var(--a);width:40px}
+.lb-name{font-family:'Syne',sans-serif;font-weight:700;flex-grow:1;color:rgba(255,255,255,0.85)}
+.lb-score{font-family:'Syne Mono',monospace;font-weight:700;color:#fff}
+
+.achievements-list{display:flex;flex-direction:column;gap:0}
+.ach-card{background:none;border:none;border-bottom:1px solid rgba(255,255,255,0.08);padding:10px 0;display:flex;flex-direction:column;opacity:0.4;transition:opacity 0.3s}
+.ach-card.unlocked{opacity:1;border-bottom-color:rgba(var(--a-tint),0.4)}
+.ach-title{font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#fff}
+.ach-desc{font-family:'Syne Mono',monospace;font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px}
+
+/* CATEGORY PAGES LINKS (Priority 4 & 5) */
+.cross-games-title{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:auto;padding-top:30px;margin-bottom:12px;letter-spacing:0.05em}
+.cross-games-flex{display:flex;flex-wrap:wrap;gap:8px}
+.cross-link{font-family:'Syne Mono',monospace;font-size:11px;color:var(--a);text-decoration:none;background:rgba(var(--a-tint),0.05);padding:6px 12px;border:1px solid rgba(var(--a-tint),0.2);transition:all 0.2s}
+.cross-link:hover{background:var(--a);color:#000}
+
+/* MOBILE RESPONSIVENESS */
+@media(max-width:800px){
+  #gameover{grid-template-columns:1fr}
+  .go-left-panel{border-right:none;border-bottom:1px solid rgba(255,255,255,0.05);padding:32px 20px}
+  .go-right-panel{padding:32px 20px}
+}
+@media(max-width:640px){
+  #nav{padding:0 12px}
+  .nav-center-modes{gap:6px}
+  .mode-btn{padding:3px 8px;font-size:9px}
+  .nav-right{gap:10px}
+  .game-logo-name{display:none}
+  .game-logo img{height:22px;width:22px}
+  .nav-hs{font-size:9px}
+  .nav-back{font-size:9px}
+  .item-name{padding:0 12px}
+  .choice-btns{gap:10px}
+  .choice-btn{padding:12px 20px;font-size:12px}
+  .divider-label{font-size:11px;padding:5px 12px}
+  .stats-grid{gap:6px 0}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING / INTRO SCREEN -->
+<div id="page-intro" style="position:fixed;inset:0;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;overflow:hidden">
+  <div style="position:absolute;inset:0;opacity:.4;background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.04%22/%3E%3C/svg%3E');pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(8,8,8,0.88) 100%);pointer-events:none"></div>
+  <div id="intro-glow" style="position:absolute;width:500px;height:250px;border-radius:50%;background:radial-gradient(ellipse,rgba(var(--a-tint),0.14) 0%,transparent 70%);filter:blur(40px);opacity:0;transition:opacity 1.2s ease .6s;pointer-events:none"></div>
+
+  <div id="intro-logos" style="display:flex;align-items:center;justify-content:center;gap:24px;opacity:0;transform:scale(0.92) translateY(14px);transition:all .85s cubic-bezier(.34,1.1,.64,1)">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games" style="height:min(72px,14vw);width:min(72px,14vw);object-fit:contain;display:block"/>
+    <div style="width:1px;height:min(54px,11vw);background:linear-gradient(180deg,transparent,rgba(var(--a-tint),0.55),transparent);flex-shrink:0"></div>
+    <img src="hol-logo.svg" alt="Higher or Lower" style="height:min(72px,14vw);width:min(72px,14vw);object-fit:contain;display:block"/>
+  </div>
+
+  <div id="intro-sub" style="font-family:'Syne Mono',monospace;font-size:9px;color:#2e3a2e;letter-spacing:.24em;text-transform:uppercase;margin-top:28px;opacity:0;transition:opacity .5s ease .68s">HIGHER, OR LOWER?</div>
+
+  <div id="intro-bar" style="width:min(180px,44vw);height:1px;background:rgba(255,255,255,0.04);margin-top:36px;overflow:hidden;opacity:0;transition:opacity .3s ease .82s">
+    <div id="intro-progress" style="height:100%;width:0%;background:linear-gradient(90deg,#0B3C26,var(--a));transition:width 1.2s ease .94s;box-shadow:0 0 6px rgba(var(--a-tint),0.7)"></div>
+  </div>
+</div>
+
+<div id="cur"></div>
+
+<nav id="nav">
+  <a href="../home/" class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+    <span class="nav-logo-name">Ajora</span>
+  </a>
+  
+  <div class="nav-center-modes">
+    <button id="mode-classic" class="mode-btn active" onclick="switchMode('classic')">CLASSIC</button>
+    <button id="mode-daily" class="mode-btn" onclick="switchMode('daily')">DAILY CHALLENGE</button>
+  </div>
+  
+  <div class="nav-right">
+    <div class="game-logo">
+      <img src="hol-logo.svg" alt="Higher or Lower"/>
+      <span class="game-logo-name">Higher<br/><small>OR LOWER</small></span>
+    </div>
+    <div class="nav-hs">Best: <span id="hs-display">0</span></div>
+    <a href="../games/" class="nav-back">← All Games</a>
+  </div>
+</nav>
+
+<div id="top-ad-placement">
+  <div class="ad-container">
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:728px;height:60px"
+         data-ad-client="ca-pub-3421312807231714"
+         data-ad-slot="1234567890"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
+
+<div id="stats-line">SCORE: <span id="sl-score">0</span> &nbsp;/&nbsp; BEST: <span id="sl-best">0</span></div>
+
+<div id="streak-badge">
+  <div id="streak-num">0</div>
+  <div id="streak-label">Streak</div>
+</div>
+
+<div id="sys-tag">SYS_HOL // V1.0.4</div>
+
+<div id="history-log">
+  <div id="history-log-title">Recent Logs</div>
+  <div id="history-log-rows"></div>
+</div>
+
+<div id="flash"></div>
+
+<div id="game-wrap">
+  <div class="half" id="top-half">
+    <div class="item-category" id="top-cat"></div>
+    <div class="item-name" id="top-name"></div>
+    <div class="item-value" id="top-value"></div>
+    <div id="top-reveal"></div>
+    <div class="item-unit" id="top-unit"></div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-label">vs</div>
+  </div>
+
+  <div class="half" id="bot-half">
+    <div class="item-category" id="bot-cat"></div>
+    <div class="item-name" id="bot-name"></div>
+    <div class="item-value" id="bot-value" style="opacity:.15;font-size:clamp(18px,3vw,32px);letter-spacing:.05em">???</div>
+    <div class="item-unit" id="bot-unit"></div>
+    <div class="choice-btns">
+      <button class="choice-btn higher" id="btn-higher" onclick="guess('higher')">▲ HIGHER</button>
+      <button class="choice-btn lower" id="btn-lower" onclick="guess('lower')">▼ LOWER</button>
+    </div>
+  </div>
+</div>
+
+<div id="gameover">
+  <div class="go-left-panel">
+    <div class="go-label" id="go-title-label">Game Over</div>
+    <div class="go-score" id="go-score">0</div>
+    <div class="go-sub" id="go-sub-label">correct answers in a row</div>
+    <div class="go-hs" id="go-hs"></div>
+    <div class="go-wrong" id="go-wrong"></div>
+    
+    <button class="go-btn" onclick="startGame()">Play Again</button>
+
+    <div class="share-zone">
+      <div class="share-title">Share Score Cards</div>
+      <div class="share-grid">
+        <button class="share-btn" onclick="shareGame('copy')">🔗 Copy Link</button>
+        <button class="share-btn" onclick="shareGame('twitter')">🐦 Twitter/X</button>
+        <button class="share-btn" onclick="shareGame('whatsapp')">💬 WhatsApp</button>
+        <button class="share-btn tiktok" onclick="downloadScoreImage()">🖼️ Save Image Card</button>
+      </div>
+    </div>
+    
+    <div class="ad-container" style="margin-top: 30px; max-width: 300px; height: 250px;">
+      <ins class="adsbygoogle"
+           style="display:inline-block;width:300px;height:250px"
+           data-ad-client="ca-pub-3421312807231714"
+           data-ad-slot="9876543210"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+  </div>
+
+  <div class="go-right-panel">
+    <div class="panel-section-title">Personal Statistics</div>
+    <div class="stats-grid">
+      <div class="stat-box"><span class="stat-label">Played:</span><span class="stat-val" id="stat-played">0</span></div>
+      <div class="stat-box"><span class="stat-label">Avg:</span><span class="stat-val" id="stat-avg">0.0</span></div>
+      <div class="stat-box"><span class="stat-label">Best:</span><span class="stat-val" id="stat-best">0</span></div>
+      <div class="stat-box"><span class="stat-label">Correct:</span><span class="stat-val" id="stat-correct">0</span></div>
+    </div>
+
+    <div class="panel-section-title">Global Leaderboard</div>
+    <div class="leaderboard-list" id="leaderboard-container"></div>
+
+    <div class="panel-section-title">Achievements Unlocked</div>
+    <div class="achievements-list">
+      <div class="ach-card" id="ach-first"><div class="ach-title">First Win</div><div class="ach-desc">Get a score of 1 or more.</div></div>
+      <div class="ach-card" id="ach-10"><div class="ach-title">Score 10</div><div class="ach-desc">Reach a streak of 10 points.</div></div>
+      <div class="ach-card" id="ach-25"><div class="ach-title">Score 25</div><div class="ach-desc">Reach a streak of 25 points.</div></div>
+      <div class="ach-card" id="ach-50"><div class="ach-title">Score 50</div><div class="ach-desc">Reach a streak of 50 points.</div></div>
+    </div>
+
+    <div class="cross-games-title">More Games</div>
+    <div class="cross-games-flex">
+      <a href="../games/" class="cross-link">🎮 See All Ajora Games</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  // ── CITY POPULATION (city proper, most recent reliable estimates) ──
+  {name:"Shanghai",cat:"City Population",value:24870000,unit:"residents",type:"population"},
+  {name:"Beijing",cat:"City Population",value:21600000,unit:"residents",type:"population"},
+  {name:"Delhi",cat:"City Population",value:23400000,unit:"residents",type:"population"},
+  {name:"Mumbai",cat:"City Population",value:21800000,unit:"residents",type:"population"},
+  {name:"Tokyo",cat:"City Population",value:9270000,unit:"residents",type:"population"},
+  {name:"Sao Paulo",cat:"City Population",value:22430000,unit:"residents",type:"population"},
+  {name:"Mexico City",cat:"City Population",value:9200000,unit:"residents",type:"population"},
+  {name:"Dhaka",cat:"City Population",value:23900000,unit:"residents",type:"population"},
+  {name:"Cairo",cat:"City Population",value:10100000,unit:"residents",type:"population"},
+  {name:"Osaka",cat:"City Population",value:2750000,unit:"residents",type:"population"},
+  {name:"Istanbul",cat:"City Population",value:15800000,unit:"residents",type:"population"},
+  {name:"London",cat:"City Population",value:9000000,unit:"residents",type:"population"},
+  {name:"New York City",cat:"City Population",value:8336817,unit:"residents",type:"population"},
+  {name:"Lagos",cat:"City Population",value:16600000,unit:"residents",type:"population"},
+  {name:"Paris",cat:"City Population",value:2140000,unit:"residents",type:"population"},
+  {name:"Los Angeles",cat:"City Population",value:3900000,unit:"residents",type:"population"},
+  {name:"Seoul",cat:"City Population",value:9400000,unit:"residents",type:"population"},
+  {name:"Jakarta",cat:"City Population",value:10600000,unit:"residents",type:"population"},
+  {name:"Manila",cat:"City Population",value:1900000,unit:"residents",type:"population"},
+
+  // ── COUNTRY POPULATION ──
+  {name:"India",cat:"Country Population",value:1450000000,unit:"residents",type:"population"},
+  {name:"China",cat:"Country Population",value:1410000000,unit:"residents",type:"population"},
+  {name:"United States",cat:"Country Population",value:341000000,unit:"residents",type:"population"},
+  {name:"Indonesia",cat:"Country Population",value:283000000,unit:"residents",type:"population"},
+  {name:"Pakistan",cat:"Country Population",value:255000000,unit:"residents",type:"population"},
+  {name:"Nigeria",cat:"Country Population",value:232000000,unit:"residents",type:"population"},
+  {name:"Brazil",cat:"Country Population",value:212000000,unit:"residents",type:"population"},
+  {name:"Japan",cat:"Country Population",value:123000000,unit:"residents",type:"population"},
+  {name:"United Kingdom",cat:"Country Population",value:68700000,unit:"residents",type:"population"},
+  {name:"France",cat:"Country Population",value:66000000,unit:"residents",type:"population"},
+
+  // ── BOX OFFICE (lifetime worldwide gross, unadjusted) ──
+  {name:"Avatar (2009)",cat:"Box Office",value:2923706026,unit:"USD gross",type:"money"},
+  {name:"Avengers: Endgame",cat:"Box Office",value:2799439100,unit:"USD gross",type:"money"},
+  {name:"Avatar: The Way of Water",cat:"Box Office",value:2320250281,unit:"USD gross",type:"money"},
+  {name:"Titanic (1997)",cat:"Box Office",value:2264743305,unit:"USD gross",type:"money"},
+  {name:"Star Wars: The Force Awakens",cat:"Box Office",value:2071310218,unit:"USD gross",type:"money"},
+  {name:"Avengers: Infinity War",cat:"Box Office",value:2052415039,unit:"USD gross",type:"money"},
+  {name:"Spider-Man: No Way Home",cat:"Box Office",value:1922598800,unit:"USD gross",type:"money"},
+  {name:"Inside Out 2",cat:"Box Office",value:1698863816,unit:"USD gross",type:"money"},
+  {name:"Jurassic World",cat:"Box Office",value:1671713208,unit:"USD gross",type:"money"},
+  {name:"The Lion King (2019)",cat:"Box Office",value:1663079850,unit:"USD gross",type:"money"},
+  {name:"The Avengers (2012)",cat:"Box Office",value:1518815515,unit:"USD gross",type:"money"},
+  {name:"Frozen II",cat:"Box Office",value:1450026933,unit:"USD gross",type:"money"},
+  {name:"Barbie (2023)",cat:"Box Office",value:1446900000,unit:"USD gross",type:"money"},
+
+  // ── SPOTIFY ALL-TIME STREAMS ──
+  {name:"Blinding Lights – The Weeknd",cat:"Spotify Streams",value:5400000000,unit:"streams",type:"streams"},
+  {name:"Shape of You – Ed Sheeran",cat:"Spotify Streams",value:4700000000,unit:"streams",type:"streams"},
+  {name:"Someone You Loved – Lewis Capaldi",cat:"Spotify Streams",value:4500000000,unit:"streams",type:"streams"},
+  {name:"Starboy – The Weeknd ft. Daft Punk",cat:"Spotify Streams",value:4500000000,unit:"streams",type:"streams"},
+  {name:"As It Was – Harry Styles",cat:"Spotify Streams",value:3000000000,unit:"streams",type:"streams"},
+  {name:"Sunflower – Post Malone & Swae Lee",cat:"Spotify Streams",value:3000000000,unit:"streams",type:"streams"},
+  {name:"One Dance – Drake",cat:"Spotify Streams",value:3000000000,unit:"streams",type:"streams"},
+  {name:"Dance Monkey – Tones and I",cat:"Spotify Streams",value:2800000000,unit:"streams",type:"streams"},
+  {name:"Die With A Smile – Lady Gaga & Bruno Mars",cat:"Spotify Streams",value:1700000000,unit:"streams",type:"streams"},
+
+  // ── MOUNTAIN HEIGHT (metres above sea level) ──
+  {name:"Mount Everest",cat:"Mountain Height",value:8849,unit:"metres",type:"height"},
+  {name:"K2",cat:"Mountain Height",value:8611,unit:"metres",type:"height"},
+  {name:"Kangchenjunga",cat:"Mountain Height",value:8586,unit:"metres",type:"height"},
+  {name:"Lhotse",cat:"Mountain Height",value:8516,unit:"metres",type:"height"},
+  {name:"Makalu",cat:"Mountain Height",value:8485,unit:"metres",type:"height"},
+  {name:"Cho Oyu",cat:"Mountain Height",value:8188,unit:"metres",type:"height"},
+  {name:"Dhaulagiri I",cat:"Mountain Height",value:8167,unit:"metres",type:"height"},
+  {name:"Manaslu",cat:"Mountain Height",value:8163,unit:"metres",type:"height"},
+  {name:"Mont Blanc",cat:"Mountain Height",value:4805,unit:"metres",type:"height"},
+  {name:"Mount Kilimanjaro",cat:"Mountain Height",value:5895,unit:"metres",type:"height"},
+  {name:"Denali",cat:"Mountain Height",value:6190,unit:"metres",type:"height"},
+  {name:"Aconcagua",cat:"Mountain Height",value:6961,unit:"metres",type:"height"},
+
+  // ── BUILDING HEIGHT (metres, completed buildings) ──
+  {name:"Burj Khalifa",cat:"Building Height",value:828,unit:"metres",type:"height"},
+  {name:"Merdeka 118",cat:"Building Height",value:679,unit:"metres",type:"height"},
+  {name:"Shanghai Tower",cat:"Building Height",value:632,unit:"metres",type:"height"},
+  {name:"Abraj Al-Bait Clock Tower",cat:"Building Height",value:601,unit:"metres",type:"height"},
+  {name:"Ping An Finance Centre",cat:"Building Height",value:599,unit:"metres",type:"height"},
+  {name:"Lotte World Tower",cat:"Building Height",value:555,unit:"metres",type:"height"},
+  {name:"One World Trade Center",cat:"Building Height",value:541,unit:"metres",type:"height"},
+  {name:"Guangzhou CTF Finance Centre",cat:"Building Height",value:530,unit:"metres",type:"height"},
+  {name:"CITIC Tower (China Zun)",cat:"Building Height",value:528,unit:"metres",type:"height"},
+  {name:"Taipei 101",cat:"Building Height",value:508,unit:"metres",type:"height"},
+  {name:"Eiffel Tower",cat:"Building Height",value:330,unit:"metres",type:"height"},
+  {name:"Empire State Building",cat:"Building Height",value:381,unit:"metres",type:"height"},
+
+  // ── COMPANY FOUNDING YEAR ──
+  {name:"Microsoft",cat:"Year Founded",value:1975,unit:"year founded",type:"founded"},
+  {name:"Apple",cat:"Year Founded",value:1976,unit:"year founded",type:"founded"},
+  {name:"Amazon",cat:"Year Founded",value:1994,unit:"year founded",type:"founded"},
+  {name:"Google",cat:"Year Founded",value:1998,unit:"year founded",type:"founded"},
+  {name:"Facebook",cat:"Year Founded",value:2004,unit:"year founded",type:"founded"},
+  {name:"YouTube",cat:"Year Founded",value:2005,unit:"year founded",type:"founded"},
+  {name:"Twitter (X)",cat:"Year Founded",value:2006,unit:"year founded",type:"founded"},
+  {name:"Instagram",cat:"Year Founded",value:2010,unit:"year founded",type:"founded"},
+  {name:"Spotify",cat:"Year Founded",value:2006,unit:"year founded",type:"founded"},
+  {name:"Netflix",cat:"Year Founded",value:1997,unit:"year founded",type:"founded"},
+  {name:"TikTok",cat:"Year Founded",value:2016,unit:"year founded",type:"founded"},
+  {name:"Wikipedia",cat:"Year Founded",value:2001,unit:"year founded",type:"founded"},
+
+  // ── ANIMAL TOP SPEED (km/h) ──
+  {name:"Peregrine Falcon (diving)",cat:"Animal Top Speed",value:389,unit:"km/h",type:"speed"},
+  {name:"Golden Eagle (diving)",cat:"Animal Top Speed",value:320,unit:"km/h",type:"speed"},
+  {name:"Sailfish",cat:"Animal Top Speed",value:110,unit:"km/h",type:"speed"},
+  {name:"Cheetah",cat:"Animal Top Speed",value:103,unit:"km/h",type:"speed"},
+  {name:"Black Marlin",cat:"Animal Top Speed",value:105,unit:"km/h",type:"speed"},
+  {name:"Pronghorn Antelope",cat:"Animal Top Speed",value:88,unit:"km/h",type:"speed"},
+  {name:"Springbok",cat:"Animal Top Speed",value:88,unit:"km/h",type:"speed"},
+  {name:"Lion",cat:"Animal Top Speed",value:80,unit:"km/h",type:"speed"},
+  {name:"Greyhound",cat:"Animal Top Speed",value:70,unit:"km/h",type:"speed"},
+  {name:"Usain Bolt (peak sprint)",cat:"Animal Top Speed",value:44,unit:"km/h",type:"speed"},
+  {name:"Domestic Cat",cat:"Animal Top Speed",value:48,unit:"km/h",type:"speed"},
+  {name:"Giant Tortoise",cat:"Animal Top Speed",value:0.3,unit:"km/h",type:"speed"},
+
+  // ── VIDEO GAME SALES (copies sold, lifetime) ──
+  {name:"Minecraft",cat:"Video Game Sales",value:300000000,unit:"copies sold",type:"sales"},
+  {name:"Grand Theft Auto V",cat:"Video Game Sales",value:215000000,unit:"copies sold",type:"sales"},
+  {name:"Tetris (all versions)",cat:"Video Game Sales",value:520000000,unit:"copies sold",type:"sales"},
+  {name:"Wii Sports",cat:"Video Game Sales",value:82900000,unit:"copies sold",type:"sales"},
+  {name:"PUBG: Battlegrounds",cat:"Video Game Sales",value:75000000,unit:"copies sold",type:"sales"},
+  {name:"Mario Kart 8 / Deluxe",cat:"Video Game Sales",value:67000000,unit:"copies sold",type:"sales"},
+  {name:"Super Mario Bros. (1985)",cat:"Video Game Sales",value:58000000,unit:"copies sold",type:"sales"},
+  {name:"Animal Crossing: New Horizons",cat:"Video Game Sales",value:47000000,unit:"copies sold",type:"sales"}
+];
+
+const COLORS = [
+  {top:"#0B3C26",bot:"#2E081B"},
+  {top:"#0B1F3C",bot:"#2E2108"},
+  {top:"#1B0B3C",bot:"#0B3C2A"},
+  {top:"#3C0B2E",bot:"#0B2E3C"},
+  {top:"#2E3C0B",bot:"#3C0B1F"},
+  {top:"#0B2E3C",bot:"#3C2E0B"},
+  {top:"#1F0B3C",bot:"#3C1F0B"}
+];
+
+let cur, nxt, streak=0, hs=0, locked=false, colorIdx=0, gameMode='classic';
+let logCounter=0;
+let seenItems = [];
+
+function getDailySeed() {
+  const now = new Date();
+  return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+}
+
+let dailyRandomCounter = 0;
+function seededRandom() {
+  if (gameMode !== 'daily') return Math.random();
+  const seed = getDailySeed() + dailyRandomCounter;
+  dailyRandomCounter++;
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+function fmt(v,type){
+  if(type==='founded') return v.toString();
+  if(v>=1e9) return (v/1e9).toFixed(2).replace(/\.?0+$/,'')+'B';
+  if(v>=1e6) return (v/1e6).toFixed(2).replace(/\.?0+$/,'')+'M';
+  if(v>=1e3) return v.toLocaleString();
+  return v.toString();
+}
+
+function pickColor(){
+  const c=COLORS[colorIdx%COLORS.length];
+  colorIdx++;
+  document.getElementById('top-half').style.setProperty('--bg-top',c.top);
+  document.getElementById('top-half').style.background=c.top;
+  document.getElementById('bot-half').style.background=c.bot;
+}
+
+function switchMode(mode) {
+  gameMode = mode;
+  document.getElementById('mode-classic').classList.toggle('active', mode === 'classic');
+  document.getElementById('mode-daily').classList.toggle('active', mode === 'daily');
+  startGame();
+}
+
+function setItem(prefix,item,revealValue){
+  document.getElementById(prefix+'-cat').textContent=item.cat;
+  document.getElementById(prefix+'-name').textContent=item.name;
+  document.getElementById(prefix+'-unit').textContent=item.unit;
+  if(revealValue){
+    document.getElementById(prefix+'-value').textContent=fmt(item.value,item.type);
+    document.getElementById(prefix+'-value').style.opacity='1';
+    document.getElementById(prefix+'-value').style.fontSize='';
+    document.getElementById(prefix+'-value').style.letterSpacing='';
+  } else {
+    document.getElementById(prefix+'-value').textContent='???';
+    document.getElementById(prefix+'-value').style.opacity='0.15';
+    document.getElementById(prefix+'-value').style.fontSize='clamp(18px,3vw,32px)';
+    document.getElementById(prefix+'-value').style.letterSpacing='.05em';
+  }
+}
+
+function getBalancedNextItem(currentItem) {
+  let pool = DATA.filter(d => d.name !== currentItem.name && !seenItems.includes(d.name) && d.type === currentItem.type);
+  let balancedPool = pool.filter(d => {
+    const ratio = Math.max(d.value, currentItem.value) / Math.min(d.value, currentItem.value);
+    return ratio >= 1.05 && ratio <= 4.0;
+  });
+  if (balancedPool.length > 0) pool = balancedPool;
+  if (pool.length === 0) pool = DATA.filter(d => d.name !== currentItem.name && d.type === currentItem.type);
+  return pool[Math.floor(seededRandom() * pool.length)] || DATA.find(d => d.type === currentItem.type) || DATA[0];
+}
+
+function startGame(){
+  document.getElementById('gameover').classList.remove('show');
+  streak=0; locked=false; colorIdx=0; seenItems = []; dailyRandomCounter = 0;
+  const key = gameMode === 'daily' ? 'hol_hs_daily' : 'hol_hs';
+  hs=parseInt(localStorage.getItem(key)||'0');
+  document.getElementById('hs-display').textContent=hs;
+  document.getElementById('history-log-rows').innerHTML='';
+  logCounter=0;
+  updateStreak();
+  
+  cur = DATA[Math.floor(seededRandom() * DATA.length)];
+  seenItems.push(cur.name);
+  nxt = getBalancedNextItem(cur);
+  seenItems.push(nxt.name);
+
+  pickColor();
+  setItem('top',cur,true);
+  setItem('bot',nxt,false);
+  enableBtns();
+}
+
+function updateStreak(){
+  document.getElementById('streak-num').textContent=streak;
+  const labelEl = document.getElementById('streak-label');
+  if(streak === 5) labelEl.textContent = "Nice!";
+  else if(streak === 10) labelEl.textContent = "Hot Streak 🔥";
+  else if(streak === 25) labelEl.textContent = "Elite Status ✨";
+  else if(streak === 50) labelEl.textContent = "Legendary! 🏆";
+  else labelEl.textContent = "Streak";
+  document.getElementById('sl-score').textContent=streak;
+  document.getElementById('sl-best').textContent=hs;
+}
+
+function enableBtns(){
+  document.getElementById('btn-higher').disabled = false;
+  document.getElementById('btn-lower').disabled = false;
+}
+
+function disableBtns(){
+  document.getElementById('btn-higher').disabled = true;
+  document.getElementById('btn-lower').disabled = true;
+}
+
+function flash(type){
+  const f=document.getElementById('flash');
+  f.className=type;
+  setTimeout(()=>f.className='',500);
+}
+
+function pushLog(correct,dirLabel,actualValue,actualType,tie){
+  logCounter++;
+  const rows=document.getElementById('history-log-rows');
+  if(!rows)return;
+  const row=document.createElement('div');
+  row.className='log-row'+(tie?' tie':correct?' ok':' bad');
+  const tag=tie?'TIE':correct?'OK':'NO';
+  const num=String(logCounter).padStart(2,'0');
+  row.innerHTML=`<span class="log-tag">[${tag}]</span> ${num}: GUESS ${dirLabel.toUpperCase()} (${fmt(actualValue,actualType)})`;
+  rows.appendChild(row);
+  requestAnimationFrame(()=>row.classList.add('show'));
+  while(rows.children.length>8) rows.removeChild(rows.firstChild);
+}
+
+function guess(dir){
+  if(locked) return;
+  locked=true; disableBtns();
+  document._lastDir = dir;
+  const tie = nxt.value === cur.value;
+  const correct=(dir==='higher'&&nxt.value>=cur.value)||(dir==='lower'&&nxt.value<=cur.value);
+
+  document.getElementById('bot-value').textContent=fmt(nxt.value,nxt.type);
+  document.getElementById('bot-value').style.opacity='1';
+  document.getElementById('bot-value').style.fontSize='';
+
+  pushLog(correct,dir,nxt.value,nxt.type,tie);
+
+  if(tie){
+    flash('tie');
+    const labelEl=document.getElementById('streak-label');
+    const prevLabel=labelEl.textContent;
+    labelEl.textContent='TIE — FREE PASS';
+    setTimeout(()=>{ labelEl.textContent=prevLabel; },1200);
+    setTimeout(advance,1200);
+  } else if(correct){
+    flash('green'); streak++;
+    const key = gameMode === 'daily' ? 'hol_hs_daily' : 'hol_hs';
+    if(streak>hs){ hs=streak; localStorage.setItem(key, hs); document.getElementById('hs-display').textContent=hs; }
+    updateStreak();
+    setTimeout(advance,1200);
+  } else {
+    flash('red');
+    setTimeout(()=>showGameOver(),1200);
+  }
+}
+
+function advance(){
+  cur=nxt; nxt=getBalancedNextItem(cur); seenItems.push(nxt.name);
+  pickColor(); setItem('top',cur,true); setItem('bot',nxt,false);
+  locked=false; enableBtns();
+}
+
+function saveStatsAndLeaderboards(finalScore) {
+  let totalPlayed = parseInt(localStorage.getItem('stat_played') || '0') + 1;
+  let totalCorrect = parseInt(localStorage.getItem('stat_correct') || '0') + finalScore;
+  let bestScore = parseInt(localStorage.getItem('stat_alltime_best') || '0');
+  if(finalScore > bestScore) bestScore = finalScore;
+  
+  let currentAccumulated = parseFloat(localStorage.getItem('stat_acc_score') || '0') + finalScore;
+  localStorage.setItem('stat_played', totalPlayed);
+  localStorage.setItem('stat_correct', totalCorrect);
+  localStorage.setItem('stat_alltime_best', bestScore);
+  localStorage.setItem('stat_acc_score', currentAccumulated);
+  
+  document.getElementById('stat-played').textContent = totalPlayed;
+  document.getElementById('stat-correct').textContent = totalCorrect;
+  document.getElementById('stat-best').textContent = bestScore;
+  document.getElementById('stat-avg').textContent = (currentAccumulated / totalPlayed).toFixed(1);
+  
+  if(totalCorrect >= 1) document.getElementById('ach-first').classList.add('unlocked');
+  if(bestScore >= 10) document.getElementById('ach-10').classList.add('unlocked');
+  if(bestScore >= 25) document.getElementById('ach-25').classList.add('unlocked');
+  if(bestScore >= 50) document.getElementById('ach-50').classList.add('unlocked');
+  
+  let baselineLeaderboard = [
+    {rank: "#1", name: "AlphaPlayer", score: 153},
+    {rank: "#2", name: "BetaMax", score: 149},
+    {rank: "#3", name: "GammaHyper", score: 147},
+    {rank: "#4", name: "You (Local Master)", score: bestScore}
+  ].sort((a,b) => b.score - a.score);
+  
+  let lbContainer = document.getElementById('leaderboard-container');
+  lbContainer.innerHTML = "";
+  baselineLeaderboard.forEach((user, idx) => {
+    let row = document.createElement('div');
+    row.className = "leaderboard-row" + (user.name.includes("You") ? " highlight" : "");
+    row.innerHTML = `<span class="lb-rank">#${idx+1}</span><span class="lb-name">${user.name}</span><span class="lb-score">${user.score}</span>`;
+    lbContainer.appendChild(row);
+  });
+}
+
+function showGameOver(){
+  document.getElementById('go-score').textContent=streak;
+  document.getElementById('go-hs').innerHTML=streak>0?'🏆 Run Complete!':'Best ever: <span>'+hs+'</span>';
+  const userChoiceText = document._lastDir === 'higher' ? 'Higher' : 'Lower';
+  const comparisonRelation = nxt.value > cur.value ? 'higher than' : 'lower than';
+  document.getElementById('go-wrong').innerHTML = `You guessed <em>${userChoiceText}</em>. Inaccurate calculation because <em>${nxt.name}</em> records <strong>${fmt(nxt.value,nxt.type)}</strong>, which is ${comparisonRelation} <em>${cur.name}</em> (<strong>${fmt(cur.value,cur.type)}</strong>).`;
+  saveStatsAndLeaderboards(streak);
+  document.getElementById('gameover').classList.add('show');
+}
+
+function shareGame(platform) {
+  const textMsg = `I scored ${streak} on Higher or Lower Game by Ajora Games! Can you beat me? Try it here:`;
+  const shareUrl = window.location.href;
+  if (platform === 'copy') { navigator.clipboard.writeText(`${textMsg} ${shareUrl}`); alert("Copied link!"); }
+  else if (platform === 'twitter') window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(textMsg)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  else if (platform === 'whatsapp') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg + " " + shareUrl)}`, '_blank');
+}
+
+// HTML5 Canvas Downloadable Scorecard Engine (No Server/Database Layer Needed)
+function downloadScoreImage() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1920;
+  const ctx = canvas.getContext('2d');
+
+  // Background Gradient Paint
+  let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, '#0B3C26');
+  gradient.addColorStop(1, '#2E081B');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Decorative Neon Border Line
+  ctx.strokeStyle = '#39ff5a';
+  ctx.lineWidth = 16;
+  ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+
+  // Title Text Injection
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '800 48px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('AJORA GAMES PRESENTS', canvas.width / 2, 280);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 84px sans-serif';
+  ctx.fillText('HIGHER OR LOWER', canvas.width / 2, 410);
+
+  // Main Score Display Value
+  ctx.fillStyle = '#39ff5a';
+  ctx.font = '800 320px sans-serif';
+  ctx.fillText(streak.toString(), canvas.width / 2, 880);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 52px sans-serif';
+  ctx.fillText('CORRECT GUESSES STREAK', canvas.width / 2, 1020);
+
+  // Local Personalized Statistics Label Container
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillRect(140, 1160, canvas.width - 280, 240);
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(140, 1160, canvas.width - 280, 240);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 42px sans-serif';
+  ctx.fillText(`All-Time Personal Record: ${localStorage.getItem('stat_alltime_best') || streak}`, canvas.width / 2, 1265);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '500 36px sans-serif';
+  ctx.fillText(`Total Games Tracked: ${localStorage.getItem('stat_played') || 1}`, canvas.width / 2, 1340);
+
+  // Invite Call To Action Footer Text
+  ctx.fillStyle = '#39ff5a';
+  ctx.font = '700 44px sans-serif';
+  ctx.fillText('CAN YOU BEAT MY RECORD?', canvas.width / 2, 1620);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '500 38px sans-serif';
+  ctx.fillText('ajoragames.com/higherorlower', canvas.width / 2, 1720);
+
+  // Browser Execution Download Pipeline Hook
+  const link = document.createElement('a');
+  link.download = `ajora-higherorlower-streak-${streak}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function showIntro(){
+  const logos=document.getElementById('intro-logos');
+  const glow=document.getElementById('intro-glow');
+  const sub=document.getElementById('intro-sub');
+  const bar=document.getElementById('intro-bar');
+  const prog=document.getElementById('intro-progress');
+
+  setTimeout(()=>{ if(logos){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';} },150);
+  setTimeout(()=>{ if(glow)glow.style.opacity='1'; },500);
+  setTimeout(()=>{ if(sub)sub.style.opacity='1'; },700);
+  setTimeout(()=>{ if(bar)bar.style.opacity='1'; },880);
+  setTimeout(()=>{ if(prog)prog.style.width='100%'; },920);
+  setTimeout(()=>{
+    const intro=document.getElementById('page-intro');
+    intro.style.transition='opacity .5s ease';
+    intro.style.opacity='0';
+    setTimeout(()=>{intro.style.display='none';startGame();},500);
+  },2600);
+}
+
+const cur$=document.getElementById('cur');
+document.addEventListener('mousemove',e=>{cur$.style.left=e.clientX+'px';cur$.style.top=e.clientY+'px'});
+showIntro();
+</script>
+</body>
+</html>

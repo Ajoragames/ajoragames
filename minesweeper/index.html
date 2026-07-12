@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+<title>Minesweeper | Ajora Games</title>
+<meta name="description" content="Clear the grid without triggering a mine. Tap to reveal, flag what you suspect."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --steel:#1c1f22; --steel2:#26292d; --steel3:#33373c;
+  --amber:#ffb020; --red:#ff3b3b; --safe:#4fd18a;
+  --hazard-a:#ffb020; --hazard-b:#1c1f22;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0c0d0e;overflow:hidden}
+body{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;color:#e8e6e0;-webkit-font-smoothing:antialiased;touch-action:none;
+}
+#wrap{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;overflow:hidden}
+#wrap::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:26px 26px;
+}
+#panel{position:relative;z-index:1;background:var(--steel);border-radius:10px;padding:14px;
+  border:1px solid #3a3d41;box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  background-image:repeating-linear-gradient(135deg,var(--hazard-a) 0 10px,var(--hazard-b) 10px 20px);
+  background-size:100% 6px; background-position:0 0; background-repeat:no-repeat;
+  max-width:96vw; max-height:96vh; display:flex; flex-direction:column;
+}
+#panel .hazard-top{height:6px;border-radius:6px 6px 0 0;margin:-14px -14px 12px -14px;
+  background-image:repeating-linear-gradient(135deg,var(--hazard-a) 0 10px,var(--hazard-b) 10px 20px);background-size:28px 6px;}
+
+#hud{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;font-family:'Oswald',sans-serif}
+.hud-box{background:#0e0f10;border:1px solid #3a3d41;border-radius:6px;padding:6px 12px;display:flex;align-items:center;gap:8px;min-width:64px;justify-content:center}
+.hud-box b{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--amber);letter-spacing:.03em}
+.hud-label{font-size:10px;color:#8a8d92;letter-spacing:.12em;text-transform:uppercase}
+#title{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:#e8e6e0}
+#resetBtn{background:var(--steel3);border:1px solid #4a4e53;border-radius:6px;width:38px;height:38px;font-size:18px;cursor:pointer;color:#e8e6e0}
+#resetBtn:active{background:#40444a}
+
+#gridWrap{overflow:auto;border-radius:6px;border:2px solid #0e0f10;background:#0e0f10}
+#grid{display:grid;gap:2px;background:#0e0f10;touch-action:manipulation}
+.cell{
+  width:30px;height:30px;background:var(--steel2);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;
+  cursor:pointer;user-select:none;position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),inset 0 -2px 0 rgba(0,0,0,0.35);
+}
+.cell.revealed{background:#141516;box-shadow:inset 0 1px 4px rgba(0,0,0,0.6);cursor:default}
+.cell.mine{background:var(--red);color:#fff}
+.cell.mine.exploded{background:#fff;color:var(--red)}
+.cell.flag{background:var(--steel2)}
+.c1{color:#5b9dff}.c2{color:var(--safe)}.c3{color:#ff6b6b}.c4{color:#b28aff}
+.c5{color:#ffb020}.c6{color:#3fd7d0}.c7{color:#e8e6e0}.c8{color:#8a8d92}
+
+#modeRow{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.mode-btn{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--steel3);border:1px solid #4a4e53;color:#c8c6c0;border-radius:20px;padding:8px 16px;cursor:pointer}
+.mode-btn.active{background:var(--amber);color:#141516;border-color:var(--amber)}
+#flagHint{text-align:center;font-size:10px;color:#7a7d82;margin-top:8px;letter-spacing:.03em}
+
+.overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(6,7,7,0.92);gap:14px;text-align:center;padding:20px}
+.overlay.hidden{display:none}
+.overlay h1{font-family:'Oswald',sans-serif;font-size:clamp(24px,7vw,34px);letter-spacing:.08em;text-transform:uppercase;margin:0}
+.overlay p{color:#9a9da2;font-size:13px;margin:0}
+.btn{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--amber);color:#141516;border:none;padding:12px 28px;border-radius:6px;cursor:pointer}
+.btn:active{transform:scale(.97)}
+
+/* INTRO SPLASH */
+#nv-intro{position:fixed;inset:0;background:#0c0d0e;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;overflow:hidden}
+#nv-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,176,32,0.12),transparent 70%)}
+#ni-logos{display:flex;align-items:center;gap:22px;opacity:0;transform:scale(.92) translateY(12px);transition:all .85s cubic-bezier(.34,1.1,.64,1)}
+#ni-logos img{height:min(64px,13vw);width:min(64px,13vw);object-fit:contain}
+#ni-div{width:1px;height:44px;background:linear-gradient(180deg,transparent,rgba(255,176,32,.7),transparent)}
+#ni-title{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;color:#fff;margin-top:20px;opacity:0;transition:opacity .5s ease .65s;text-transform:uppercase}
+#ni-sub{font-family:'JetBrains Mono',monospace;font-weight:400;font-size:10px;color:#8a7a5a;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .72s}
+#ni-bar{width:min(160px,44vw);height:5px;background:#241f18;border-radius:8px;margin-top:28px;overflow:hidden;opacity:0;transition:opacity .3s ease .8s}
+#ni-progress{height:100%;width:0%;background:var(--amber);box-shadow:0 0 12px var(--amber);transition:width 1.05s ease .88s}
+
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important}}
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <div id="nv-intro">
+    <div id="ni-logos">
+      <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+      <div id="ni-div"></div>
+      <img src="../games/minesweeper-logo.svg" alt="Minesweeper" style="border-radius:16px;box-shadow:0 0 24px rgba(255,176,32,0.35)"/>
+    </div>
+    <div id="ni-title">MINESWEEPER</div>
+    <div id="ni-sub">An Ajora Games Arcade Title</div>
+    <div id="ni-bar"><div id="ni-progress"></div></div>
+  </div>
+  <script>
+  (function(){
+    var logos=document.getElementById('ni-logos');
+    setTimeout(function(){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';},120);
+    var title=document.getElementById('ni-title'),sub=document.getElementById('ni-sub'),bar=document.getElementById('ni-bar'),prog=document.getElementById('ni-progress');
+    setTimeout(function(){title.style.opacity='1';},650);
+    setTimeout(function(){sub.style.opacity='1';},720);
+    setTimeout(function(){bar.style.opacity='1';},800);
+    setTimeout(function(){prog.style.width='100%';},840);
+    setTimeout(function(){
+      var intro=document.getElementById('nv-intro');
+      intro.style.transition='opacity .45s ease';
+      intro.style.opacity='0';
+      setTimeout(function(){intro.style.display='none';},450);
+    },2100);
+  })();
+  </script>
+
+  <div id="panel">
+    <div class="hazard-top"></div>
+    <div id="hud">
+      <div class="hud-box"><span>💣</span><b id="mineCount">10</b></div>
+      <div id="title">MINESWEEPER</div>
+      <button id="resetBtn">↻</button>
+      <div class="hud-box"><span class="hud-label">TIME</span><b id="timer">0</b></div>
+    </div>
+    <div id="gridWrap"><div id="grid"></div></div>
+    <div id="modeRow">
+      <button class="mode-btn active" data-diff="easy">Easy 9×9</button>
+      <button class="mode-btn" data-diff="med">Medium 12×12</button>
+      <button class="mode-btn" data-diff="hard">Hard 16×16</button>
+    </div>
+    <div id="flagHint">Tap to reveal · long-press or use 🚩 mode to flag</div>
+  </div>
+
+  <div id="winOverlay" class="overlay hidden">
+    <h1 style="color:var(--safe)">GRID CLEARED</h1>
+    <p id="winTime">Time: 0s</p>
+    <button class="btn" id="winRetry">PLAY AGAIN</button>
+  </div>
+  <div id="loseOverlay" class="overlay hidden">
+    <h1 style="color:var(--red)">BOOM</h1>
+    <p>You hit a mine.</p>
+    <button class="btn" id="loseRetry">TRY AGAIN</button>
+  </div>
+</div>
+
+<a href="../games/" id="ajora-back-badge" style="position:fixed;top:14px;right:14px;z-index:2147483647;display:flex;align-items:center;gap:7px;background:rgba(12,13,14,0.8);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,176,32,0.25);border-radius:999px;padding:6px 14px 6px 6px;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.02em;color:#e8e6e0;opacity:.78;transition:opacity .15s ease;line-height:1;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.78'">
+  <img src="../ajora-logo-transparent.png" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:5px;display:block;pointer-events:none"/>
+  <span style="pointer-events:none">Ajora Games</span>
+</a>
+
+<script>
+(function(){
+  var grid=document.getElementById('grid');
+  var rows,cols,mines,board,revealedCount,flagCount,gameOver,gameWon,timerInt,seconds,firstClick,flagMode=false;
+
+  var DIFFS={
+    easy:{rows:9,cols:9,mines:10},
+    med:{rows:12,cols:12,mines:24},
+    hard:{rows:16,cols:16,mines:50}
+  };
+  var currentDiff='easy';
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      currentDiff=btn.getAttribute('data-diff');
+      init();
+    });
+  });
+
+  function cellSize(){
+    var d=DIFFS[currentDiff];
+    var avail=Math.min(window.innerWidth,window.innerHeight)-100;
+    return Math.max(18,Math.min(30,Math.floor(avail/d.cols)));
+  }
+
+  function init(){
+    var d=DIFFS[currentDiff];
+    rows=d.rows; cols=d.cols; mines=d.mines;
+    board=[]; revealedCount=0; flagCount=0; gameOver=false; gameWon=false; firstClick=true; seconds=0;
+    clearInterval(timerInt);
+    document.getElementById('timer').textContent='0';
+    document.getElementById('mineCount').textContent=mines;
+    document.getElementById('winOverlay').classList.add('hidden');
+    document.getElementById('loseOverlay').classList.add('hidden');
+
+    for(var r=0;r<rows;r++){
+      var row=[];
+      for(var c=0;c<cols;c++){ row.push({mine:false,revealed:false,flag:false,count:0}); }
+      board.push(row);
+    }
+
+    var cs=cellSize();
+    grid.style.gridTemplateColumns='repeat('+cols+', '+cs+'px)';
+    grid.innerHTML='';
+    for(var r2=0;r2<rows;r2++){
+      for(var c2=0;c2<cols;c2++){
+        var el=document.createElement('div');
+        el.className='cell';
+        el.style.width=cs+'px'; el.style.height=cs+'px'; el.style.fontSize=Math.floor(cs*0.46)+'px';
+        el.dataset.r=r2; el.dataset.c=c2;
+        el.addEventListener('click',onCellClick);
+        el.addEventListener('contextmenu',function(e){e.preventDefault(); onCellFlag(e);});
+        var pressTimer=null;
+        el.addEventListener('touchstart',function(e){
+          var target=e.currentTarget;
+          pressTimer=setTimeout(function(){ toggleFlagAt(target); pressTimer=null; },420);
+        },{passive:true});
+        el.addEventListener('touchend',function(e){
+          if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; onCellClick(e); }
+        });
+        grid.appendChild(el);
+      }
+    }
+  }
+
+  function placeMines(avoidR,avoidC){
+    var placed=0;
+    while(placed<mines){
+      var r=Math.floor(Math.random()*rows), c=Math.floor(Math.random()*cols);
+      if(board[r][c].mine) continue;
+      if(Math.abs(r-avoidR)<=1 && Math.abs(c-avoidC)<=1) continue;
+      board[r][c].mine=true; placed++;
+    }
+    for(var r2=0;r2<rows;r2++){
+      for(var c2=0;c2<cols;c2++){
+        if(board[r2][c2].mine) continue;
+        board[r2][c2].count=neighbors(r2,c2).filter(function(n){return board[n.r][n.c].mine;}).length;
+      }
+    }
+  }
+
+  function neighbors(r,c){
+    var res=[];
+    for(var dr=-1;dr<=1;dr++) for(var dc=-1;dc<=1;dc++){
+      if(dr===0&&dc===0) continue;
+      var nr=r+dr, nc=c+dc;
+      if(nr>=0&&nr<rows&&nc>=0&&nc<cols) res.push({r:nr,c:nc});
+    }
+    return res;
+  }
+
+  function startTimer(){
+    timerInt=setInterval(function(){ seconds++; document.getElementById('timer').textContent=seconds; },1000);
+  }
+
+  function onCellClick(e){
+    if(gameOver||gameWon) return;
+    var el=e.currentTarget || e.target;
+    if(!el.dataset) return;
+    var r=parseInt(el.dataset.r,10), c=parseInt(el.dataset.c,10);
+    if(flagMode){ toggleFlagAt(el); return; }
+    if(board[r][c].flag) return;
+    if(firstClick){ placeMines(r,c); firstClick=false; startTimer(); }
+    reveal(r,c);
+    render();
+    checkWin();
+  }
+
+  function onCellFlag(e){
+    if(gameOver||gameWon) return;
+    var el=e.currentTarget || e.target;
+    toggleFlagAt(el);
+  }
+
+  function toggleFlagAt(el){
+    if(gameOver||gameWon||!el.dataset) return;
+    var r=parseInt(el.dataset.r,10), c=parseInt(el.dataset.c,10);
+    if(board[r][c].revealed) return;
+    board[r][c].flag=!board[r][c].flag;
+    flagCount+=board[r][c].flag?1:-1;
+    document.getElementById('mineCount').textContent=(mines-flagCount);
+    render();
+  }
+
+  function reveal(r,c){
+    if(r<0||r>=rows||c<0||c>=cols) return;
+    var cell=board[r][c];
+    if(cell.revealed||cell.flag) return;
+    cell.revealed=true; revealedCount++;
+    if(cell.mine){ triggerLose(r,c); return; }
+    if(cell.count===0){
+      neighbors(r,c).forEach(function(n){ reveal(n.r,n.c); });
+    }
+  }
+
+  function triggerLose(er,ec){
+    gameOver=true; clearInterval(timerInt);
+    for(var r=0;r<rows;r++) for(var c=0;c<cols;c++){ if(board[r][c].mine) board[r][c].revealed=true; }
+    render();
+    var exploded=document.querySelector('[data-r="'+er+'"][data-c="'+ec+'"]');
+    if(exploded) exploded.classList.add('exploded');
+    setTimeout(function(){ document.getElementById('loseOverlay').classList.remove('hidden'); },350);
+  }
+
+  function checkWin(){
+    if(revealedCount===rows*cols-mines){
+      gameWon=true; clearInterval(timerInt);
+      document.getElementById('winTime').textContent='Time: '+seconds+'s';
+      setTimeout(function(){ document.getElementById('winOverlay').classList.remove('hidden'); },250);
+    }
+  }
+
+  function render(){
+    for(var r=0;r<rows;r++){
+      for(var c=0;c<cols;c++){
+        var el=document.querySelector('[data-r="'+r+'"][data-c="'+c+'"]');
+        if(!el) continue;
+        var cell=board[r][c];
+        el.className='cell';
+        el.textContent='';
+        if(cell.revealed){
+          el.classList.add('revealed');
+          if(cell.mine){ el.classList.add('mine'); el.textContent='💣'; }
+          else if(cell.count>0){ el.textContent=cell.count; el.classList.add('c'+cell.count); }
+        } else if(cell.flag){
+          el.classList.add('flag'); el.textContent='🚩';
+        }
+      }
+    }
+  }
+
+  document.getElementById('resetBtn').addEventListener('click',init);
+  document.getElementById('winRetry').addEventListener('click',init);
+  document.getElementById('loseRetry').addEventListener('click',init);
+  window.addEventListener('resize',function(){ /* keep board, just relies on scroll for overflow */ });
+
+  init();
+})();
+</script>
+</body>
+</html>

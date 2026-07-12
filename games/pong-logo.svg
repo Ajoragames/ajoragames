@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#08130a" />
+      <stop offset="100%" stop-color="#030a05" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <rect x="24" y="24" width="464" height="464" rx="88" fill="none" stroke="#39ff5a" stroke-width="4" stroke-opacity="0.25" />
+  <g transform="translate(256,220)" fill="#39ff5a" filter="url(#glow)">
+    <rect x="-110" y="-60" width="18" height="70" rx="6"/>
+    <rect x="92" y="-10" width="18" height="70" rx="6"/>
+    <circle cx="0" cy="0" r="14"/>
+  </g>
+  <text x="256" y="445" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="32" letter-spacing="16" opacity="0.9">PONG</text>
+  <text x="256" y="475" text-anchor="middle" fill="#39ff5a" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="22" letter-spacing="0" filter="url(#glow)"></text>
+</svg>

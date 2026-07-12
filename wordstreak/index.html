@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Word Streak | Ajora Games</title>
+<meta name="description" content="One five-letter word a day. Six guesses. Keep your streak alive."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0d0c0c;--ink2:#161413;--ink3:#211e1b;
+  --paper:#ede7dc;--paper-dim:#c9c1b2;
+  --red:#c81d3a;--red2:#8f1428;--amber:#ffb020;--green:#4ADE80;
+  --line:#3f3a34;
+  --display:'Big Shoulders Display',sans-serif;
+  --mono:'Space Mono',monospace;
+  --data:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--ink);color:var(--paper);font-family:var(--mono);
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;
+  min-height:100%;padding:24px 14px 40px;
+}
+h1{
+  font-family:var(--display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(28px,6vw,44px);letter-spacing:.02em;margin:6px 0 2px;
+}
+h1 em{font-style:normal;color:var(--green)}
+.tagline{font-family:var(--data);font-size:12px;color:var(--paper-dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;text-align:center}
+
+.hud{display:flex;gap:10px;margin-bottom:18px;font-family:var(--data);font-size:12px}
+.chip{background:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:7px 14px;display:flex;gap:6px;align-items:center}
+.chip b{color:var(--amber);font-weight:800}
+
+.grid{display:grid;grid-template-rows:repeat(6,1fr);gap:6px;margin-bottom:20px}
+.row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.tile{
+  width:min(13vw,54px);height:min(13vw,54px);
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--line);border-radius:6px;
+  font-family:var(--display);font-weight:800;font-size:clamp(18px,5vw,26px);
+  color:var(--paper);text-transform:uppercase;background:var(--ink2);
+  transition:transform .15s ease;
+}
+.tile.filled{border-color:#5c574f}
+.tile.pop{animation:pop .1s ease}
+@keyframes pop{50%{transform:scale(1.08)}}
+.tile.flip{animation:flip .5s ease forwards}
+@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.tile.correct{background:var(--green);border-color:var(--green);color:var(--ink)}
+.tile.present{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+.tile.absent{background:var(--ink3);border-color:var(--ink3);color:#7a746a}
+
+.keyboard{display:flex;flex-direction:column;gap:6px;width:min(96vw,480px)}
+.krow{display:flex;gap:5px;justify-content:center}
+.key{
+  font-family:var(--data);font-weight:700;font-size:12px;text-transform:uppercase;
+  background:var(--ink2);color:var(--paper);border:1px solid var(--line);border-radius:6px;
+  padding:14px 0;flex:1;min-width:0;cursor:pointer;user-select:none;
+}
+.key.wide{flex:1.6;font-size:10px}
+.key.correct{background:var(--green);border-color:var(--green);color:var(--ink)}
+.key.present{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+.key.absent{background:var(--ink3);border-color:var(--ink3);color:#5c574f}
+.key:hover{border-color:var(--amber)}
+
+.toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  background:var(--paper);color:var(--ink);font-family:var(--data);font-weight:700;font-size:13px;
+  padding:10px 18px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:1200;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.toast.show{opacity:1}
+
+.win-overlay{
+  position:fixed;inset:0;background:rgba(8,8,8,.9);display:none;align-items:center;justify-content:center;
+  z-index:1100;flex-direction:column;gap:10px;text-align:center;padding:20px;
+}
+.win-overlay.show{display:flex}
+.win-overlay h2{font-family:var(--display);font-weight:900;font-size:clamp(30px,7vw,52px);margin:0;text-transform:uppercase}
+.win-overlay p{font-family:var(--data);color:var(--paper-dim);font-size:13px;max-width:320px}
+.win-overlay button{
+  font-family:var(--data);font-weight:700;background:var(--red);border:1px solid var(--red);color:var(--paper);
+  border-radius:8px;padding:12px 22px;cursor:pointer;margin-top:6px;text-transform:uppercase;font-size:12px;letter-spacing:.06em;
+}
+
+#ajora-back-badge{
+  position:fixed;top:14px;right:14px;z-index:1000;display:flex;align-items:center;gap:7px;
+  background:rgba(8,8,8,0.72);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.14);
+  border-radius:999px;padding:6px 14px 6px 6px;text-decoration:none;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:600;
+  color:#e8e8ec;opacity:.78;transition:opacity .15s ease;line-height:1;
+}
+#ajora-back-badge:hover{opacity:1}
+#ajora-back-badge img{width:18px;height:18px;object-fit:contain;border-radius:5px;display:block}
+</style>
+</head>
+<body>
+
+<a href="../games/" id="ajora-back-badge">
+  <img src="../ajora-logo-transparent.png" alt=""/>
+  <span>Ajora Games</span>
+</a>
+
+<h1>WORD <em>STREAK</em></h1>
+<div class="tagline">One word a day. Six guesses. Don't break the chain.</div>
+
+<div class="hud">
+  <div class="chip">Streak <b id="streak">0</b></div>
+  <div class="chip">Best <b id="bestStreak">0</b></div>
+  <div class="chip">Played <b id="played">0</b></div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="keyboard" id="keyboard"></div>
+<div class="toast" id="toast"></div>
+
+<div class="win-overlay" id="winOverlay">
+  <h2 id="winTitle">Solved!</h2>
+  <p id="winText"></p>
+  <p style="font-size:11px;color:#5c574f">Come back tomorrow for a new word \u2014 your streak is saved.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var WORDS = ["about","above","abuse","actor","acute","admit","adopt","adult","after","again",
+  "agent","agree","ahead","alarm","album","alert","alike","alive","allow","alone",
+  "along","alter","among","anger","angle","angry","apart","apple","apply","arena",
+  "argue","arise","array","aside","asset","avoid","awake","award","aware","badly",
+  "baker","bases","basic","basis","beach","began","begin","begun","being","below",
+  "bench","birth","black","blade","blame","blank","blast","blend","blind","block",
+  "blood","board","boost","booth","bound","brain","brand","brave","bread","break",
+  "breed","brief","bring","broad","broke","brown","brush","build","built","bunch",
+  "burst","buyer","cable","calif","carry","catch","cause","chain","chair","chaos",
+  "charm","chart","chase","cheap","check","chest","chief","child","chose","civil",
+  "claim","class","clean","clear","climb","clock","close","cloud","coach","coast",
+  "could","count","court","cover","craft","crash","crazy","cream","crime","cross",
+  "crowd","crown","curve","cycle","daily","dance","dealt","death","debut","delay",
+  "depth","doubt","dozen","draft","drama","drawn","dream","dress","drill","drink",
+  "drive","eager","early","earth","eight","elite","empty","enemy","enjoy","enter",
+  "entry","equal","error","event","every","exact","exist","extra","faith","false",
+  "fault","favor","fence","fewer","field","fifth","fight","final","first","fixed",
+  "flame","flash","fleet","floor","fluid","focus","force","forge","forth","forty",
+  "forum","found","frame","fraud","fresh","front","frost","fruit","fully","funny",
+  "genre","ghost","giant","given","glass","globe","glory","grace","grade","grain",
+  "grand","grant","grasp","grass","great","green","greet","grief","grill","gross",
+  "group","grown","guard","guess","guest","guide","habit","happy","harsh","haste",
+  "heart","heavy","hobby","hoist","honor","horse","hotel","house","human","humor",
+  "ideal","image","imply","index","inner","input","issue","joint","judge","juice",
+  "known","label","large","laser","later","laugh","layer","learn","least","level",
+  "light","limit","logic","loose","lower","loyal","lucky","lunar","lunch","magic",
+  "major","maker","march","match","maybe","mayor","medal","media","metal","meter",
+  "might","minor","minus","mixed","model","month","moral","motor","mount","mouse",
+  "mouth","movie","music","naval","nerve","never","newly","noble","noise","north",
+  "novel","nurse","occur","ocean","offer","often","order","organ","other","ought",
+  "outer","owner","paint","panel","panic","paper","party","pause","peace","phase",
+  "phone","photo","piece","pilot","pitch","pixel","place","plain","plane","plant",
+  "plate","point","pound","power","press","pride","prime","print","prior","prize",
+  "proof","proud","prove","pulse","punch","pupil","quest","queue","quick","quiet",
+  "quite","radio","raise","range","rapid","ratio","reach","react","ready","realm",
+  "rebel","refer","relax","reply","right","rigid","rival","river","robot","rocky",
+  "roman","rough","round","route","royal","rural","sadly","salad","sauce","scale",
+  "scene","scope","score","sense","serve","seven","shade","shake","shall","shape",
+  "share","shark","sharp","sheet","shelf","shift","shine","shirt","shock","shoot",
+  "shore","short","shown","sight","silly","since","sixth","skill","slate","sleep",
+  "slice","slide","small","smart","smile","smoke","snack","solar","solid","solve",
+  "sonic","sorry","sound","south","space","spare","spark","speak","speed","spend",
+  "spent","spike","spine","split","spoke","sport","spray","squad","stack","staff",
+  "stage","stake","stand","start","state","steam","steel","stick","still","stock",
+  "stone","store","storm","story","strip","study","stuff","style","sugar","suite",
+  "sunny","super","sweep","sweet","swift","swing","sword","table","taste","teach",
+  "テ","theme","thick","thing","think","third","those","three","threw","throw",
+  "thumb","tiger","tight","timer","tired","title","today","token","topic","total",
+  "touch","tough","tower","toxic","trace","track","trade","trail","train","trait",
+  "trend","trial","tribe","trick","truck","truly","trust","truth","tumor","tutor",
+  "twice","under","union","unity","until","upper","upset","urban","usage","usual",
+  "valid","value","vapor","vault","venue","verse","video","virus","visit","vital",
+  "vivid","vocal","voice","waste","watch","water","weigh","weird","wheel","where",
+  "which","while","white","whole","whose","woman","world","worry","worse","worth",
+  "would","wound","wreck","wrist","write","wrong","yield","young","youth"];
+  // remove the stray non-ascii placeholder above defensively
+  WORDS = WORDS.filter(function(w){ return /^[a-z]{5}$/.test(w); });
+
+  var STORAGE_KEY = 'ajoraWordStreak_v1';
+  var MAX_GUESSES = 6;
+  var WORD_LEN = 5;
+
+  function dayIndex(){
+    var epoch = new Date(2024,0,1);
+    var now = new Date();
+    var utcNow = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    var utcEpoch = Date.UTC(epoch.getFullYear(), epoch.getMonth(), epoch.getDate());
+    return Math.floor((utcNow - utcEpoch) / 86400000);
+  }
+  function todayKey(){
+    var now = new Date();
+    return now.getFullYear()+'-'+(now.getMonth()+1)+'-'+now.getDate();
+  }
+  function getTargetWord(){
+    var i = dayIndex() % WORDS.length;
+    if (i < 0) i += WORDS.length;
+    return WORDS[i];
+  }
+
+  var state = loadState();
+  var target = getTargetWord();
+  var guesses = state.day === todayKey() ? state.guesses : [];
+  var finished = state.day === todayKey() ? state.finished : false;
+  var won = state.day === todayKey() ? state.won : false;
+  var currentGuess = '';
+
+  var gridEl = document.getElementById('grid');
+  var keyboardEl = document.getElementById('keyboard');
+  var toastEl = document.getElementById('toast');
+  var winOverlay = document.getElementById('winOverlay');
+
+  function loadState(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { day:'', guesses:[], finished:false, won:false, streak:0, best:0, played:0 };
+      var parsed = JSON.parse(raw);
+      parsed.streak = parsed.streak || 0;
+      parsed.best = parsed.best || 0;
+      parsed.played = parsed.played || 0;
+      return parsed;
+    } catch(e){
+      return { day:'', guesses:[], finished:false, won:false, streak:0, best:0, played:0 };
+    }
+  }
+  function saveState(){
+    state.day = todayKey();
+    state.guesses = guesses;
+    state.finished = finished;
+    state.won = won;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+    updateHud();
+  }
+  function updateHud(){
+    document.getElementById('streak').textContent = state.streak;
+    document.getElementById('bestStreak').textContent = state.best;
+    document.getElementById('played').textContent = state.played;
+  }
+
+  function buildGrid(){
+    gridEl.innerHTML = '';
+    for (var r=0;r<MAX_GUESSES;r++){
+      var row = document.createElement('div');
+      row.className = 'row';
+      for (var c=0;c<WORD_LEN;c++){
+        var tile = document.createElement('div');
+        tile.className = 'tile';
+        row.appendChild(tile);
+      }
+      gridEl.appendChild(row);
+    }
+  }
+
+  var KEY_ROWS = [
+    ['q','w','e','r','t','y','u','i','o','p'],
+    ['a','s','d','f','g','h','j','k','l'],
+    ['enter','z','x','c','v','b','n','m','back']
+  ];
+  var keyState = {}; // letter -> 'correct'|'present'|'absent'
+
+  function buildKeyboard(){
+    keyboardEl.innerHTML = '';
+    KEY_ROWS.forEach(function(rowKeys){
+      var row = document.createElement('div');
+      row.className = 'krow';
+      rowKeys.forEach(function(k){
+        var btn = document.createElement('div');
+        btn.className = 'key' + ((k==='enter'||k==='back') ? ' wide' : '');
+        btn.textContent = k === 'back' ? 'DEL' : (k === 'enter' ? 'GO' : k);
+        btn.dataset.key = k;
+        btn.addEventListener('click', function(){ handleKey(k); });
+        row.appendChild(btn);
+      });
+      keyboardEl.appendChild(row);
+    });
+  }
+
+  function evaluateGuess(guess){
+    var result = new Array(WORD_LEN).fill('absent');
+    var targetArr = target.split('');
+    var used = new Array(WORD_LEN).fill(false);
+    for (var i=0;i<WORD_LEN;i++){
+      if (guess[i] === targetArr[i]){ result[i] = 'correct'; used[i] = true; }
+    }
+    for (var j=0;j<WORD_LEN;j++){
+      if (result[j] === 'correct') continue;
+      var found = false;
+      for (var k=0;k<WORD_LEN;k++){
+        if (!used[k] && targetArr[k] === guess[j]){ used[k] = true; found = true; break; }
+      }
+      result[j] = found ? 'present' : 'absent';
+    }
+    return result;
+  }
+
+  function renderGrid(){
+    var rows = gridEl.children;
+    for (var r=0;r<MAX_GUESSES;r++){
+      var tiles = rows[r].children;
+      var word = guesses[r] ? guesses[r].word : (r === guesses.length ? currentGuess : '');
+      var evalResult = guesses[r] ? guesses[r].result : null;
+      for (var c=0;c<WORD_LEN;c++){
+        var tile = tiles[c];
+        var ch = word[c] || '';
+        tile.textContent = ch;
+        tile.className = 'tile' + (ch ? ' filled' : '');
+        if (evalResult) tile.classList.add(evalResult[c]);
+      }
+    }
+  }
+
+  function renderKeyboard(){
+    var allBtns = keyboardEl.querySelectorAll('.key');
+    allBtns.forEach(function(btn){
+      var k = btn.dataset.key;
+      btn.classList.remove('correct','present','absent');
+      if (keyState[k]) btn.classList.add(keyState[k]);
+    });
+  }
+
+  function applyKeyState(guess, result){
+    for (var i=0;i<guess.length;i++){
+      var ch = guess[i], r = result[i];
+      var rank = { absent:0, present:1, correct:2 };
+      if (!keyState[ch] || rank[r] > rank[keyState[ch]]) keyState[ch] = r;
+    }
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(function(){ toastEl.classList.remove('show'); }, 1300);
+  }
+
+  function handleKey(k){
+    if (finished) return;
+    if (k === 'back'){
+      currentGuess = currentGuess.slice(0, -1);
+      renderGrid();
+      return;
+    }
+    if (k === 'enter'){
+      submitGuess();
+      return;
+    }
+    if (currentGuess.length < WORD_LEN){
+      currentGuess += k;
+      renderGrid();
+    }
+  }
+
+  function submitGuess(){
+    if (currentGuess.length !== WORD_LEN){
+      showToast('Not enough letters');
+      return;
+    }
+    var result = evaluateGuess(currentGuess);
+    guesses.push({ word: currentGuess, result: result });
+    applyKeyState(currentGuess, result);
+    var isWin = currentGuess === target;
+    currentGuess = '';
+    renderGrid();
+    renderKeyboard();
+
+    if (isWin){
+      finished = true;
+      won = true;
+      state.streak += 1;
+      state.best = Math.max(state.best, state.streak);
+      state.played += 1;
+      saveState();
+      setTimeout(function(){
+        document.getElementById('winTitle').textContent =
+          guesses.length === 1 ? 'Genius!' : guesses.length <= 3 ? 'Great!' : 'Solved!';
+        document.getElementById('winText').textContent =
+          'You got it in ' + guesses.length + '/' + MAX_GUESSES + '. Streak: ' + state.streak + '.';
+        winOverlay.classList.add('show');
+      }, 700);
+    } else if (guesses.length >= MAX_GUESSES){
+      finished = true;
+      won = false;
+      state.streak = 0;
+      state.played += 1;
+      saveState();
+      setTimeout(function(){
+        document.getElementById('winTitle').textContent = 'So Close';
+        document.getElementById('winText').textContent =
+          'The word was ' + target.toUpperCase() + '. Streak reset \u2014 come back tomorrow.';
+        winOverlay.classList.add('show');
+      }, 700);
+    }
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (finished) return;
+    var k = e.key.toLowerCase();
+    if (k === 'enter') handleKey('enter');
+    else if (k === 'backspace') handleKey('back');
+    else if (/^[a-z]$/.test(k)) handleKey(k);
+  });
+
+  // rebuild key state from existing guesses (e.g. on reload same day)
+  function rebuildKeyStateFromHistory(){
+    keyState = {};
+    guesses.forEach(function(g){ applyKeyState(g.word, g.result); });
+  }
+
+  buildGrid();
+  buildKeyboard();
+  rebuildKeyStateFromHistory();
+  renderGrid();
+  renderKeyboard();
+  updateHud();
+
+  if (finished){
+    setTimeout(function(){
+      document.getElementById('winTitle').textContent = won ? 'Already Solved' : 'Already Played';
+      document.getElementById('winText').textContent = won ?
+        ('You solved today\'s word in ' + guesses.length + '/' + MAX_GUESSES + '. Streak: ' + state.streak + '.') :
+        ('Today\'s word was ' + target.toUpperCase() + '. Come back tomorrow.');
+      winOverlay.classList.add('show');
+    }, 300);
+  }
+})();
+</script>
+
+</body>
+</html>

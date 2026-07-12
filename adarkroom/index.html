@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html itemscope itemtype="https://schema.org/CreativeWork">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+	<!--  
+		A Dark Room (v1.4)
+		==================
+		
+		A minimalist text adventure by Michael Townsend and all his friends.
+		Inspired by Candy Box (https://candybox2.github.io/candybox)
+		Contribute on GitHub! (https://github.com/doublespeakgames/adarkroom/)
+	-->
+	<title>A Dark Room | Ajora Games</title>
+	<meta itemprop="description" name="description" property="og:description" content="A minimalist text adventure">
+	<meta itemprop="image" property="og:image" content="img/adr.png" />
+	<meta itemprop="name" property="og:title" content="A Dark Room" />
+	<link rel="shortcut icon" href="favicon.ico" />
+	<link rel="image_src" href="img/adr.png" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script>
+		if(!window.jQuery) {
+			document.write('<script src="lib/jquery.min.js"><\/script>')
+		}
+	</script>
+	<script src="lib/jquery.color-2.1.2.min.js"></script>
+	<script src="lib/jquery.event.move.js"></script>
+	<script src="lib/jquery.event.swipe.js"></script>
+	<script src="lib/base64.js"></script>
+	<script src="lib/translate.js"></script>
+	
+	<script src="lang/langs.js"></script>
+	
+	<script>
+		// try to read "lang" param's from url
+		var lang = decodeURIComponent((new RegExp('[?|&]lang=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+		// if no language requested, try to read it from local storage
+		if(!lang){
+			try {
+				lang = localStorage.lang;
+			} catch(e) {}
+		}
+		// if a language different than english requested, load all translations
+		if(lang && lang != 'en'){
+			document.write('<script src="lang/'+lang+'/strings.js"><\/script>');
+			document.write('<link rel="stylesheet" type="text/css" href="lang/'+lang+'/main.css" \/>');
+		}
+	</script>
+	
+	<script src="script/Button.js"></script>
+	<script src="script/audioLibrary.js"></script>
+	<script src="script/audio.js"></script>
+	<script src="script/engine.js"></script>
+	<script src="script/state_manager.js"></script>
+	<script src="script/header.js"></script>
+	<script src="script/notifications.js"></script>
+	<script src="script/events.js"></script>
+	<script src="script/room.js"></script>
+	<script src="script/outside.js"></script>
+	<script src="script/world.js"></script>
+	<script src="script/path.js"></script>
+	<script src="script/ship.js"></script>
+  <script src="script/space.js"></script>
+  <script src="script/fabricator.js"></script>
+	<script src="script/prestige.js"></script>
+	<script src="script/scoring.js"></script>
+	<!-- Event modules -->
+	<script src="script/events/global.js"></script>
+	<script src="script/events/room.js"></script>
+	<script src="script/events/outside.js"></script>
+	<script src="script/events/encounters.js"></script>
+  <script src="script/events/setpieces.js"></script>
+  <script src="script/events/marketing.js"></script>
+	<script src="script/events/executioner.js"></script>
+	
+	<script type='text/javascript'>
+		var oldIE = false;
+	</script>
+	<!--[if lt IE 9]> 
+		<script type="text/javascript">oldIE = true;</script> 
+	<![endif]-->
+	
+	<link rel="stylesheet" type="text/css" href="css/main.css" />
+	<link rel="stylesheet" type="text/css" href="css/room.css" />
+	<link rel="stylesheet" type="text/css" href="css/outside.css" />
+	<link rel="stylesheet" type="text/css" href="css/path.css" />
+	<link rel="stylesheet" type="text/css" href="css/world.css" />
+	<link rel="stylesheet" type="text/css" href="css/ship.css" />
+  <link rel="stylesheet" type="text/css" href="css/space.css" />
+  <link rel="stylesheet" type="text/css" href="css/fabricator.css" />
+	
+	<script src="script/localization.js"></script>
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-606P6J79WH"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-606P6J79WH');
+	</script>
+	
+</head>
+<body>
+<div id="ajora-intro" style="position:fixed;inset:0;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2147483647;overflow:hidden">
+  <div style="position:absolute;inset:0;opacity:.5;background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.05%22/%3E%3C/svg%3E');pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(8,8,8,0.9) 100%);pointer-events:none"></div>
+  <div id="ai-glow" style="position:absolute;width:500px;height:250px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,154,61,0.28) 0%,transparent 70%);filter:blur(40px);opacity:0;transition:opacity 1.2s ease .6s;pointer-events:none"></div>
+
+  <div id="ai-logos" style="display:flex;align-items:center;justify-content:center;gap:24px;opacity:0;transform:scale(0.92) translateY(14px);transition:all .85s cubic-bezier(.34,1.1,.64,1)">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games" style="height:min(64px,13vw);width:min(64px,13vw);object-fit:contain;display:block"/>
+    <div style="width:1px;height:min(48px,10vw);background:linear-gradient(180deg,transparent,rgba(255,154,61,0.7),transparent);flex-shrink:0"></div>
+    <img src="../games/adarkroom-logo.svg" alt="A Dark Room" style="height:min(64px,13vw);width:min(64px,13vw);object-fit:contain;display:block;border-radius:16px;box-shadow:0 0 24px rgba(255,154,61,0.35)"/>
+  </div>
+
+  <div id="ai-title" style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;font-size:15px;color:#e8e8ec;letter-spacing:.04em;margin-top:22px;opacity:0;transition:opacity .5s ease .68s">A Dark Room</div>
+  <div id="ai-sub" style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:600;font-size:10px;color:#606068;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .74s">An Ajora Games Title</div>
+
+  <div id="ai-bar" style="width:min(160px,44vw);height:6px;background:#1a1a22;border-radius:8px;margin-top:30px;overflow:hidden;opacity:0;transition:opacity .3s ease .82s">
+    <div id="ai-progress" style="height:100%;width:0%;background:#FF9A3D;transition:width 1.1s ease .92s;border-radius:8px"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var logos=document.getElementById('ai-logos');
+  var glow=document.getElementById('ai-glow');
+  var title=document.getElementById('ai-title');
+  var sub=document.getElementById('ai-sub');
+  var bar=document.getElementById('ai-bar');
+  var prog=document.getElementById('ai-progress');
+  setTimeout(function(){ if(logos){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';} },120);
+  setTimeout(function(){ if(glow)glow.style.opacity='1'; },450);
+  setTimeout(function(){ if(title)title.style.opacity='1'; },650);
+  setTimeout(function(){ if(sub)sub.style.opacity='1'; },720);
+  setTimeout(function(){ if(bar)bar.style.opacity='1'; },800);
+  setTimeout(function(){ if(prog)prog.style.width='100%'; },840);
+  setTimeout(function(){
+    var intro=document.getElementById('ajora-intro');
+    if(!intro)return;
+    intro.style.transition='opacity .45s ease';
+    intro.style.opacity='0';
+    setTimeout(function(){ intro.style.display='none'; },450);
+  },2100);
+})();
+</script>
+
+	<div id="wrapper">
+		<div id="saveNotify"><script>document.write(_("saved."));</script></div>
+		<div id="content">
+			<div id="outerSlider">
+				<div id="main">
+					<div id="header"></div>
+				</div>
+			</div>
+		</div>
+  </div>
+  <a class="logo" href="https://www.doublespeakgames.com" alt="doublespeak games" target="_blank">
+    <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 41.75 32.84375" class="logo-icon">
+      <path d="m 18.024533,28.5722 c 2.532365,-2.243 5.064679,-4.4861 7.596993,-6.7292 4.907813,0 9.815625,0 14.723438,0 0,-6.8136 0,-13.6272 0,-20.4408 -12.976656,0 -25.953312,0 -38.9299676,0 0,6.8136 0,13.6272 0,20.4408 3.2917905,0 6.5835811,0 9.8753716,0 -0.643311,2.2431 -1.286622,4.4861 -1.9299604,6.7292 2.5323644,-2.243 5.0646784,-4.4861 7.5969924,-6.7292 0.999066,0 1.998131,0 2.997197,0 -0.643345,2.2431 -1.286691,4.4861 -1.930064,6.7292 z" style="stroke-width:1.0;fill:none;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none"></path>
+    </svg>
+  </a>
+
+<a href="../games/" id="ajora-back-badge" style="position:fixed;top:14px;right:14px;z-index:2147483647;display:flex;align-items:center;gap:7px;background:rgba(8,8,8,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:6px 14px 6px 6px;text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:600;letter-spacing:.02em;color:#e8e8ec;opacity:.78;transition:opacity .15s ease,background .15s ease;line-height:1;" onmouseover="this.style.opacity='1';this.style.background='rgba(8,8,8,0.9)'" onmouseout="this.style.opacity='.78';this.style.background='rgba(8,8,8,0.72)'">
+  <img src="../ajora-logo-transparent.png" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:5px;display:block;pointer-events:none"/>
+  <span style="pointer-events:none">Ajora Games</span>
+</a>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+<title>Reflex Rush | Ajora Games</title>
+<meta name="description" content="Five lights, one reaction. Tap the instant it goes green. Jump early and you're disqualified. How fast are you really?"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --asphalt:#0a0a0d; --asphalt2:#141418;
+  --red:#ff2d3a; --amber:#ffb020; --green:#39ff5a;
+  --chrome:#8a8d94;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;color:#eee;-webkit-font-smoothing:antialiased;touch-action:none;
+}
+#wrap{position:relative;width:100vw;height:100vh;background:radial-gradient(ellipse 120% 80% at 50% -10%,#1a1a20,var(--asphalt) 60%);overflow:hidden;display:flex;flex-direction:column}
+#wrap::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.015) 0 2px,transparent 2px 60px);
+}
+
+#topbar{position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;pointer-events:none}
+#topbar a{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:8px;opacity:.85}
+.brand img{width:20px;height:20px;object-fit:contain;border-radius:5px}
+.brand b{font-family:'Teko',sans-serif;font-weight:600;font-size:15px;letter-spacing:.08em;color:#fff;text-transform:uppercase}
+.hud{display:flex;gap:12px;font-size:11px;font-weight:700;color:#eee;letter-spacing:.05em;background:rgba(0,0,0,0.5);padding:6px 12px;border:1px solid rgba(255,255,255,0.12);border-radius:6px}
+.hud b{color:var(--amber)}
+
+#stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;position:relative;z-index:2;padding:20px}
+
+/* CHRISTMAS TREE LIGHT TOWER */
+#tower{display:flex;flex-direction:column;gap:10px;background:#1a1a1e;padding:16px 22px;border-radius:10px;border:2px solid #2c2c32;box-shadow:0 20px 50px rgba(0,0,0,0.6)}
+.light-row{display:flex;gap:10px;justify-content:center}
+.bulb{width:28px;height:28px;border-radius:50%;background:#1f1f24;border:2px solid #33333a;transition:all .08s ease}
+.bulb.on-red{background:var(--red);box-shadow:0 0 22px var(--red),0 0 6px #fff inset}
+.bulb.on-amber{background:var(--amber);box-shadow:0 0 22px var(--amber),0 0 6px #fff inset}
+.bulb.on-green{background:var(--green);box-shadow:0 0 26px var(--green),0 0 8px #fff inset}
+
+#tapZone{
+  width:min(300px,80vw);height:min(300px,80vw);border-radius:50%;
+  background:var(--asphalt2);border:3px solid #2c2c32;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;user-select:none;transition:background .1s ease,border-color .1s ease;
+}
+#tapZone.armed{border-color:rgba(255,45,58,0.5)}
+#tapZone.go{background:radial-gradient(circle,#2a5c33,var(--asphalt2) 75%);border-color:var(--green)}
+#tapZone.jumped{background:radial-gradient(circle,#5c2a2a,var(--asphalt2) 75%);border-color:var(--red)}
+#tzLabel{font-family:'Teko',sans-serif;font-size:22px;letter-spacing:.1em;text-transform:uppercase;color:#c8c8cc}
+#tzMs{font-family:'Space Mono',monospace;font-size:clamp(36px,10vw,54px);font-weight:700;color:#fff}
+#tzSub{font-size:11px;color:#7a7a80;letter-spacing:.06em}
+
+#rounds{display:flex;gap:8px}
+.round-pip{width:10px;height:10px;border-radius:50%;background:#2c2c32;border:1px solid #3a3a40}
+.round-pip.done{background:var(--green)}
+.round-pip.active{background:var(--amber)}
+
+.overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,4,6,0.94);gap:14px;text-align:center;padding:24px}
+.overlay.hidden{display:none}
+.overlay h1{font-family:'Teko',sans-serif;font-size:clamp(30px,8vw,46px);letter-spacing:.06em;text-transform:uppercase;margin:0}
+.overlay p{color:#9a9da2;font-size:13px;margin:0;max-width:280px;line-height:1.5}
+.big-avg{font-family:'Space Mono',monospace;font-size:clamp(48px,13vw,72px);font-weight:700;color:var(--green);margin:0}
+.btn{font-family:'Teko',sans-serif;font-weight:600;font-size:18px;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--green);color:#04140a;border:none;padding:12px 32px;border-radius:6px;cursor:pointer}
+.btn:active{transform:scale(.97)}
+.btn.secondary{background:transparent;border:1px solid #444;color:#ccc}
+.btn-row{display:flex;gap:10px}
+
+/* INTRO SPLASH */
+#nv-intro{position:fixed;inset:0;background:#0a0a0d;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;overflow:hidden}
+#nv-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,45,58,0.14),transparent 70%)}
+#ni-logos{display:flex;align-items:center;gap:22px;opacity:0;transform:scale(.92) translateY(12px);transition:all .85s cubic-bezier(.34,1.1,.64,1)}
+#ni-logos img{height:min(64px,13vw);width:min(64px,13vw);object-fit:contain}
+#ni-div{width:1px;height:44px;background:linear-gradient(180deg,transparent,rgba(255,45,58,.7),transparent)}
+#ni-title{font-family:'Teko',sans-serif;font-weight:600;font-size:19px;letter-spacing:.1em;color:#fff;margin-top:20px;opacity:0;transition:opacity .5s ease .65s;text-transform:uppercase}
+#ni-sub{font-family:'Space Mono',monospace;font-weight:400;font-size:10px;color:#8a5a5a;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .72s}
+#ni-bar{width:min(160px,44vw);height:5px;background:#241818;border-radius:8px;margin-top:28px;overflow:hidden;opacity:0;transition:opacity .3s ease .8s}
+#ni-progress{height:100%;width:0%;background:var(--red);box-shadow:0 0 12px var(--red);transition:width 1.05s ease .88s}
+
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important}}
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <div id="nv-intro">
+    <div id="ni-logos">
+      <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+      <div id="ni-div"></div>
+      <img src="../games/reflexrush-logo.svg" alt="Reflex Rush" style="border-radius:16px;box-shadow:0 0 24px rgba(255,45,58,0.35)"/>
+    </div>
+    <div id="ni-title">REFLEX RUSH</div>
+    <div id="ni-sub">An Ajora Games Original</div>
+    <div id="ni-bar"><div id="ni-progress"></div></div>
+  </div>
+  <script>
+  (function(){
+    var logos=document.getElementById('ni-logos');
+    setTimeout(function(){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';},120);
+    var title=document.getElementById('ni-title'),sub=document.getElementById('ni-sub'),bar=document.getElementById('ni-bar'),prog=document.getElementById('ni-progress');
+    setTimeout(function(){title.style.opacity='1';},650);
+    setTimeout(function(){sub.style.opacity='1';},720);
+    setTimeout(function(){bar.style.opacity='1';},800);
+    setTimeout(function(){prog.style.width='100%';},840);
+    setTimeout(function(){
+      var intro=document.getElementById('nv-intro');
+      intro.style.transition='opacity .45s ease';
+      intro.style.opacity='0';
+      setTimeout(function(){intro.style.display='none';},450);
+    },2100);
+  })();
+  </script>
+
+  <div id="topbar">
+    <div class="brand"><img src="../ajora-logo-transparent.png" alt=""/><b>Reflex Rush</b></div>
+    <div class="hud">BEST <b id="hudBest">–</b> ms</div>
+  </div>
+
+  <div id="stage">
+    <div id="tower">
+      <div class="light-row"><div class="bulb" data-slot="0"></div><div class="bulb" data-slot="1"></div></div>
+      <div class="light-row"><div class="bulb" data-slot="2"></div><div class="bulb" data-slot="3"></div></div>
+      <div class="light-row"><div class="bulb" data-slot="4"></div></div>
+    </div>
+
+    <div id="tapZone">
+      <div id="tzLabel">GET READY</div>
+      <div id="tzMs">TAP TO START</div>
+      <div id="tzSub"></div>
+    </div>
+
+    <div id="rounds">
+      <div class="round-pip" data-r="0"></div><div class="round-pip" data-r="1"></div>
+      <div class="round-pip" data-r="2"></div><div class="round-pip" data-r="3"></div>
+      <div class="round-pip" data-r="4"></div>
+    </div>
+  </div>
+
+  <div id="jumpOverlay" class="overlay hidden">
+    <h1 style="color:var(--red)">TOO SOON</h1>
+    <p>You jumped the light. A real reaction only counts after green. Try that round again.</p>
+    <button class="btn" id="jumpRetry">RESET ROUND</button>
+  </div>
+
+  <div id="resultOverlay" class="overlay hidden">
+    <h1>RESULTS</h1>
+    <div class="big-avg" id="avgMs">0</div>
+    <p>Average reaction time across 5 rounds, in milliseconds.</p>
+    <p id="bestNote" style="color:var(--green);display:none">New personal best!</p>
+    <div class="btn-row">
+      <button class="btn" id="againBtn">RUN AGAIN</button>
+      <button class="btn secondary" id="shareBtn">SAVE SCORE CARD</button>
+    </div>
+  </div>
+</div>
+
+<a href="../games/" id="ajora-back-badge" style="position:fixed;top:14px;right:14px;z-index:2147483647;display:flex;align-items:center;gap:7px;background:rgba(10,10,13,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:6px 14px 6px 6px;text-decoration:none;font-family:'Space Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.02em;color:#eee;opacity:.78;transition:opacity .15s ease;line-height:1;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.78'">
+  <img src="../ajora-logo-transparent.png" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:5px;display:block;pointer-events:none"/>
+  <span style="pointer-events:none">Ajora Games</span>
+</a>
+
+<script>
+(function(){
+  var tapZone=document.getElementById('tapZone');
+  var tzLabel=document.getElementById('tzLabel');
+  var tzMs=document.getElementById('tzMs');
+  var tzSub=document.getElementById('tzSub');
+  var bulbs=document.querySelectorAll('.bulb');
+  var pips=document.querySelectorAll('.round-pip');
+
+  var BEST_KEY='ajora_reflex_best';
+  var best=localStorage.getItem(BEST_KEY);
+  document.getElementById('hudBest').textContent=best?best:'–';
+
+  var STATE_IDLE='idle', STATE_ARMED='armed', STATE_WAIT='wait', STATE_GO='go', STATE_DONE='done';
+  var state=STATE_IDLE;
+  var round=0, results=[], goTime=0, lightTimer=null;
+  var TOTAL_ROUNDS=5;
+
+  function resetLights(){
+    bulbs.forEach(function(b){ b.className='bulb'; });
+  }
+
+  function updatePips(){
+    pips.forEach(function(p,i){
+      p.classList.remove('done','active');
+      if(i<round) p.classList.add('done');
+      else if(i===round) p.classList.add('active');
+    });
+  }
+
+  function armRound(){
+    state=STATE_ARMED;
+    resetLights();
+    tapZone.className=''; tapZone.classList.add('armed');
+    tzLabel.textContent='ROUND '+(round+1)+' OF '+TOTAL_ROUNDS;
+    tzMs.textContent='WAIT...';
+    tzSub.textContent='Lights will climb, then flash green. Tap the instant it does.';
+    updatePips();
+
+    var litCount=0;
+    lightTimer=setInterval(function(){
+      if(litCount<5){
+        bulbs[litCount].classList.add('on-red');
+        litCount++;
+      } else {
+        clearInterval(lightTimer);
+        var delay=600+Math.random()*1600;
+        lightTimer=setTimeout(function(){
+          resetLights();
+          bulbs.forEach(function(b){ b.classList.add('on-green'); });
+          state=STATE_GO;
+          tapZone.classList.remove('armed'); tapZone.classList.add('go');
+          tzLabel.textContent='GO!';
+          tzMs.textContent='TAP NOW';
+          goTime=performance.now();
+        },delay);
+      }
+    },260);
+  }
+
+  function handleTap(){
+    if(state===STATE_IDLE){
+      round=0; results=[];
+      armRound();
+      return;
+    }
+    if(state===STATE_ARMED){
+      clearTimeout(lightTimer); clearInterval(lightTimer);
+      state=STATE_DONE;
+      tapZone.className=''; tapZone.classList.add('jumped');
+      document.getElementById('jumpOverlay').classList.remove('hidden');
+      return;
+    }
+    if(state===STATE_GO){
+      var rt=Math.round(performance.now()-goTime);
+      results.push(rt);
+      tzLabel.textContent='REACTION';
+      tzMs.textContent=rt+' ms';
+      tzSub.textContent=rt<200?'Lightning fast.':rt<300?'Sharp reflex.':rt<450?'Solid.':'Room to improve.';
+      round++;
+      state=STATE_DONE;
+      setTimeout(function(){
+        if(round>=TOTAL_ROUNDS){ finish(); }
+        else { armRound(); }
+      },900);
+    }
+  }
+
+  function finish(){
+    updatePips();
+    var avg=Math.round(results.reduce(function(a,b){return a+b;},0)/results.length);
+    document.getElementById('avgMs').textContent=avg;
+    var isBest = !best || avg<parseInt(best,10);
+    if(isBest){ localStorage.setItem(BEST_KEY,avg); best=avg; document.getElementById('hudBest').textContent=avg;
+      document.getElementById('bestNote').style.display='block';
+    } else {
+      document.getElementById('bestNote').style.display='none';
+    }
+    setTimeout(function(){ document.getElementById('resultOverlay').classList.remove('hidden'); },300);
+  }
+
+  tapZone.addEventListener('click',handleTap);
+  tapZone.addEventListener('touchstart',function(e){ e.preventDefault(); handleTap(); },{passive:false});
+
+  document.getElementById('jumpRetry').addEventListener('click',function(){
+    document.getElementById('jumpOverlay').classList.add('hidden');
+    armRound();
+  });
+  document.getElementById('againBtn').addEventListener('click',function(){
+    document.getElementById('resultOverlay').classList.add('hidden');
+    state=STATE_IDLE; round=0; results=[];
+    tapZone.className=''; resetLights();
+    tzLabel.textContent='GET READY'; tzMs.textContent='TAP TO START'; tzSub.textContent='';
+    updatePips();
+  });
+
+  document.getElementById('shareBtn').addEventListener('click',function(){
+    var canvas=document.createElement('canvas');
+    canvas.width=800; canvas.height=500;
+    var ctx=canvas.getContext('2d');
+    ctx.fillStyle='#0a0a0d'; ctx.fillRect(0,0,800,500);
+    ctx.fillStyle='#39ff5a'; ctx.font='bold 28px monospace'; ctx.textAlign='center';
+    ctx.fillText('REFLEX RUSH', 400, 90);
+    ctx.fillStyle='#fff'; ctx.font='bold 90px monospace';
+    var avg=document.getElementById('avgMs').textContent;
+    ctx.fillText(avg+' ms', 400, 260);
+    ctx.fillStyle='#9a9da2'; ctx.font='16px monospace';
+    ctx.fillText('Average reaction time · Ajora Games', 400, 320);
+    ctx.fillStyle='#ff2d3a'; ctx.font='14px monospace';
+    ctx.fillText('ajoragames.com/reflexrush', 400, 460);
+    var link=document.createElement('a');
+    link.download='reflex-rush-score.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  });
+})();
+</script>
+</body>
+</html>
