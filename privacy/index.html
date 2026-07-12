@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Privacy Policy — Ajora Games</title>
+<meta name="description" content="How Ajora Games collects, uses, and protects your data, including the use of cookies and advertising partners like Google AdSense."/>
+<link rel="canonical" href="https://ajoragames.com/privacy/"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Cpath d='M16 4.5 L26.5 27 L22.3 27 L16 13 L9.7 27 L5.5 27 Z' fill='%23911A30'/%3E%3Cpath d='M11.3 19.5 L20.7 19.5 L19.4 22.5 L12.6 22.5 Z' fill='%23911A30'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0d0c0c;--ink2:#161413;--ink3:#211e1b;
+  --paper:#ede7dc;--paper-dim:#c9c1b2;
+  --red:#c81d3a;--red2:#8f1428;--orange:#ff5a36;--amber:#ffb020;
+  --line:#3f3a34;
+  --display:'Big Shoulders Display',sans-serif;
+  --mono:'Space Mono',monospace;
+  --data:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--mono);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--red2)}
+img{max-width:100%;display:block}
+::selection{background:var(--red);color:var(--paper)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
+
+/* MARQUEE */
+.marquee-wrap{background:var(--ink);border-bottom:2px solid var(--line);overflow:hidden;position:relative;padding:9px 0}
+.marquee-wrap::before,.marquee-wrap::after{content:'';position:absolute;top:0;bottom:0;background-image:radial-gradient(circle, var(--amber) 2px, transparent 2.4px);background-size:18px 100%;width:100%;height:3px;opacity:.55}
+.marquee-wrap::before{top:0}
+.marquee-wrap::after{bottom:0}
+.marquee-track{display:flex;white-space:nowrap;width:max-content;animation:scrollmarquee 22s linear infinite}
+.marquee-track span{font-family:var(--display);font-weight:900;font-size:20px;letter-spacing:.05em;text-transform:uppercase;padding:0 22px;color:var(--paper)}
+.marquee-track span.hot{color:var(--red)}
+.marquee-track span.amber{color:var(--amber)}
+@keyframes scrollmarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:2px solid var(--line);background:var(--ink);position:sticky;top:0;z-index:500}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo img{width:32px;height:32px;object-fit:contain}
+.nav-logo b{font-family:var(--display);font-weight:900;font-size:19px;letter-spacing:.03em;text-transform:uppercase}
+nav ul{list-style:none;display:flex;gap:26px;margin:0;padding:0}
+nav ul a{font-family:var(--data);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim);text-decoration:none;transition:color .15s}
+nav ul a:hover,nav ul a.active{color:var(--red)}
+@media(max-width:900px){nav ul{display:none}}
+
+/* HERO */
+.hero{padding:50px 28px 36px;text-align:center;border-bottom:2px dashed var(--line)}
+.hero-badge{display:inline-block;font-family:var(--data);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);background:var(--amber);padding:5px 14px;transform:rotate(-2deg);margin-bottom:20px}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(30px,6vw,58px);line-height:.95;letter-spacing:.01em;text-transform:uppercase;margin:0 0 14px}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p{font-family:var(--mono);font-size:14px;color:var(--paper-dim);max-width:520px;margin:0 auto;line-height:1.6}
+
+/* SECTIONS */
+.section{padding:44px 28px 20px;max-width:820px;margin:0 auto}
+.doc h2{font-family:var(--display);font-weight:900;font-size:clamp(20px,3vw,28px);text-transform:uppercase;letter-spacing:.02em;margin:38px 0 14px;color:var(--paper)}
+.doc h2:first-child{margin-top:0}
+.doc p{font-size:14px;color:var(--paper-dim);line-height:1.8;margin:0 0 14px}
+.doc ul{margin:0 0 14px;padding-left:22px}
+.doc li{font-size:14px;color:var(--paper-dim);line-height:1.8;margin-bottom:6px}
+.doc strong{color:var(--paper);font-weight:700}
+.doc a{color:var(--amber)}
+.updated{font-family:var(--data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim);border:1px dashed var(--line);display:inline-block;padding:6px 12px;margin-bottom:8px}
+
+/* FOOTER */
+footer{border-top:2px solid var(--line);margin-top:60px;padding:30px 28px 40px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+footer .nav-logo{gap:10px}
+footer .copy{font-family:var(--data);font-size:10px;color:var(--paper-dim)}
+footer ul{list-style:none;display:flex;gap:22px;margin:0;padding:0;flex-wrap:wrap}
+footer ul a{font-family:var(--data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim);text-decoration:none}
+footer ul a:hover{color:var(--red)}
+.footer-copy{font-family:var(--data);font-size:9.5px;color:#57524b;letter-spacing:.03em;line-height:1.7;width:100%;margin-top:18px;padding-top:18px;border-top:1px dashed var(--line)}
+
+@media(max-width:560px){
+  .section{padding:32px 20px 20px}
+}
+</style>
+<meta name="google-adsense-account" content="ca-pub-8780250723862238">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8780250723862238" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="marquee-wrap"><div class="marquee-track" id="marquee-track"></div></div>
+
+<nav id="nav">
+  <a href="../home/" class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games"/>
+    <b>Ajora Games</b>
+  </a>
+  <ul>
+    <li><a href="../home/">Home</a></li>
+    <li><a href="../games/">Arcade</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="../lastonestanding/" class="stamp" style="font-family:var(--display);font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);background:var(--red);padding:7px 14px;border:2px solid var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink);transform:rotate(-1.5deg);text-decoration:none">Play Now</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="hero-badge">Legal</span>
+  <h1>Privacy <em>Policy</em></h1>
+  <p>What we collect, why we collect it, and how advertising works on this site.</p>
+</header>
+
+<section class="section doc">
+  <span class="updated">Last updated: July 2026</span>
+
+  <h2>Overview</h2>
+  <p><strong>Ajora Games</strong> ("we", "us") operates ajoragames.com (the "Site"), a free-to-play browser arcade. This policy explains what information is collected when you visit or play, and how it's used. Playing our games doesn't require an account for most titles, and we aim to collect as little personal data as possible.</p>
+
+  <h2>Information We Collect</h2>
+  <p>Depending on the game you play, we may collect:</p>
+  <ul>
+    <li><strong>Gameplay data</strong> — scores, progress, and in-game stats, stored via our backend (Supabase) to power leaderboards, achievements, and save states.</li>
+    <li><strong>Usage data</strong> — pages visited, device/browser type, and approximate location (derived from IP), collected automatically for analytics and site performance.</li>
+    <li><strong>Cookies and similar technologies</strong> — small files stored in your browser to remember preferences and support advertising, described below.</li>
+  </ul>
+  <p>We do not knowingly collect personal information from children under 13. This Site is not directed at children, and if we learn a child has provided personal information, we will delete it.</p>
+
+  <h2>Advertising &amp; Cookies</h2>
+  <p>We use <strong>Google AdSense</strong> to display ads and help fund development of the Site and its games. Google and its partners may use cookies (including the DoubleClick DART cookie) to serve ads based on your visits to this and other sites.</p>
+  <ul>
+    <li>You can opt out of personalized advertising by visiting <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
+    <li>You can also opt out of some third-party vendor cookies via the <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener">Digital Advertising Alliance</a>.</li>
+    <li>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites.</li>
+  </ul>
+  <p>If you are located in the European Economic Area or UK, ads on this Site are shown only after you provide consent through our cookie consent tool, in line with Google's EU User Consent Policy.</p>
+
+  <h2>Third-Party Services</h2>
+  <p>We use the following third-party services, each with their own privacy practices:</p>
+  <ul>
+    <li><strong>Google AdSense</strong> — advertising. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a>.</li>
+    <li><strong>Supabase</strong> — backend infrastructure for scores, achievements, and (where applicable) in-app purchases.</li>
+    <li><strong>Cloudflare</strong> — hosting and content delivery.</li>
+  </ul>
+
+  <h2>Your Choices</h2>
+  <p>You can control or delete cookies through your browser settings at any time. Blocking cookies may affect how ads are shown and may disable some game features like saved progress or leaderboards.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>We may update this policy as the Site grows. Material changes will be reflected by updating the "Last updated" date above.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy or your data can be sent to <a href="mailto:ajoragames@gmail.com">ajoragames@gmail.com</a>.</p>
+</section>
+
+<footer>
+  <div class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="" style="width:22px;height:22px"/>
+    <span class="copy">&copy; Ajora Games</span>
+  </div>
+  <ul>
+    <li><a href="../home/">Home</a></li>
+    <li><a href="../games/">Arcade</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/">Contact</a></li>
+    <li><a href="../privacy/">Privacy</a></li>
+  </ul>
+  <div class="footer-copy">
+    &copy; 2026 Ajora Games. All rights reserved.<br/>
+    Original titles are the IP of Ajora Games. Open-source titles are credited on their game cards.
+  </div>
+</footer>
+
+<script>
+(function(){
+  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','PRIVACY FIRST','HIGH SCORE AWAITS'];
+  const track = document.getElementById('marquee-track');
+  let html = '';
+  for(let r=0;r<2;r++){
+    items.forEach((t,i)=>{
+      const cls = i%3===0 ? 'hot' : (i%3===1 ? 'amber' : '');
+      html += `<span class="${cls}">${t}</span><span>&#9670;</span>`;
+    });
+  }
+  track.innerHTML = html;
+})();
+</script>
+</body>
+</html>
