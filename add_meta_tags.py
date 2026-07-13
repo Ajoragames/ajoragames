@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""
+Injects/refreshes <title>, <meta description>, canonical, Open Graph and
+Twitter Card tags across every page of ajoragames.com.
+
+Idempotent: safe to re-run. Existing og:/twitter:/canonical tags inserted
+by this script (or leftover from upstream game templates) are stripped
+and re-inserted fresh each run.
+
+Usage: run from the repo root (same folder as index.html):
+    python3 add_meta_tags.py
+"""
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+SITE = "https://ajoragames.com"
+SITE_NAME = "Ajora Games"
+DEFAULT_IMAGE = f"{SITE}/ajora-logo-transparent.png"
+
+# Marker so re-runs cleanly replace the block instead of duplicating it
+BLOCK_START = "<!-- BEGIN social-meta (auto-generated, do not hand-edit) -->"
+BLOCK_END = "<!-- END social-meta -->"
+
+with open(ROOT / "games" / "games.json", encoding="utf-8") as f:
+    games = json.load(f)
+
+# folder name -> game record (games.json "path" is relative to /games/)
+GAME_BY_FOLDER = {}
+for g in games:
+    folder = g["path"].strip("./").rstrip("/").split("/")[-1]
+    GAME_BY_FOLDER[folder] = g
+
+# Non-game pages: folder -> (title, description)  (titles already match live <title> tags)
+STATIC_PAGES = {
+    "":        ("Ajora Games — Play. Survive. Repeat.",
+                "Ajora Games — indie gaming studio building fast, emotional, replayable browser games."),
+    "home":    ("Ajora Games",
+                "An indie browser arcade. Fifteen free games, no download, no login."),
+    "games":   ("The Arcade | Ajora Games",
+                "Free browser games. No download, no login. Pick a ticket and play."),
+    "about":   ("About — Ajora Games",
+                "Ajora Games is an independent gaming studio building fast, emotional, replayable browser games."),
+    "contact": ("Contact — Ajora Games",
+                "Get in touch with Ajora Games — partnerships, sponsorships, press, feedback and bug reports."),
+    "privacy": ("Privacy Policy — Ajora Games",
+                "How Ajora Games collects, uses, and protects your data, including the use of cookies and advertising partners like Google AdSense."),
+}
+
+
+def resolve_image(folder, game):
+    """Prefer a real raster logo for the OG image; SVGs don't render
+    reliably as link-preview images on Discord/Twitter/etc, so fall back
+    to the sitewide PNG logo for those."""
+    if not game:
+        return DEFAULT_IMAGE
+    logo = game.get("logo", "")
+    if not logo.lower().endswith((".png", ".jpg", ".jpeg")):
+        return DEFAULT_IMAGE
+    # logo path is relative to /games/
+    abs_path = (ROOT / "games" / logo).resolve()
+    if not abs_path.exists():
+        return DEFAULT_IMAGE
+    rel = abs_path.relative_to(ROOT)
+    return f"{SITE}/{rel.as_posix()}"
+
+
+def build_block(url, title, desc, image):
+    esc = lambda s: s.replace('"', "&quot;")
+    return "\n".join([
+        BLOCK_START,
+        f'<link rel="canonical" href="{url}"/>',
+        f'<meta property="og:type" content="website"/>',
+        f'<meta property="og:url" content="{url}"/>',
+        f'<meta property="og:site_name" content="{SITE_NAME}"/>',
+        f'<meta property="og:title" content="{esc(title)}"/>',
+        f'<meta property="og:description" content="{esc(desc)}"/>',
+        f'<meta property="og:image" content="{image}"/>',
+        f'<meta name="twitter:card" content="summary_large_image"/>',
+        f'<meta name="twitter:title" content="{esc(title)}"/>',
+        f'<meta name="twitter:description" content="{esc(desc)}"/>',
+        f'<meta name="twitter:image" content="{image}"/>',
+        BLOCK_END,
+    ])
+
+
+def process_file(path, folder):
+    html = path.read_text(encoding="utf-8")
+
+    # Strip any previously-injected block (for idempotent re-runs)
+    html = re.sub(
+        re.escape(BLOCK_START) + r".*?" + re.escape(BLOCK_END) + r"\n?",
+        "", html, flags=re.DOTALL
+    )
+    # Strip any pre-existing hand-written canonical link so we don't duplicate it
+    html = re.sub(r'\n?<link rel="canonical"[^>]*>\s*', "\n", html)
+
+    # Strip legacy og:/twitter: meta tags left over from upstream open-source
+    # templates (several games shipped with these, pointing at the ORIGINAL
+    # project's site/images rather than ajoragames.com -- e.g. hextris.github.io).
+    # Match any <meta ...> tag whose attributes contain property="og:...",
+    # property="twitter:...", name="twitter:...", or itemprop="...".
+    html = re.sub(
+        r'[ \t]*<meta\b(?=[^>]*(?:property="og:|property="twitter:|name="twitter:|itemprop="))[^>]*>\s*\n?',
+        "", html
+    )
+
+    game = GAME_BY_FOLDER.get(folder)
+    if game:
+        title = f'{game["title"]} | {SITE_NAME}'
+        desc = game["desc"]
+        url = f'{SITE}/{folder}/'
+        image = resolve_image(folder, game)
+    else:
+        title, desc = STATIC_PAGES[folder]
+        url = f'{SITE}/{folder}/' if folder else f'{SITE}/'
+        image = DEFAULT_IMAGE
+
+    # Sync <title> and <meta name="description"> to the same source of truth
+    if re.search(r"<title>.*?</title>", html, flags=re.DOTALL):
+        html = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", html, count=1, flags=re.DOTALL)
+    else:
+        html = re.sub(r"(<head[^>]*>)", rf"\1\n<title>{title}</title>", html, count=1)
+
+    desc_attr = desc.replace('"', "&quot;")
+    if re.search(r'<meta\s+name="description"[^>]*>', html):
+        html = re.sub(r'<meta\s+name="description"[^>]*>',
+                       f'<meta name="description" content="{desc_attr}"/>', html, count=1)
+    else:
+        html = re.sub(r"(<title>.*?</title>)", rf'\1\n<meta name="description" content="{desc_attr}"/>',
+                       html, count=1, flags=re.DOTALL)
+
+    block = build_block(url, title, desc, image)
+
+    if "</head>" in html:
+        html = html.replace("</head>", block + "\n</head>", 1)
+    else:
+        html += "\n" + block
+
+    path.write_text(html, encoding="utf-8")
+    return title, image
+
+
+def main():
+    targets = [("", ROOT / "index.html")]
+    for folder in STATIC_PAGES:
+        if folder == "":
+            continue
+        p = ROOT / folder / "index.html"
+        if p.exists():
+            targets.append((folder, p))
+    for folder in GAME_BY_FOLDER:
+        p = ROOT / folder / "index.html"
+        if p.exists():
+            targets.append((folder, p))
+        else:
+            print(f"  [skip] no index.html found for game folder: {folder}")
+
+    print(f"Processing {len(targets)} pages...\n")
+    for folder, path in sorted(targets, key=lambda t: t[0]):
+        title, image = process_file(path, folder)
+        rel = path.relative_to(ROOT)
+        print(f"  {str(rel):40s} -> {title!r}  [{image}]")
+
+    print("\nDone.")
+
+
+if __name__ == "__main__":
+    main()
