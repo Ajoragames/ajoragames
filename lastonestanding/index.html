@@ -920,6 +920,7 @@ function getXpForScore(score,diff){
 
 // ===================== STATE =====================
 let currentUser=null;
+let currentPassword=null; // kept in memory only for this tab session, never persisted
 let score=0,streak=0,bestStreak=0,lives=3,tI=null,tL=0,maxT=0,answered=false,curA='',hist=[],pb=0,totalQ=0;
 let killerQuestion=null;let killerCorrect=null;let nearMissGap=0;
 let diff='normal';
@@ -1071,10 +1072,10 @@ async function checkUsername(){
   clearTimeout(unameTimer);
   if(v.length<3){document.getElementById('su-user-err').textContent=v.length>0?'Min 3 chars':'';return;}
   unameTimer=setTimeout(async()=>{
-    const{data}=await sb.from('users').select('id').eq('username',v.toLowerCase()).maybeSingle();
+    const{data:taken}=await sb.rpc('username_taken',{p_username:v.toLowerCase()});
     const el=document.getElementById('su-user-err');
-    el.textContent=data?'Taken':'Available';
-    el.style.color=data?'var(--red)':'var(--green)';
+    el.textContent=taken?'Taken':'Available';
+    el.style.color=taken?'var(--red)':'var(--green)';
   },400);
 }
 
@@ -1088,12 +1089,13 @@ async function doSignup(){
   if(pass!==pass2){document.getElementById('su-pass2-err').textContent='Passwords don\'t match';ok=false;}
   if(!ok)return;
   const btn=document.getElementById('su-btn');btn.disabled=true;btn.textContent='Creating...';
-  const{data:ex}=await sb.from('users').select('id').eq('username',user.toLowerCase()).maybeSingle();
-  if(ex){document.getElementById('su-user-err').textContent='Username taken';btn.disabled=false;btn.textContent='Create account';return;}
-  const hashed=await hashPw(pass);
-  const{data,error}=await sb.from('users').insert({username:user.toLowerCase(),display_name:user,password_hash:hashed,achievements:[],best_score:0}).select().single();
-  if(error){document.getElementById('su-err').textContent=error.message;btn.disabled=false;btn.textContent='Create account';return;}
+  const{data,error}=await sb.rpc('signup',{p_username:user.toLowerCase(),p_password:pass}).single();
+  if(error){
+    document.getElementById(error.message&&error.message.includes('taken')?'su-user-err':'su-err').textContent=error.message&&error.message.includes('taken')?'Username taken':error.message;
+    btn.disabled=false;btn.textContent='Create account';return;
+  }
   currentUser={id:data.id,username:data.display_name};
+  currentPassword=pass;
   xp=0;
   localStorage.setItem('los_user',JSON.stringify(currentUser));
   updateNav();showPage('home');toast('Welcome, '+user+'!');
@@ -1106,11 +1108,10 @@ async function doLogin(){
   if(!user){document.getElementById('li-user-err').textContent='Enter username';return;}
   if(!pass){document.getElementById('li-pass-err').textContent='Enter password';return;}
   const btn=document.getElementById('li-btn');btn.disabled=true;btn.textContent='Logging in...';
-  const{data}=await sb.from('users').select('*').eq('username',user.toLowerCase()).maybeSingle();
-  if(!data){document.getElementById('li-err').textContent='Username not found';btn.disabled=false;btn.textContent='Log in';return;}
-  const hashed=await hashPw(pass);
-  if(hashed!==data.password_hash){document.getElementById('li-err').textContent='Wrong password';btn.disabled=false;btn.textContent='Log in';return;}
+  const{data,error}=await sb.rpc('login',{p_username:user.toLowerCase(),p_password:pass}).single();
+  if(error||!data){document.getElementById('li-err').textContent='Wrong username or password';btn.disabled=false;btn.textContent='Log in';return;}
   currentUser={id:data.id,username:data.display_name};
+  currentPassword=pass;
   xp=parseInt(localStorage.getItem('los_xp_'+data.id)||'0');
   localStorage.setItem('los_user',JSON.stringify(currentUser));
   await loadCosmeticsFromDb();
@@ -1119,12 +1120,18 @@ async function doLogin(){
   btn.disabled=false;btn.textContent='Log in';
 }
 
-function doLogout(){currentUser=null;localStorage.removeItem('los_user');updateNav();showPage('home');toast('Logged out');}
+function doLogout(){currentUser=null;currentPassword=null;localStorage.removeItem('los_user');updateNav();showPage('home');toast('Logged out');}
 
-async function hashPw(p){
-  const enc=new TextEncoder().encode(p+'los_salt_2026');
-  const buf=await crypto.subtle.digest('SHA-256',enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+// Password is never persisted to localStorage, so after a page refresh a
+// "logged in" session has currentUser but not currentPassword. Writes
+// (scores, coins, achievements, cosmetics) need it — ask once, then cache
+// it in memory for the rest of the tab session.
+async function ensurePassword(){
+  if(currentPassword)return currentPassword;
+  const p=prompt('Please re-enter your password to save progress:');
+  if(!p)return null;
+  currentPassword=p;
+  return p;
 }
 
 // ===================== DIFFICULTY =====================
@@ -1898,19 +1905,22 @@ function checkAchievements(){
 
 async function saveAchievements(newIds){
   if(!currentUser)return;
+  const pw=await ensurePassword();if(!pw)return;
   try{
-    const{data}=await sb.from('users').select('achievements').eq('id',currentUser.id).single();
+    const{data}=await sb.rpc('get_profile',{p_user_id:currentUser.id}).single();
     const merged=[...new Set([...(data?.achievements||[]),...newIds])];
-    await sb.from('users').update({achievements:merged}).eq('id',currentUser.id);
+    await sb.rpc('update_profile',{p_user_id:currentUser.id,p_password:pw,p_achievements:merged});
   }catch(e){}
 }
 
 // ===================== SCORES =====================
 async function saveScore(s,d,isDaily,bStreak){
   if(!currentUser)return;
+  const pw=await ensurePassword();if(!pw)return;
   try{
     await sb.rpc('submit_score',{
       p_user_id:    currentUser.id,
+      p_password:   pw,
       p_score:      s,
       p_difficulty: d,
       p_best_streak:bStreak,
@@ -2016,7 +2026,7 @@ async function loadProfile(){
       </div>`;
     // achievements
     const localAchs=getLocalAchs();
-    const{data:udata}=await sb.from('users').select('achievements').eq('id',currentUser.id).single();
+    const{data:udata}=await sb.rpc('get_profile',{p_user_id:currentUser.id}).single();
     const dbAchs=udata?.achievements||[];
     const allAchs=[...new Set([...localAchs,...dbAchs])];
     document.getElementById('ach-count').textContent=allAchs.length+'/'+ACHIEVEMENTS.length;
@@ -2058,8 +2068,8 @@ function setCoins(v){try{localStorage.setItem('los_coins_'+(currentUser?.id||'gu
 function addCoins(n,reason='correct_answer'){
   const prev=getCoins();setCoins(prev+n);
   toast('+'+n+' coins earned!');
-  if(currentUser){
-    sb.rpc('award_coins',{p_user_id:currentUser.id,p_amount:n,p_reason:reason})
+  if(currentUser&&currentPassword){
+    sb.rpc('award_coins',{p_user_id:currentUser.id,p_password:currentPassword,p_amount:n,p_reason:reason})
       .then(({data,error})=>{if(!error&&data!==null)setCoins(data);})
       .catch(e=>console.warn('coin sync failed',e));
   }
@@ -2230,12 +2240,15 @@ function buyShield(){
 
 async function saveCosmeticsToDb(){
   if(!currentUser)return;
+  const pw=await ensurePassword();if(!pw)return;
   try{
-    await sb.from('users').update({
-      colour:getCosmeticVal('colour'),
-      flair:getCosmeticVal('flair'),
-      avatar:getCosmeticVal('avatar'),
-    }).eq('id',currentUser.id);
+    await sb.rpc('update_profile',{
+      p_user_id:currentUser.id,
+      p_password:pw,
+      p_colour:getCosmeticVal('colour'),
+      p_flair:getCosmeticVal('flair'),
+      p_avatar:getCosmeticVal('avatar'),
+    });
   }catch(e){}
 }
 
@@ -2243,7 +2256,7 @@ async function saveCosmeticsToDb(){
 async function loadCosmeticsFromDb(){
   if(!currentUser)return;
   try{
-    const{data}=await sb.from('users').select('colour,flair,avatar,coins').eq('id',currentUser.id).single();
+    const{data}=await sb.rpc('get_profile',{p_user_id:currentUser.id}).single();
     if(data){
       if(data.colour)setCosmeticVal('colour',data.colour);
       if(data.flair)setCosmeticVal('flair',data.flair);
