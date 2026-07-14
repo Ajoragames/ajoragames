@@ -1,85 +1,263 @@
 <!DOCTYPE html>
-<html class="dark">
-    <head>
-        <meta charset="utf-8">
-
-        <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1">
-
-        <title>Ten by Ten | Ajora Games</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Ten by Ten | Ajora Games</title>
 <meta name="description" content="Drop blocks onto a 10x10 grid, clear full rows and columns, and keep the board from filling up."/>
-
-        <link href="game.css" rel="stylesheet" type="text/css">
-    <meta name="google-adsense-account" content="ca-pub-8780250723862238">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8780250723862238" crossorigin="anonymous"></script>
-<!-- BEGIN social-meta (auto-generated, do not hand-edit) -->
-<link rel="canonical" href="https://ajoragames.com/tenbyten/"/>
-<meta property="og:type" content="website"/>
-<meta property="og:url" content="https://ajoragames.com/tenbyten/"/>
-<meta property="og:site_name" content="Ajora Games"/>
-<meta property="og:title" content="Ten by Ten | Ajora Games"/>
-<meta property="og:description" content="Drop blocks onto a 10x10 grid, clear full rows and columns, and keep the board from filling up."/>
-<meta property="og:image" content="https://ajoragames.com/games/tenbyten-logo-og.png"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Ten by Ten | Ajora Games"/>
-<meta name="twitter:description" content="Drop blocks onto a 10x10 grid, clear full rows and columns, and keep the board from filling up."/>
-<meta name="twitter:image" content="https://ajoragames.com/games/tenbyten-logo-og.png"/>
-<!-- END social-meta -->
+<style>
+  :root{ --bg:#0a0a0d; --panel:#121216; --line:#232329; --fg:#e8e8ec; --mu:#606068; --green:#3ddc84; --cell:#1a1a20; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{min-height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;}
+  #wrap{display:flex;flex-direction:column;align-items:center;padding:20px 12px 60px;gap:14px;}
+  header{text-align:center;}
+  h1{font-weight:800;font-size:15px;letter-spacing:.04em;}
+  .sub{font-weight:600;font-size:10px;color:var(--mu);letter-spacing:.2em;text-transform:uppercase;margin-top:4px;}
+  #hud{display:flex;gap:28px;align-items:baseline;}
+  #hud .lbl{font-size:9px;color:var(--mu);letter-spacing:.15em;text-transform:uppercase;}
+  #hud .val{font-size:22px;font-weight:800;color:var(--green);}
+  #board{
+    display:grid; grid-template-columns:repeat(10,1fr); grid-template-rows:repeat(10,1fr);
+    width:min(92vw,380px); height:min(92vw,380px);
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:4px; gap:2px;
+  }
+  .cell{background:var(--cell); border-radius:3px; transition:background .08s;}
+  .cell.filled{box-shadow:inset 0 0 0 2px rgba(0,0,0,.25);}
+  .cell.preview-ok{background:rgba(61,220,132,.35);}
+  .cell.preview-bad{background:rgba(220,61,61,.35);}
+  #tray{display:flex; gap:14px; padding:10px; background:var(--panel); border:1px solid var(--line); border-radius:8px; width:min(92vw,380px); justify-content:space-around;}
+  .piece{display:grid; gap:2px; cursor:pointer; padding:6px; border-radius:6px; transition:box-shadow .1s, transform .1s;}
+  .piece.selected{box-shadow:0 0 0 2px var(--green); transform:scale(1.05);}
+  .piece.used{opacity:.15; pointer-events:none;}
+  .pcell{width:14px;height:14px;border-radius:2px;}
+  #hint{font-size:11px;color:var(--mu);text-align:center;max-width:380px;line-height:1.5;}
+  #overlay{position:fixed;inset:0;background:rgba(10,10,13,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:10;}
+  #overlay.show{display:flex;}
+  #overlay h2{font-size:22px;font-weight:800;}
+  #overlay p{font-size:12px;color:var(--mu);}
+  button{background:var(--green);color:#04140b;border:none;border-radius:8px;padding:10px 22px;font-weight:800;font-size:13px;cursor:pointer;}
+  button:active{transform:scale(.97);}
+</style>
 </head>
-
-    <body>
-<div id="ajora-intro" style="position:fixed;inset:0;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2147483647;overflow:hidden">
-  <div style="position:absolute;inset:0;opacity:.5;background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.05%22/%3E%3C/svg%3E');pointer-events:none"></div>
-  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(8,8,8,0.9) 100%);pointer-events:none"></div>
-  <div id="ai-glow" style="position:absolute;width:500px;height:250px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,138,0,0.28) 0%,transparent 70%);filter:blur(40px);opacity:0;transition:opacity 1.2s ease .6s;pointer-events:none"></div>
-
-  <div id="ai-logos" style="display:flex;align-items:center;justify-content:center;gap:24px;opacity:0;transform:scale(0.92) translateY(14px);transition:all .85s cubic-bezier(.34,1.1,.64,1)">
-    <img src="../ajora-logo-transparent.png" alt="Ajora Games" style="height:min(64px,13vw);width:min(64px,13vw);object-fit:contain;display:block"/>
-    <div style="width:1px;height:min(48px,10vw);background:linear-gradient(180deg,transparent,rgba(255,138,0,0.7),transparent);flex-shrink:0"></div>
-    <img src="../games/tenbyten-logo.svg" alt="Ten by Ten" style="height:min(64px,13vw);width:min(64px,13vw);object-fit:contain;display:block;border-radius:16px;box-shadow:0 0 24px rgba(255,138,0,0.35)"/>
+<body>
+<div id="wrap">
+  <header>
+    <h1>Ten by Ten</h1>
+    <div class="sub">An Ajora Games Title</div>
+  </header>
+  <div id="hud">
+    <div><div class="lbl">Score</div><div class="val" id="scoreVal">0</div></div>
+    <div><div class="lbl">Best</div><div class="val" id="bestVal">0</div></div>
   </div>
-
-  <div id="ai-title" style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;font-size:15px;color:#e8e8ec;letter-spacing:.04em;margin-top:22px;opacity:0;transition:opacity .5s ease .68s">Ten by Ten</div>
-  <div id="ai-sub" style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:600;font-size:10px;color:#606068;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;opacity:0;transition:opacity .5s ease .74s">An Ajora Games Title</div>
-
-  <div id="ai-bar" style="width:min(160px,44vw);height:6px;background:#1a1a22;border-radius:8px;margin-top:30px;overflow:hidden;opacity:0;transition:opacity .3s ease .82s">
-    <div id="ai-progress" style="height:100%;width:0%;background:#FF8A00;transition:width 1.1s ease .92s;border-radius:8px"></div>
-  </div>
+  <div id="board"></div>
+  <div id="tray"></div>
+  <div id="hint">Tap a piece, then tap the board to place it. Clear full rows or columns to score.</div>
 </div>
+
+<div id="overlay">
+  <h2>No Moves Left</h2>
+  <p id="finalScore"></p>
+  <button id="restartBtn">Play Again</button>
+</div>
+
 <script>
 (function(){
-  var logos=document.getElementById('ai-logos');
-  var glow=document.getElementById('ai-glow');
-  var title=document.getElementById('ai-title');
-  var sub=document.getElementById('ai-sub');
-  var bar=document.getElementById('ai-bar');
-  var prog=document.getElementById('ai-progress');
-  setTimeout(function(){ if(logos){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';} },120);
-  setTimeout(function(){ if(glow)glow.style.opacity='1'; },450);
-  setTimeout(function(){ if(title)title.style.opacity='1'; },650);
-  setTimeout(function(){ if(sub)sub.style.opacity='1'; },720);
-  setTimeout(function(){ if(bar)bar.style.opacity='1'; },800);
-  setTimeout(function(){ if(prog)prog.style.width='100%'; },840);
-  setTimeout(function(){
-    var intro=document.getElementById('ajora-intro');
-    if(!intro)return;
-    intro.style.transition='opacity .45s ease';
-    intro.style.opacity='0';
-    setTimeout(function(){ intro.style.display='none'; },450);
-  },2100);
+  const SIZE = 10;
+  const COLORS = ['#3ddc84','#4aa8ff','#ff9f4a','#c47bff','#ff5d7a','#ffd24a'];
+
+  // Shape library: arrays of [row,col] offsets
+  const SHAPES = [
+    [[0,0]],
+    [[0,0],[0,1]],
+    [[0,0],[1,0]],
+    [[0,0],[0,1],[0,2]],
+    [[0,0],[1,0],[2,0]],
+    [[0,0],[0,1],[1,0],[1,1]],
+    [[0,0],[0,1],[0,2],[1,0]],
+    [[0,0],[0,1],[0,2],[1,2]],
+    [[0,0],[1,0],[1,1],[1,2]],
+    [[0,2],[1,0],[1,1],[1,2]],
+    [[0,0],[0,1],[1,1],[1,2]],
+    [[0,1],[0,2],[1,0],[1,1]],
+    [[0,0],[0,1],[0,2],[0,3]],
+    [[0,0],[1,0],[2,0],[3,0]],
+    [[0,0],[0,1],[1,0],[2,0]],
+    [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2]],
+  ];
+
+  let grid, score, best, tray, selectedIdx;
+  const boardEl = document.getElementById('board');
+  const trayEl = document.getElementById('tray');
+  const scoreEl = document.getElementById('scoreVal');
+  const bestEl = document.getElementById('bestVal');
+
+  function loadBest(){ try{ return parseInt(localStorage.getItem('btt_best')||'0'); }catch(e){ return 0; } }
+  function saveBest(v){ try{ localStorage.setItem('btt_best', v); }catch(e){} }
+
+  function randShape(){
+    const shape = SHAPES[Math.floor(Math.random()*SHAPES.length)];
+    const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+    return { cells: shape, color };
+  }
+
+  function newTray(){
+    return [randShape(), randShape(), randShape()];
+  }
+
+  function buildBoardDom(){
+    boardEl.innerHTML = '';
+    for (let r=0;r<SIZE;r++){
+      for (let c=0;c<SIZE;c++){
+        const d = document.createElement('div');
+        d.className = 'cell';
+        d.dataset.r = r; d.dataset.c = c;
+        d.addEventListener('click', () => attemptPlace(r,c));
+        d.addEventListener('mouseenter', () => showPreview(r,c));
+        boardEl.appendChild(d);
+      }
+    }
+  }
+
+  function cellEl(r,c){ return boardEl.children[r*SIZE+c]; }
+
+  function renderGrid(){
+    for (let r=0;r<SIZE;r++){
+      for (let c=0;c<SIZE;c++){
+        const el = cellEl(r,c);
+        el.classList.remove('preview-ok','preview-bad');
+        if (grid[r][c]){
+          el.classList.add('filled');
+          el.style.background = grid[r][c];
+        } else {
+          el.classList.remove('filled');
+          el.style.background = '';
+        }
+      }
+    }
+  }
+
+  function renderTray(){
+    trayEl.innerHTML = '';
+    tray.forEach((piece, idx) => {
+      const wrap = document.createElement('div');
+      if (!piece){
+        wrap.className = 'piece used';
+        trayEl.appendChild(wrap);
+        return;
+      }
+      const maxR = Math.max(...piece.cells.map(p=>p[0])) + 1;
+      const maxC = Math.max(...piece.cells.map(p=>p[1])) + 1;
+      wrap.className = 'piece' + (selectedIdx === idx ? ' selected' : '');
+      wrap.style.gridTemplateColumns = `repeat(${maxC}, 14px)`;
+      wrap.style.gridTemplateRows = `repeat(${maxR}, 14px)`;
+      for (let r=0;r<maxR;r++){
+        for (let c=0;c<maxC;c++){
+          const has = piece.cells.some(p=>p[0]===r && p[1]===c);
+          const pc = document.createElement('div');
+          pc.className = 'pcell';
+          pc.style.background = has ? piece.color : 'transparent';
+          wrap.appendChild(pc);
+        }
+      }
+      wrap.addEventListener('click', () => { selectedIdx = idx; renderTray(); });
+      trayEl.appendChild(wrap);
+    });
+  }
+
+  function canPlace(piece, r0, c0){
+    return piece.cells.every(([dr,dc]) => {
+      const r = r0+dr, c = c0+dc;
+      return r>=0 && r<SIZE && c>=0 && c<SIZE && !grid[r][c];
+    });
+  }
+
+  function showPreview(r0,c0){
+    renderGrid();
+    if (selectedIdx == null || !tray[selectedIdx]) return;
+    const piece = tray[selectedIdx];
+    const ok = canPlace(piece, r0, c0);
+    piece.cells.forEach(([dr,dc]) => {
+      const r=r0+dr, c=c0+dc;
+      if (r>=0&&r<SIZE&&c>=0&&c<SIZE){
+        cellEl(r,c).classList.add(ok?'preview-ok':'preview-bad');
+      }
+    });
+  }
+
+  function attemptPlace(r0,c0){
+    if (selectedIdx == null || !tray[selectedIdx]) return;
+    const piece = tray[selectedIdx];
+    if (!canPlace(piece, r0, c0)) return;
+    piece.cells.forEach(([dr,dc]) => { grid[r0+dr][c0+dc] = piece.color; });
+    score += piece.cells.length;
+    tray[selectedIdx] = null;
+    selectedIdx = null;
+
+    const cleared = clearLines();
+    score += cleared * 12;
+
+    if (tray.every(p => p === null)){
+      tray = newTray();
+    }
+
+    updateHud();
+    renderGrid();
+    renderTray();
+
+    if (!anyMovePossible()){
+      endGame();
+    }
+  }
+
+  function clearLines(){
+    const fullRows = [];
+    const fullCols = [];
+    for (let r=0;r<SIZE;r++){ if (grid[r].every(v=>v)) fullRows.push(r); }
+    for (let c=0;c<SIZE;c++){ if (grid.every(row=>row[c])) fullCols.push(c); }
+    fullRows.forEach(r => { for (let c=0;c<SIZE;c++) grid[r][c] = null; });
+    fullCols.forEach(c => { for (let r=0;r<SIZE;r++) grid[r][c] = null; });
+    return fullRows.length + fullCols.length;
+  }
+
+  function anyMovePossible(){
+    return tray.some(piece => {
+      if (!piece) return false;
+      for (let r=0;r<SIZE;r++){
+        for (let c=0;c<SIZE;c++){
+          if (canPlace(piece, r, c)) return true;
+        }
+      }
+      return false;
+    });
+  }
+
+  function updateHud(){
+    scoreEl.textContent = score;
+    if (score > best){ best = score; saveBest(best); }
+    bestEl.textContent = best;
+  }
+
+  function endGame(){
+    document.getElementById('finalScore').textContent = 'Final score: ' + score;
+    document.getElementById('overlay').classList.add('show');
+  }
+
+  function start(){
+    grid = Array.from({length:SIZE}, () => Array(SIZE).fill(null));
+    score = 0;
+    best = loadBest();
+    tray = newTray();
+    selectedIdx = null;
+    document.getElementById('overlay').classList.remove('show');
+    updateHud();
+    renderGrid();
+    renderTray();
+  }
+
+  document.getElementById('restartBtn').addEventListener('click', start);
+  buildBoardDom();
+  start();
 })();
 </script>
-
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-5 -10 110 140"></svg>
-
-        <script src="vendor/fullscreen-api-polyfill.js"></script>
-        <script src="vendor/snap.svg-min.js"></script>
-        <script src="common.js"></script>
-        <script src="client-local.js"></script>
-    
-<a href="../games/" id="ajora-back-badge" style="position:fixed;top:14px;right:14px;z-index:2147483647;display:flex;align-items:center;gap:7px;background:rgba(8,8,8,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:6px 14px 6px 6px;text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:600;letter-spacing:.02em;color:#e8e8ec;opacity:.78;transition:opacity .15s ease,background .15s ease;line-height:1;" onmouseover="this.style.opacity='1';this.style.background='rgba(8,8,8,0.9)'" onmouseout="this.style.opacity='.78';this.style.background='rgba(8,8,8,0.72)'">
-  <img src="../ajora-logo-transparent.png" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:5px;display:block;pointer-events:none"/>
-  <span style="pointer-events:none">Ajora Games</span>
-</a>
-
 </body>
 </html>
