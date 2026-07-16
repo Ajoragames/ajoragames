@@ -94,9 +94,16 @@ nav ul a:hover,nav ul a.active{color:var(--red)}
 .submit-stamp{font-family:var(--display);font-weight:900;font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--paper);background:var(--red);border:2px solid var(--ink);cursor:pointer;padding:14px 20px;box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink);transition:transform .15s ease;width:100%;margin-top:4px}
 .submit-stamp:hover{transform:translate(-2px,-2px)}
 .submit-stamp:disabled{opacity:.6;cursor:wait}
-.form-msg{display:none;padding:16px 18px;text-align:center;font-family:var(--data);font-size:12px;line-height:1.7;border:2px dashed}
+.form-msg{display:none;padding:22px 18px;text-align:center;font-family:var(--data);font-size:12px;line-height:1.7;border:2px dashed;animation:msgpop .3s ease}
+.form-msg .msg-icon{display:block;font-size:32px;margin-bottom:10px;line-height:1}
+.form-msg .msg-title{display:block;font-family:var(--display);font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px}
+.form-msg a{color:inherit;text-decoration:underline}
 .form-msg.ok{border-color:#3f8f5c;color:#2f6b45;background:rgba(63,143,92,.08)}
 .form-msg.err{border-color:var(--red2);color:var(--red2);background:rgba(143,20,40,.06)}
+@keyframes msgpop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.submit-stamp.is-loading{opacity:.7;cursor:wait}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;margin-right:8px;vertical-align:-1px;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .perf{position:relative;height:0;border-top:2px dashed rgba(13,12,12,.25);margin:20px -30px}
 .perf::before,.perf::after{content:'';position:absolute;top:-7px;width:14px;height:14px;border-radius:50%;background:var(--ink)}
 .perf::before{left:-7px}.perf::after{right:-7px}
@@ -223,8 +230,16 @@ footer ul a:hover{color:var(--red)}
         <div class="perf"></div>
 
         <button type="submit" class="submit-stamp" id="submitBtn">Send Message &rarr;</button>
-        <div class="form-msg ok" id="msgOk">&#10003; Sent! Your ticket's in &mdash; we'll get back to you within 48 hours.</div>
-        <div class="form-msg err" id="msgErr">Couldn't send automatically. Opening your email app instead&hellip;</div>
+        <div class="form-msg ok" id="msgOk">
+          <span class="msg-icon">&#10003;</span>
+          <span class="msg-title">Message Sent</span>
+          Your ticket's in &mdash; we'll get back to you within 48 hours.
+        </div>
+        <div class="form-msg err" id="msgErr">
+          <span class="msg-icon">&#9888;&#65039;</span>
+          <span class="msg-title">Couldn't Send Automatically</span>
+          We tried opening your email app. If nothing happened, <a href="#" id="fallbackMailLink">click here to email us directly</a>.
+        </div>
       </form>
     </div>
   </div>
@@ -241,6 +256,7 @@ footer ul a:hover{color:var(--red)}
     <li><a href="../about/">About</a></li>
     <li><a href="../contact/">Contact</a></li>
     <li><a href="../privacy/">Privacy</a></li>
+    <li><a href="../legal/">Legal</a></li>
     <li><a href="https://instagram.com/ajoragames" target="_blank">Instagram</a></li>
   </ul>
   <div class="footer-copy">
@@ -274,6 +290,7 @@ const form = document.getElementById('contact-form');
 const btn = document.getElementById('submitBtn');
 const msgOk = document.getElementById('msgOk');
 const msgErr = document.getElementById('msgErr');
+const fallbackMailLink = document.getElementById('fallbackMailLink');
 
 // Maps the "Inquiry Type" dropdown to a subject tag AND the branded
 // alias the mailto fallback should address, so both the automated send
@@ -306,11 +323,24 @@ function aliasFor(type){
   return TYPE_ALIASES[type] || 'hello@ajoragames.com';
 }
 
+function showMessage(el){
+  msgOk.style.display = 'none';
+  msgErr.style.display = 'none';
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Shows the error state with a real clickable mailto link (not just an
+// automatic redirect, which silently does nothing if the visitor's
+// browser has no default email app configured — the #1 cause of a
+// contact form looking "stuck" with zero feedback).
 function mailtoFallback(data){
   const subject = encodeURIComponent(tagFor(data.get('type')) + ' Ajora Games – ' + (data.get('type') || 'Contact'));
   const body = encodeURIComponent('Name: ' + data.get('name') + '\nEmail: ' + data.get('email') + '\n\n' + data.get('message'));
-  window.location.href = 'mailto:' + aliasFor(data.get('type')) + '?subject=' + subject + '&body=' + body;
-  msgErr.style.display = 'block';
+  const mailtoUrl = 'mailto:' + aliasFor(data.get('type')) + '?subject=' + subject + '&body=' + body;
+  fallbackMailLink.href = mailtoUrl;
+  window.location.href = mailtoUrl;
+  showMessage(msgErr);
 }
 
 form.addEventListener('submit', async function(e){
@@ -328,7 +358,8 @@ form.addEventListener('submit', async function(e){
   }
 
   btn.disabled = true;
-  btn.textContent = 'Sending…';
+  btn.classList.add('is-loading');
+  btn.innerHTML = '<span class="spin"></span>Sending…';
   msgOk.style.display = 'none';
   msgErr.style.display = 'none';
 
@@ -341,13 +372,14 @@ form.addEventListener('submit', async function(e){
     const result = await res.json();
     if (result.success){
       form.style.display = 'none';
-      msgOk.style.display = 'block';
+      showMessage(msgOk);
     } else {
       throw new Error(result.message || 'Send failed');
     }
   } catch(err){
     mailtoFallback(data);
     btn.disabled = false;
+    btn.classList.remove('is-loading');
     btn.textContent = 'Send Message →';
   }
 });

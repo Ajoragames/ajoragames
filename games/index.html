@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>The Arcade | Ajora Games</title>
 <meta name="description" content="Free browser games. No download, no login. Pick a ticket and play."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Cpath d='M16 4.5 L26.5 27 L22.3 27 L16 13 L9.7 27 L5.5 27 Z' fill='%23911A30'/%3E%3Cpath d='M11.3 19.5 L20.7 19.5 L19.4 22.5 L12.6 22.5 Z' fill='%23911A30'/%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
@@ -238,7 +239,7 @@ footer .copy{font-family:var(--data);font-size:10px;color:#57524b;letter-spacing
 <header class="hero">
   <span class="hero-badge">Free &middot; No Download &middot; No Login</span>
   <h1>Insert Coin.<br>Pick a <em>Ticket.</em></h1>
-  <p>Fifteen games, zero paywalls. The originals we built, and the arcade classics we keep running.</p>
+  <p id="hero-count-line">A growing arcade, zero paywalls. The originals we built, and the arcade classics we keep running.</p>
 </header>
 
 <section class="section" id="og-section">
@@ -270,13 +271,14 @@ footer .copy{font-family:var(--data);font-size:10px;color:#57524b;letter-spacing
     <li><a href="../about/">About</a></li>
     <li><a href="../contact/">Contact</a></li>
     <li><a href="../privacy/">Privacy</a></li>
+    <li><a href="../legal/">Legal</a></li>
   </ul>
 </footer>
 
 <script>
 // Marquee ticker content — duplicated for a seamless loop
 (function(){
-  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','26 GAMES','HIGH SCORE AWAITS'];
+  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','ALWAYS FREE','HIGH SCORE AWAITS'];
   const track = document.getElementById('marquee-track');
   let html = '';
   for(let r=0;r<2;r++){
@@ -343,6 +345,7 @@ fetch('games.json')
     });
 
     document.getElementById('arcade-count').textContent = arcadeGames.length + ' games';
+    document.getElementById('hero-count-line').textContent = games.length + ' games, zero paywalls. The originals we built, and the arcade classics we keep running.';
   })
   .catch(err=>{
     console.error('Failed to load games.json', err);

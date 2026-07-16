@@ -4,7 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Ajora Games</title>
-<meta name="description" content="An indie browser arcade. Fifteen free games, no download, no login."/>
+<meta name="description" content="An indie browser arcade. Free games, no download, no login."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Cpath d='M16 4.5 L26.5 27 L22.3 27 L16 13 L9.7 27 L5.5 27 Z' fill='%23911A30'/%3E%3Cpath d='M11.3 19.5 L20.7 19.5 L19.4 22.5 L12.6 22.5 Z' fill='%23911A30'/%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet"/>
@@ -120,11 +121,11 @@ footer ul a:hover{color:var(--red)}
 <meta property="og:url" content="https://ajoragames.com/home/"/>
 <meta property="og:site_name" content="Ajora Games"/>
 <meta property="og:title" content="Ajora Games"/>
-<meta property="og:description" content="An indie browser arcade. Fifteen free games, no download, no login."/>
+<meta property="og:description" content="An indie browser arcade. Free games, no download, no login."/>
 <meta property="og:image" content="https://ajoragames.com/ajora-logo-transparent.png"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Ajora Games"/>
-<meta name="twitter:description" content="An indie browser arcade. Fifteen free games, no download, no login."/>
+<meta name="twitter:description" content="An indie browser arcade. Free games, no download, no login."/>
 <meta name="twitter:image" content="https://ajoragames.com/ajora-logo-transparent.png"/>
 <!-- END social-meta -->
 </head>
@@ -173,7 +174,7 @@ footer ul a:hover{color:var(--red)}
     <span class="tag">Classics we keep running</span>
   </div>
   <div class="wall" id="wall-grid"></div>
-  <div class="see-all-row"><a href="../games/" class="stamp alt">See All 26 Games</a></div>
+  <div class="see-all-row"><a href="../games/" class="stamp alt" id="see-all-link">See All Games</a></div>
 </section>
 
 <section class="quick-grid">
@@ -203,6 +204,7 @@ footer ul a:hover{color:var(--red)}
     <li><a href="../about/">About</a></li>
     <li><a href="../contact/">Contact</a></li>
     <li><a href="../privacy/">Privacy</a></li>
+    <li><a href="../legal/">Legal</a></li>
     <li><a href="https://instagram.com/ajoragames" target="_blank">Instagram</a></li>
   </ul>
   <div class="footer-copy">
@@ -213,7 +215,7 @@ footer ul a:hover{color:var(--red)}
 
 <script>
 (function(){
-  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','26 GAMES','HIGH SCORE AWAITS'];
+  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','ALWAYS FREE','HIGH SCORE AWAITS'];
   const track = document.getElementById('marquee-track');
   let html = '';
   for(let r=0;r<2;r++){
@@ -269,6 +271,8 @@ fetch('../games/games.json')
       `;
       wallGrid.appendChild(el);
     });
+
+    document.getElementById('see-all-link').textContent = 'See All ' + games.length + ' Games';
   })
   .catch(err=>console.error('Failed to load games.json', err));
 </script>

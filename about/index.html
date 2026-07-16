@@ -169,7 +169,7 @@ footer ul a:hover{color:var(--red)}
     </div>
     <div class="stat-grid">
       <div class="stat-ticket">
-        <div class="stat-top"><span class="stat-num">26</span><span class="stat-admit">Admit One</span></div>
+        <div class="stat-top"><span class="stat-num" id="games-live-count">26</span><span class="stat-admit">Admit One</span></div>
         <div class="stat-label">Games Live</div>
         <div class="stat-sub">Originals, arcade classics &amp; daily games</div>
       </div>
@@ -203,6 +203,7 @@ footer ul a:hover{color:var(--red)}
     <li><a href="../about/">About</a></li>
     <li><a href="../contact/">Contact</a></li>
     <li><a href="../privacy/">Privacy</a></li>
+    <li><a href="../legal/">Legal</a></li>
     <li><a href="https://instagram.com/ajoragames" target="_blank">Instagram</a></li>
   </ul>
   <div class="footer-copy">
@@ -213,7 +214,7 @@ footer ul a:hover{color:var(--red)}
 
 <script>
 (function(){
-  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','26 GAMES','HIGH SCORE AWAITS'];
+  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','ALWAYS FREE','HIGH SCORE AWAITS'];
   const track = document.getElementById('marquee-track');
   let html = '';
   for(let r=0;r<2;r++){
@@ -224,6 +225,15 @@ footer ul a:hover{color:var(--red)}
   }
   track.innerHTML = html;
 })();
+
+// Keep the "Games Live" stat in sync with games.json automatically,
+// so this number never needs manual updating when a game is added.
+fetch('../games/games.json')
+  .then(r => r.json())
+  .then(games => {
+    document.getElementById('games-live-count').textContent = games.length;
+  })
+  .catch(err => console.error('Failed to load games.json', err));
 </script>
 </body>
 </html>
