@@ -165,9 +165,17 @@ footer ul a:hover{color:var(--red)}
   <div class="contact-layout">
     <div>
       <div class="c-links">
-        <a href="mailto:ajoragames@gmail.com" class="c-link">
+        <a href="mailto:hello@ajoragames.com" class="c-link">
           <span class="c-link-icon">&#128231;</span>
-          <div><div class="c-link-title">Email</div><div class="c-link-val">ajoragames@gmail.com</div></div>
+          <div><div class="c-link-title">General</div><div class="c-link-val">hello@ajoragames.com</div></div>
+        </a>
+        <a href="mailto:bugs@ajoragames.com" class="c-link">
+          <span class="c-link-icon">&#128027;</span>
+          <div><div class="c-link-title">Bug Reports</div><div class="c-link-val">bugs@ajoragames.com</div></div>
+        </a>
+        <a href="mailto:partnerships@ajoragames.com" class="c-link">
+          <span class="c-link-icon">&#129309;</span>
+          <div><div class="c-link-title">Partnerships</div><div class="c-link-val">partnerships@ajoragames.com</div></div>
         </a>
         <a href="https://instagram.com/ajoragames" target="_blank" rel="noopener" class="c-link">
           <span class="c-link-icon">&#128248;</span>
@@ -188,7 +196,7 @@ footer ul a:hover{color:var(--red)}
       <div class="tp-title">Send A <em>Message</em></div>
 
       <form class="cf" id="contact-form">
-        <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY_HERE"/>
+        <input type="hidden" name="access_key" value="91ce67bb-b9ac-45b7-966f-79fc9a28cc48"/>
         <input type="hidden" name="subject" value="New message from Ajora Games contact form"/>
         <input type="hidden" name="from_name" value="Ajora Games Website"/>
         <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off"/>
@@ -259,16 +267,49 @@ document.getElementById('ticketNum').textContent = 'NO. ' + (100 + Math.floor(Ma
 
 // Contact form: tries a real, serverless email send via Web3Forms first.
 // If no access key has been set yet, or the request fails, it falls back
-// to opening the visitor's own email client addressed to ajoragames@gmail.com.
+// to opening the visitor's own email client addressed to the matching
+// branded alias below (all of which forward to the studio inbox via
+// Cloudflare Email Routing).
 const form = document.getElementById('contact-form');
 const btn = document.getElementById('submitBtn');
 const msgOk = document.getElementById('msgOk');
 const msgErr = document.getElementById('msgErr');
 
+// Maps the "Inquiry Type" dropdown to a subject tag AND the branded
+// alias the mailto fallback should address, so both the automated send
+// and the manual fallback stay consistent with the Cloudflare routing rules.
+const TYPE_TAGS = {
+  'Partnership / Business': '[Partnership]',
+  'Sponsorship': '[Sponsorship]',
+  'Press / Media': '[Press]',
+  'Creator Collab': '[Collab]',
+  'Game Feedback': '[Feedback]',
+  'Bug Report': '[Bug]',
+  'Other': '[General]'
+};
+
+const TYPE_ALIASES = {
+  'Partnership / Business': 'partnerships@ajoragames.com',
+  'Sponsorship': 'partnerships@ajoragames.com',
+  'Press / Media': 'press@ajoragames.com',
+  'Creator Collab': 'collab@ajoragames.com',
+  'Game Feedback': 'hello@ajoragames.com',
+  'Bug Report': 'bugs@ajoragames.com',
+  'Other': 'hello@ajoragames.com'
+};
+
+function tagFor(type){
+  return TYPE_TAGS[type] || '[General]';
+}
+
+function aliasFor(type){
+  return TYPE_ALIASES[type] || 'hello@ajoragames.com';
+}
+
 function mailtoFallback(data){
-  const subject = encodeURIComponent('[Ajora Games] ' + (data.get('type') || 'Contact'));
+  const subject = encodeURIComponent(tagFor(data.get('type')) + ' Ajora Games – ' + (data.get('type') || 'Contact'));
   const body = encodeURIComponent('Name: ' + data.get('name') + '\nEmail: ' + data.get('email') + '\n\n' + data.get('message'));
-  window.location.href = 'mailto:ajoragames@gmail.com?subject=' + subject + '&body=' + body;
+  window.location.href = 'mailto:' + aliasFor(data.get('type')) + '?subject=' + subject + '&body=' + body;
   msgErr.style.display = 'block';
 }
 
@@ -276,6 +317,10 @@ form.addEventListener('submit', async function(e){
   e.preventDefault();
   const data = new FormData(form);
   const accessKey = data.get('access_key');
+
+  // Rewrite the subject with a type tag right before sending, e.g.
+  // "[Bug] Ajora Games – Bug Report" — keeps inquiries easy to filter/search.
+  data.set('subject', tagFor(data.get('type')) + ' Ajora Games – ' + (data.get('type') || 'Contact'));
 
   if (!accessKey || accessKey === 'YOUR_WEB3FORMS_ACCESS_KEY_HERE'){
     mailtoFallback(data);
