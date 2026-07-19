@@ -1,0 +1,55 @@
+<svg viewBox="0 0 500 500" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FDE047" />
+            <stop offset="50%" stop-color="#F59E0B" />
+            <stop offset="100%" stop-color="#B45309" />
+        </linearGradient>
+        <linearGradient id="goldTextGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FDE047" />
+            <stop offset="100%" stop-color="#F59E0B" />
+        </linearGradient>
+        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#0F172A" />
+            <stop offset="100%" stop-color="#1E293B" />
+        </linearGradient>
+        <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+            <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.5"/>
+        </filter>
+        <path id="star_small" d="M 0,-12 L 3,-4 L 12,-4 L 5,2 L 7,10 L 0,5 L -7,10 L -5,2 L -12,-4 L -3,-4 Z" />
+        <path id="star_large" d="M 0,-16 L 4,-5 L 16,-5 L 6,2 L 10,13 L 0,7 L -10,13 L -6,2 L -16,-5 L -4,-5 Z" />
+    </defs>
+    <rect width="500" height="500" rx="40" fill="#000000" />
+    <circle cx="250" cy="250" r="235" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="8" />
+    <circle cx="250" cy="250" r="215" fill="none" stroke="#FDE047" stroke-width="2" stroke-dasharray="8, 6" opacity="0.4" />
+    <g fill="url(#goldGrad)" filter="url(#dropShadow)">
+        <use href="#star_large" x="250" y="70" />
+        <use href="#star_small" x="180" y="85" />
+        <use href="#star_small" x="320" y="85" />
+    </g>
+    <g stroke="url(#goldGrad)" stroke-linecap="round" opacity="0.7">
+        <line x1="70" y1="210" x2="110" y2="210" stroke-width="4" />
+        <line x1="50" y1="230" x2="130" y2="230" stroke-width="5" />
+        <line x1="80" y1="250" x2="110" y2="250" stroke-width="3" />
+    </g>
+    <g filter="url(#dropShadow)">
+        <g transform="translate(60, 105) scale(1.15)">
+            <path d="M60,20 C60,20 40,60 40,80 C40,100 30,130 50,140 C70,150 170,140 190,140 C210,140 230,130 230,110 C230,90 190,80 160,60 C130,40 100,30 90,20 Z" fill="url(#goldGrad)"/>
+            <ellipse cx="75" cy="20" rx="15" ry="6" fill="#0F172A"/>
+            <path d="M 60,140 L 65,155 L 75,155 L 80,140 Z" fill="url(#goldGrad)"/>
+            <path d="M 110,140 L 115,155 L 125,155 L 130,140 Z" fill="url(#goldGrad)"/>
+            <path d="M 160,140 L 165,155 L 175,155 L 180,140 Z" fill="url(#goldGrad)"/>
+            <path d="M 90,20 L 120,40 M 110,35 L 135,50 M 130,45 L 150,60" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 70,70 C 100,100 160,110 200,90 C 180,120 100,120 60,80 Z" fill="#FFFFFF" opacity="0.9"/>
+        </g>
+        <g transform="translate(315, 175)">
+            <circle cx="40" cy="40" r="40" fill="#FFFFFF" />
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#0F172A" stroke-width="2" stroke-dasharray="6,4" opacity="0.25"/>
+            <text x="40" y="55" font-family="'Arial Black', Impact, sans-serif" font-size="50" font-weight="900" fill="url(#goldTextGrad)" text-anchor="middle">?</text>
+        </g>
+    </g>
+    <g filter="url(#dropShadow)" text-anchor="middle">
+        <text x="250" y="380" font-family="'Impact', 'Arial Black', sans-serif" font-size="56" font-weight="900" fill="#FFFFFF" letter-spacing="1">GOLDEN BOOT</text>
+        <text x="250" y="440" font-family="'Impact', 'Arial Black', sans-serif" font-size="44" font-weight="900" fill="url(#goldTextGrad)" letter-spacing="8">TRIVIA</text>
+    </g>
+</svg>

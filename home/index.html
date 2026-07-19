@@ -73,7 +73,13 @@ nav ul a:hover,nav ul a.active{color:var(--red)}
 .og-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:26px}
 .og-card{position:relative;background:var(--ink2);border:2px solid var(--amber);padding:22px 20px 26px;box-shadow:8px 8px 0 rgba(255,176,32,0.28);display:flex;flex-direction:column;gap:14px;transition:transform .15s ease}
 .og-card:hover{transform:translate(-3px,-3px)}
+.og-card.is-new{border-color:var(--red);box-shadow:8px 8px 0 rgba(200,29,58,0.32);animation:newPulse 2.6s ease-in-out infinite}
+@keyframes newPulse{0%,100%{box-shadow:8px 8px 0 rgba(200,29,58,0.32)}50%{box-shadow:8px 8px 0 rgba(200,29,58,0.55),0 0 24px rgba(200,29,58,0.25)}}
+.new-ribbon{position:absolute;top:-11px;right:16px;background:var(--red);color:var(--paper);font-family:var(--display);font-weight:900;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;transform:rotate(2deg);box-shadow:3px 3px 0 rgba(0,0,0,0.35);z-index:2}
+.new-ribbon::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--paper);margin-right:6px;animation:dotBlink 1.2s ease-in-out infinite}
+@keyframes dotBlink{0%,100%{opacity:1}50%{opacity:.25}}
 .og-kicker{font-family:var(--data);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--amber)}
+.og-kicker.hot{color:var(--red)}
 .og-top{display:flex;align-items:center;gap:14px}
 .og-logo{width:64px;height:64px;object-fit:contain;border:2px solid var(--amber);flex-shrink:0;background:var(--ink)}
 .og-card h3{font-family:var(--display);font-weight:900;font-size:26px;text-transform:uppercase;margin:0;line-height:1.02}
@@ -215,7 +221,7 @@ footer ul a:hover{color:var(--red)}
 
 <script>
 (function(){
-  const items = ['AJORA GAMES','INSERT COIN','FREE TO PLAY','NO DOWNLOAD','ALWAYS FREE','HIGH SCORE AWAITS'];
+  const items = ['AJORA GAMES','GOLDEN BOOT TRIVIA \u2014 OUT NOW','REAL ONES KNOW','INSERT COIN','FREE TO PLAY','15 QUESTIONS. ONE CLOCK.','NO DOWNLOAD','ALWAYS FREE','HIGH SCORE AWAITS'];
   const track = document.getElementById('marquee-track');
   let html = '';
   for(let r=0;r<2;r++){
@@ -232,21 +238,25 @@ fetch('../games/games.json')
   .then(games=>{
     const ogGrid = document.getElementById('og-grid');
     const wallGrid = document.getElementById('wall-grid');
-    const ogGames = games.filter(g=>g.tier==='og');
+    const ogGames = games.filter(g=>g.tier==='og').sort((a,b)=>(b.new?1:0)-(a.new?1:0));
     const arcadeGames = games.filter(g=>g.tier!=='og').slice(0,4);
 
     ogGames.forEach(g=>{
       const el = document.createElement('a');
       el.href = '../games/' + g.path;
-      el.className = 'og-card';
+      el.className = 'og-card' + (g.new ? ' is-new' : '');
+      const kicker = g.new ? '&#128293; Just Dropped &mdash; Ajora Original' : '&#9733; Ajora Original';
+      const ribbon = g.new ? '<span class="new-ribbon">New</span>' : '';
+      const ctaLabel = g.new ? 'Play Now' : 'Play';
       el.innerHTML = `
-        <span class="og-kicker">&#9733; Ajora Original</span>
+        ${ribbon}
+        <span class="og-kicker${g.new ? ' hot' : ''}">${kicker}</span>
         <div class="og-top">
           <img class="og-logo" src="../games/${g.logo}" alt="${g.title}"/>
           <h3>${g.title}</h3>
         </div>
         <p>${g.desc}</p>
-        <div class="og-foot"><span class="stamp">Play</span></div>
+        <div class="og-foot"><span class="stamp">${ctaLabel}</span></div>
       `;
       ogGrid.appendChild(el);
     });

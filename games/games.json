@@ -27,6 +27,17 @@
     "tier": "og"
   },
   {
+    "id": "goldenboot",
+    "title": "Golden Boot Trivia",
+    "path": "../goldenboot/",
+    "logo": "gbt-logo.svg",
+    "desc": "Countries, legends, and World Cup history \u2014 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card.",
+    "accent": "#F59E0B",
+    "featured": true,
+    "new": true,
+    "tier": "og"
+  },
+  {
     "id": "2048",
     "title": "2048",
     "path": "../2048/",

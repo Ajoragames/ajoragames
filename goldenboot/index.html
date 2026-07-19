@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Golden Boot Trivia | Ajora Games</title>
+<meta name="description" content="Countries, legends, and World Cup history — 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card."/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Golden Boot Trivia",
+  "url": "https://ajoragames.com/goldenboot/",
+  "genre": "Trivia",
+  "author": { "@type": "Organization", "name": "Ajora Games", "url": "https://ajoragames.com" },
+  "description": "A football trivia game covering national teams, legendary players, and World Cup history, with a countdown timer per question.",
+  "playMode": "SinglePlayer",
+  "applicationCategory": "Game"
+}
+</script>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' fill='%230d2818'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23ffb020' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23ffb020'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --turf-dark:#0a2015;
+  --turf:#0d2818;
+  --turf-light:#123420;
+  --ink:#0d0c0c;
+  --chalk:#ede7dc;
+  --chalk-dim:#b9b3a4;
+  --gold:#ffb020;
+  --gold-deep:#d99312;
+  --red:#c81d3a;
+  --yellow:#ffd23f;
+  --floodlight:rgba(234,246,255,0.08);
+}
+html,body{height:100%;background:var(--turf-dark);overflow-x:hidden}
+body{
+  font-family:'Space Mono',monospace;
+  color:var(--chalk);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  background:
+    radial-gradient(ellipse 90% 55% at 20% -10%,var(--floodlight),transparent 60%),
+    radial-gradient(ellipse 90% 55% at 80% -10%,var(--floodlight),transparent 60%),
+    repeating-linear-gradient(90deg,var(--turf) 0px,var(--turf) 64px,var(--turf-light) 64px,var(--turf-light) 128px),
+    var(--turf-dark);
+  position:relative;
+}
+h1,h2,h3,.display{font-family:'Big Shoulders Display',sans-serif;font-weight:900;letter-spacing:.01em}
+
+/* NAV */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 22px;flex-shrink:0;position:relative;z-index:50;
+  background:rgba(13,12,12,0.55);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid rgba(237,231,220,0.1);
+}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--chalk)}
+.nav-logo img{height:28px;width:28px;object-fit:contain;border-radius:8px}
+.nav-logo-name{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+.nav-right{display:flex;align-items:center;gap:14px}
+.game-logo{display:flex;align-items:center;gap:8px}
+.game-logo img{height:28px;width:28px;object-fit:contain;border-radius:8px}
+.game-logo-name{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:12px;letter-spacing:.03em;color:var(--gold);line-height:1.05}
+.nav-back{
+  font-family:'Space Mono',monospace;font-weight:700;font-size:11px;color:var(--chalk-dim);text-decoration:none;
+  letter-spacing:.03em;padding:6px 14px;border-radius:3px;border:1px solid rgba(237,231,220,0.25);
+  transition:color .2s,border-color .2s,transform .15s;
+}
+.nav-back:hover{color:var(--gold);border-color:var(--gold);transform:translateY(-1px)}
+@media(max-width:640px){.game-logo-name,.nav-logo-name{display:none}nav{padding:10px 14px}}
+
+/* SCOREBOARD STRIP */
+#scoreboard{
+  display:flex;align-items:center;justify-content:center;gap:0;
+  flex-shrink:0;position:relative;z-index:20;padding:14px 16px 0;
+}
+.sb-block{
+  background:rgba(13,12,12,0.6);border:1px solid rgba(237,231,220,0.14);
+  padding:8px 20px;text-align:center;min-width:88px;
+}
+.sb-block:first-child{border-radius:6px 0 0 6px;border-right:none}
+.sb-block:last-child{border-radius:0 6px 6px 0;border-left:none}
+.sb-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--chalk-dim)}
+.sb-value{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:var(--gold);line-height:1.2}
+#sb-progress{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:var(--chalk)}
+
+/* MAIN / CARD */
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;position:relative;min-height:0}
+
+#timer-wrap{position:relative;width:88px;height:88px;margin-bottom:6px;flex-shrink:0}
+#timer-wrap svg{transform:rotate(-90deg)}
+#timer-bg{fill:none;stroke:rgba(237,231,220,0.14);stroke-width:6}
+#timer-arc{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .2s}
+#timer-arc.low{stroke:var(--red)}
+#timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--chalk)}
+
+.eyebrow{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);
+  background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.35);
+  padding:5px 14px;border-radius:20px;margin-bottom:16px;
+}
+
+#ticket{
+  width:100%;max-width:560px;
+  background:var(--chalk);color:var(--ink);
+  border-radius:14px;
+  padding:30px 26px 24px;
+  position:relative;
+  box-shadow:0 20px 50px rgba(0,0,0,0.45),0 0 0 1px rgba(0,0,0,0.06);
+}
+#ticket::before,#ticket::after{
+  content:'';position:absolute;top:50%;transform:translateY(-50%);
+  width:26px;height:26px;background:var(--turf-dark);border-radius:50%;
+}
+#ticket::before{left:-13px}
+#ticket::after{right:-13px}
+#q-text{
+  font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+  font-size:clamp(20px,3.4vw,28px);line-height:1.22;margin-bottom:22px;
+  min-height:2.4em;display:flex;align-items:center;
+}
+#answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){#answers{grid-template-columns:1fr}}
+.ans{
+  font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;text-align:left;
+  background:#fff;border:2px solid rgba(13,12,12,0.14);border-radius:8px;
+  padding:13px 16px;cursor:pointer;color:var(--ink);position:relative;
+  transition:border-color .15s,transform .12s,background .15s;
+  display:flex;align-items:center;gap:10px;
+}
+.ans:hover:not(.locked){border-color:var(--gold-deep);transform:translateY(-1px)}
+.ans .num{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;color:var(--chalk-dim);flex-shrink:0}
+.ans.correct{background:#e6f7ec;border-color:#2e9e5b;color:#1b6b3c}
+.ans.correct .num{color:#2e9e5b}
+.ans.wrong{background:#fbe6e9;border-color:var(--red);color:#9c1428}
+.ans.wrong .num{color:var(--red)}
+.ans.locked{cursor:default}
+
+#next-btn{
+  margin-top:24px;padding:13px 40px;background:var(--gold);color:var(--ink);
+  font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;letter-spacing:.03em;
+  border:none;border-radius:6px;cursor:pointer;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .15s;text-transform:uppercase;
+}
+#next-btn.show{opacity:1;pointer-events:all}
+#next-btn:hover{transform:translateY(-2px)}
+
+/* CARD FLASH overlay - referee card feedback */
+#card-flash{
+  position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;
+  display:flex;align-items:center;justify-content:center;
+}
+#card-flash .card-shape{
+  width:120px;height:170px;border-radius:8px;transform:scale(0.4) rotate(-8deg);
+  box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+#card-flash.yellow{background:rgba(255,210,63,0.12)}
+#card-flash.yellow .card-shape{background:var(--yellow)}
+#card-flash.green{background:rgba(46,158,91,0.1)}
+#card-flash.green .card-shape{background:#2e9e5b;width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+#card-flash.show{animation:cardFlash .7s ease forwards}
+@keyframes cardFlash{
+  0%{opacity:0}
+  15%{opacity:1}
+  15%{transform:none}
+  30%{}
+  100%{opacity:0}
+}
+#card-flash.show .card-shape{animation:cardPop .7s cubic-bezier(.34,1.4,.4,1) forwards}
+@keyframes cardPop{
+  0%{transform:scale(0.3) rotate(-10deg)}
+  40%{transform:scale(1.08) rotate(3deg)}
+  60%{transform:scale(1) rotate(0)}
+  100%{transform:scale(1) rotate(0)}
+}
+
+/* END SCREEN */
+#gameover{
+  position:fixed;inset:0;background:rgba(10,32,21,0.97);z-index:300;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:24px;
+}
+#gameover.show{display:flex}
+.go-eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.go-title{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(38px,8vw,64px);line-height:.95;color:var(--chalk);margin-bottom:6px}
+.go-title span{color:var(--gold)}
+.go-score{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(70px,16vw,120px);color:var(--gold);line-height:1;margin:14px 0 4px}
+.go-sub{font-size:12px;color:var(--chalk-dim);margin-bottom:26px}
+.go-stats{display:flex;gap:28px;margin-bottom:30px;flex-wrap:wrap;justify-content:center}
+.go-stat-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--chalk-dim)}
+.go-stat-val{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:var(--chalk)}
+.go-play-btn{
+  padding:15px 46px;background:var(--gold);color:var(--ink);border:none;border-radius:6px;
+  font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;letter-spacing:.03em;
+  text-transform:uppercase;cursor:pointer;transition:transform .15s;
+}
+.go-play-btn:hover{transform:translateY(-2px)}
+.go-back-link{margin-top:16px;font-size:11px;color:var(--chalk-dim);text-decoration:none;letter-spacing:.03em}
+.go-back-link:hover{color:var(--gold)}
+</style>
+<meta name="google-adsense-account" content="ca-pub-8780250723862238">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8780250723862238" crossorigin="anonymous"></script>
+<!-- BEGIN social-meta (auto-generated, do not hand-edit) -->
+<link rel="canonical" href="https://ajoragames.com/goldenboot/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://ajoragames.com/goldenboot/"/>
+<meta property="og:site_name" content="Ajora Games"/>
+<meta property="og:title" content="Golden Boot Trivia | Ajora Games"/>
+<meta property="og:description" content="Countries, legends, and World Cup history — 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card."/>
+<meta property="og:image" content="https://ajoragames.com/games/gbt-logo-og.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Golden Boot Trivia | Ajora Games"/>
+<meta name="twitter:description" content="Countries, legends, and World Cup history — 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card."/>
+<meta name="twitter:image" content="https://ajoragames.com/games/gbt-logo-og.png"/>
+<!-- END social-meta -->
+</head>
+<body>
+
+<!-- LOADING / INTRO SCREEN -->
+<div id="page-intro" style="position:fixed;inset:0;background:#0a2015;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;overflow:hidden">
+  <div style="position:absolute;inset:0;opacity:.5;background:repeating-linear-gradient(90deg,#0d2818 0px,#0d2818 64px,#123420 64px,#123420 128px)"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,transparent 20%,rgba(10,32,21,0.94) 100%)"></div>
+  <div id="intro-glow" style="position:absolute;width:500px;height:250px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,176,32,0.22) 0%,transparent 70%);filter:blur(40px);opacity:0;transition:opacity 1.2s ease .6s;pointer-events:none"></div>
+
+  <div id="intro-logos" style="display:flex;align-items:center;justify-content:center;gap:24px;opacity:0;transform:scale(0.92) translateY(14px);transition:all .85s cubic-bezier(.34,1.1,.64,1)">
+    <img src="../ajora-logo-transparent.png" alt="Ajora Games" style="height:min(72px,14vw);width:min(72px,14vw);object-fit:contain;display:block"/>
+    <div style="width:1px;height:min(54px,11vw);background:linear-gradient(180deg,transparent,rgba(255,176,32,0.5),transparent);flex-shrink:0"></div>
+    <img src="gbt-logo.svg" alt="Golden Boot Trivia" style="height:min(72px,14vw);width:min(72px,14vw);object-fit:contain;display:block;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.5)"/>
+  </div>
+
+  <div id="intro-sub" style="font-family:'Space Mono',monospace;font-weight:700;font-size:11px;color:#ffb020;letter-spacing:.16em;text-transform:uppercase;margin-top:28px;opacity:0;transition:opacity .5s ease .68s">Kickoff in progress</div>
+
+  <div id="intro-bar" style="width:min(180px,44vw);height:6px;background:rgba(237,231,220,0.15);border-radius:8px;margin-top:32px;overflow:hidden;opacity:0;transition:opacity .3s ease .82s">
+    <div id="intro-progress" style="height:100%;width:0%;background:#ffb020;transition:width 1.2s ease .94s;border-radius:8px"></div>
+  </div>
+</div>
+
+<nav>
+  <a href="../home/" class="nav-logo">
+    <img src="../ajora-logo-transparent.png" alt="Ajora"/>
+    <span class="nav-logo-name">Ajora</span>
+  </a>
+  <div class="nav-right">
+    <div class="game-logo">
+      <img src="gbt-logo.svg" alt="Golden Boot Trivia"/>
+      <span class="game-logo-name">GOLDEN BOOT<br/>TRIVIA</span>
+    </div>
+    <a href="../games/" class="nav-back">← Games</a>
+  </div>
+</nav>
+
+<div id="scoreboard">
+  <div class="sb-block"><div class="sb-label">Score</div><div class="sb-value" id="sb-score">0</div></div>
+  <div class="sb-block"><div class="sb-label">Streak</div><div class="sb-value" id="sb-streak">0</div></div>
+  <div class="sb-block"><div class="sb-label">Question</div><div id="sb-progress"><span id="sb-q">1</span>/15</div></div>
+  <div class="sb-block"><div class="sb-label">Best</div><div class="sb-value" id="sb-best">0</div></div>
+</div>
+
+<main>
+  <div id="timer-wrap">
+    <svg width="88" height="88" viewBox="0 0 88 88">
+      <circle id="timer-bg" cx="44" cy="44" r="40"/>
+      <circle id="timer-arc" cx="44" cy="44" r="40"/>
+    </svg>
+    <div id="timer-num">10</div>
+  </div>
+
+  <div class="eyebrow" id="q-category">TEAM STAT</div>
+
+  <div id="ticket">
+    <div id="q-text">Loading question…</div>
+    <div id="answers"></div>
+  </div>
+
+  <button id="next-btn" onclick="nextQuestion()">Next Question →</button>
+</main>
+
+<div id="card-flash"><div class="card-shape"></div></div>
+
+<div id="gameover">
+  <div class="go-eyebrow">Full time</div>
+  <div class="go-title"><span>Golden Boot</span><br>Trivia</div>
+  <div class="go-score" id="go-score">0/15</div>
+  <div class="go-sub" id="go-sub">Correct answers this round</div>
+  <div class="go-stats">
+    <div><div class="go-stat-label">Best Streak</div><div class="go-stat-val" id="go-streak">0</div></div>
+    <div><div class="go-stat-label">Accuracy</div><div class="go-stat-val" id="go-acc">0%</div></div>
+    <div><div class="go-stat-label">All-Time Best</div><div class="go-stat-val" id="go-best">0/15</div></div>
+  </div>
+  <button class="go-play-btn" onclick="startGame()">Play Again</button>
+  <a href="../games/" class="go-back-link">← Back to Games</a>
+</div>
+
+<script>
+const QUESTIONS = [
+// TEAM STAT
+{cat:"TEAM STAT",q:"Which country has won the most FIFA World Cup titles?",o:["Germany","Brazil","Italy","Argentina"],c:1},
+{cat:"TEAM STAT",q:"Argentina's national team carries which nickname?",o:["La Roja","La Celeste","La Albiceleste","Los Cafeteros"],c:2},
+{cat:"TEAM STAT",q:"Germany's national team is nicknamed...",o:["Die Mannschaft","Der Panzer","Das Team","Die Adler"],c:0},
+{cat:"TEAM STAT",q:"England's men's team is nicknamed...",o:["The Lions","The Three Lions","The Red Devils","The Roaring Lions"],c:1},
+{cat:"TEAM STAT",q:"France's national team is nicknamed...",o:["Les Rouges","Les Tricolores","Les Bleus","Les Coqs"],c:2},
+{cat:"TEAM STAT",q:"Italy's national team is nicknamed...",o:["Gli Azzurri","I Rossi","Gli Aquile","I Blu"],c:0},
+{cat:"TEAM STAT",q:"Spain's national team carries the nickname...",o:["La Furia","La Roja","Los Toros","La Naranja"],c:1},
+{cat:"TEAM STAT",q:"Uruguay's national team is nicknamed...",o:["La Naranja","La Celeste","La Albiceleste","Los Pumas"],c:1},
+{cat:"TEAM STAT",q:"Which country hosted and won the first-ever World Cup in 1930?",o:["Brazil","Argentina","Uruguay","Italy"],c:2},
+{cat:"TEAM STAT",q:"Which African nation was the first to reach a World Cup semifinal, doing so in 2022?",o:["Ghana","Senegal","Cameroon","Morocco"],c:3},
+{cat:"TEAM STAT",q:"Australia's national team carries which nickname?",o:["The Kangaroos","The Socceroos","The Wallabies","The Kiwis"],c:1},
+{cat:"TEAM STAT",q:"Cameroon's national team is nicknamed...",o:["Indomitable Lions","Super Eagles","Black Stars","Desert Foxes"],c:0},
+{cat:"TEAM STAT",q:"Nigeria's national team is nicknamed...",o:["Indomitable Lions","Super Eagles","Elephants","Black Stars"],c:1},
+{cat:"TEAM STAT",q:"Ghana's national team carries the nickname...",o:["Black Stars","Super Eagles","Indomitable Lions","Bafana Bafana"],c:0},
+{cat:"TEAM STAT",q:"South Africa's national team is nicknamed...",o:["Black Stars","Bafana Bafana","Indomitable Lions","Chipolopolo"],c:1},
+{cat:"TEAM STAT",q:"Which two countries co-hosted the 2002 World Cup?",o:["China & Japan","Japan & South Korea","South Korea & Australia","Japan & Australia"],c:1},
+{cat:"TEAM STAT",q:"Which country hosted the 1994 World Cup?",o:["Mexico","Brazil","United States","Italy"],c:2},
+{cat:"TEAM STAT",q:"Which country hosted the 2018 World Cup?",o:["Brazil","Russia","Qatar","South Africa"],c:1},
+{cat:"TEAM STAT",q:"Which country hosted the 2022 World Cup?",o:["UAE","Saudi Arabia","Qatar","Kuwait"],c:2},
+{cat:"TEAM STAT",q:"Which three nations are co-hosting the 2026 World Cup?",o:["USA, Mexico & Brazil","USA, Canada & Mexico","Canada, UK & USA","Mexico, Canada & Chile"],c:1},
+{cat:"TEAM STAT",q:"How many teams competed in the expanded 2026 World Cup for the first time?",o:["32","40","48","64"],c:2},
+{cat:"TEAM STAT",q:"Which country's shirt is traditionally light blue and white vertical stripes?",o:["Uruguay","Argentina","Italy","France"],c:1},
+{cat:"TEAM STAT",q:"Which country reached the World Cup final three times without ever winning it (through 2022)?",o:["Netherlands","Sweden","Croatia","Poland"],c:0},
+{cat:"TEAM STAT",q:"Which country's team is nicknamed \"Les Lions de l'Atlas\" (Lions of the Atlas)?",o:["Tunisia","Algeria","Morocco","Egypt"],c:2},
+// PLAYERS & LEGENDS
+{cat:"FOOTBALL LEGEND",q:"Who is the all-time top scorer in World Cup tournament history (through 2022), with 16 goals?",o:["Ronaldo Nazário","Pelé","Miroslav Klose","Gerd Müller"],c:2},
+{cat:"FOOTBALL LEGEND",q:"Which player scored the infamous \"Hand of God\" goal in 1986?",o:["Diego Maradona","Pelé","Zico","Careca"],c:0},
+{cat:"FOOTBALL LEGEND",q:"Who won the Golden Boot as top scorer of the 2022 World Cup?",o:["Lionel Messi","Kylian Mbappé","Olivier Giroud","Julián Álvarez"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Which player has won the most World Cup titles as a player, with three?",o:["Pelé","Maradona","Ronaldo Nazário","Zidane"],c:0},
+{cat:"FOOTBALL LEGEND",q:"Who captained Argentina to the 2022 World Cup title?",o:["Ángel Di María","Lionel Messi","Sergio Agüero","Rodrigo De Paul"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Which goalkeeper won the Golden Glove award at the 2022 World Cup?",o:["Alisson","Emiliano Martínez","Hugo Lloris","Thibaut Courtois"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Which Brazilian is widely nicknamed \"O Rei\" — The King — of football?",o:["Ronaldinho","Pelé","Zico","Romário"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Who scored a hat-trick in the 2022 World Cup final for France?",o:["Olivier Giroud","Antoine Griezmann","Kylian Mbappé","Ousmane Dembélé"],c:2},
+{cat:"FOOTBALL LEGEND",q:"Who is the youngest player ever to score in a World Cup final, doing so in 1958 at age 17?",o:["Pelé","Garrincha","Just Fontaine","Didi"],c:0},
+{cat:"FOOTBALL LEGEND",q:"Which Portuguese forward has appeared in five different World Cups?",o:["Luís Figo","Cristiano Ronaldo","Eusébio","Rui Costa"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Who scored the winning goal in the 2014 World Cup final for Germany?",o:["Thomas Müller","Mesut Özil","Mario Götze","Miroslav Klose"],c:2},
+{cat:"FOOTBALL LEGEND",q:"Which Argentine great is nicknamed \"El Pibe de Oro\" — The Golden Boy?",o:["Lionel Messi","Diego Maradona","Gabriel Batistuta","Mario Kempes"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Who won the Golden Ball as best player of the 2018 World Cup?",o:["Kylian Mbappé","Luka Modrić","Eden Hazard","Antoine Griezmann"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Which Brazilian striker was nicknamed \"The Phenomenon\"?",o:["Ronaldinho","Rivaldo","Ronaldo Nazário","Adriano"],c:2},
+{cat:"FOOTBALL LEGEND",q:"Who scored the fastest goal in World Cup history, in just 11 seconds, in 2002?",o:["Hakan Şükür","Ronaldo Nazário","Michael Owen","Davor Šuker"],c:0},
+{cat:"FOOTBALL LEGEND",q:"Which player won the World Cup as both a player in 1998 and head coach in 2018 for France?",o:["Zinedine Zidane","Didier Deschamps","Thierry Henry","Laurent Blanc"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Who is the all-time leading goalscorer for the Argentina national team?",o:["Diego Maradona","Gabriel Batistuta","Lionel Messi","Sergio Agüero"],c:2},
+{cat:"FOOTBALL LEGEND",q:"Which England striker scored a hat-trick in the 1966 World Cup final?",o:["Bobby Charlton","Geoff Hurst","Jimmy Greaves","Roger Hunt"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Who won the Golden Boot at the 2018 World Cup?",o:["Harry Kane","Romelu Lukaku","Antoine Griezmann","Cristiano Ronaldo"],c:0},
+{cat:"FOOTBALL LEGEND",q:"Which Italian goalkeeper played at five World Cups across a two-decade career?",o:["Dino Zoff","Gianluigi Buffon","Walter Zenga","Gianluigi Donnarumma"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Which player scored both the \"Hand of God\" and the \"Goal of the Century\" in the same 1986 match against England?",o:["Diego Maradona","Jorge Valdano","Careca","Claudio Caniggia"],c:0},
+{cat:"FOOTBALL LEGEND",q:"Which Croatian midfielder led his country to a first-ever World Cup final in 2018?",o:["Ivan Rakitić","Luka Modrić","Mario Mandžukić","Marcelo Brozović"],c:1},
+{cat:"FOOTBALL LEGEND",q:"Which German striker held the World Cup all-time scoring record before Miroslav Klose broke it?",o:["Gerd Müller","Franz Beckenbauer","Karl-Heinz Rummenigge","Jürgen Klinsmann"],c:0},
+{cat:"FOOTBALL LEGEND",q:"Which player is widely nicknamed \"CR7\"?",o:["Cristiano Ronaldo","Ronaldinho","Ronaldo Nazário","Carlos Ronaldo"],c:0},
+// CUP HISTORY
+{cat:"CUP HISTORY",q:"How often is the FIFA World Cup held?",o:["Every 2 years","Every 3 years","Every 4 years","Every 5 years"],c:2},
+{cat:"CUP HISTORY",q:"Which country has won the World Cup a record five times?",o:["Germany","Italy","Argentina","Brazil"],c:3},
+{cat:"CUP HISTORY",q:"Which country was the first to win the World Cup twice, in 1934 and 1938?",o:["Brazil","Italy","Uruguay","Germany"],c:1},
+{cat:"CUP HISTORY",q:"In which year did the World Cup expand to 48 teams for the first time?",o:["2022","2026","2030","2018"],c:1},
+{cat:"CUP HISTORY",q:"What was the maximum squad size allowed at the 2022 World Cup?",o:["23 players","25 players","26 players","28 players"],c:2},
+{cat:"CUP HISTORY",q:"Which team suffered a historic 7-1 semifinal defeat on home soil in 2014?",o:["Argentina","Brazil","Chile","Colombia"],c:1},
+{cat:"CUP HISTORY",q:"Which country won back-to-back World Cups in 1958 and 1962?",o:["Uruguay","Argentina","Brazil","Italy"],c:2},
+{cat:"CUP HISTORY",q:"What is a match called when it's decided by kicks from the penalty mark after extra time?",o:["Golden goal","Sudden death","Penalty shootout","Tiebreaker round"],c:2},
+{cat:"CUP HISTORY",q:"What trophy was awarded to World Cup winners from 1930 to 1970, before being retired?",o:["Jules Rimet Trophy","FIFA Cup","World Champions Trophy","Golden Cup"],c:0},
+{cat:"CUP HISTORY",q:"Which country permanently kept the original World Cup trophy after winning it for a third time in 1970?",o:["Uruguay","Italy","Brazil","West Germany"],c:2},
+{cat:"CUP HISTORY",q:"How many outfield players does each team have on the pitch during regulation play?",o:["9","10","11","12"],c:1},
+{cat:"CUP HISTORY",q:"Which World Cup was the first to use Video Assistant Referee (VAR) technology?",o:["2014 Brazil","2018 Russia","2022 Qatar","2010 South Africa"],c:1},
+{cat:"CUP HISTORY",q:"What is the standard length of a football match before any extra time?",o:["80 minutes","90 minutes","100 minutes","120 minutes"],c:1},
+{cat:"CUP HISTORY",q:"Which stadium hosted the 2026 World Cup Final?",o:["SoFi Stadium","MetLife Stadium","AT&T Stadium","Hard Rock Stadium"],c:1},
+{cat:"CUP HISTORY",q:"How many host cities staged matches across the 2026 World Cup?",o:["12","14","16","20"],c:2},
+{cat:"CUP HISTORY",q:"What color card results in a player being sent off the pitch?",o:["Yellow","Blue","Red","Orange"],c:2},
+{cat:"CUP HISTORY",q:"What color card serves as a formal caution to a player?",o:["Yellow","Red","Green","Orange"],c:0},
+{cat:"CUP HISTORY",q:"Which two teams played the infamously violent \"Battle of Santiago\" at the 1962 World Cup?",o:["Chile and Italy","Brazil and Uruguay","Argentina and England","Chile and Brazil"],c:0},
+{cat:"CUP HISTORY",q:"Which country has appeared in every single World Cup tournament since it began in 1930?",o:["Germany","Argentina","Brazil","Italy"],c:2},
+{cat:"CUP HISTORY",q:"Which sportswear brand has long supplied the official match ball for the World Cup?",o:["Nike","Puma","Under Armour","Adidas"],c:3},
+{cat:"CUP HISTORY",q:"Which 2026 co-host nation was eliminated by Belgium in the Round of 16?",o:["Canada","Mexico","United States","None — all hosts advanced"],c:2},
+{cat:"CUP HISTORY",q:"Which 2026 co-host nation lost to Morocco in the Round of 16?",o:["Mexico","Canada","United States","None — all hosts advanced"],c:1},
+{cat:"CUP HISTORY",q:"Which 2026 co-host nation was eliminated by England in the Round of 16?",o:["Canada","United States","Mexico","None — all hosts advanced"],c:2},
+{cat:"CUP HISTORY",q:"Which two teams are contesting the 2026 World Cup Final?",o:["France and Argentina","Spain and Argentina","Spain and France","Argentina and England"],c:1},
+];
+
+const ROUND_SIZE=15, TIME_PER_Q=10, CIRC=251.2;
+let round=[], idx=0, score=0, streak=0, bestStreak=0, locked=false, timerId=null, timeLeft=TIME_PER_Q;
+const best = { get(){ try{return parseInt(localStorage.getItem('gbt_best')||'0',10)}catch(e){return 0} },
+               set(v){ try{localStorage.setItem('gbt_best',String(v))}catch(e){} } };
+
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function startGame(){
+  document.getElementById('gameover').classList.remove('show');
+  round = shuffle(QUESTIONS).slice(0,ROUND_SIZE).map(q=>{
+    const opts = q.o.map((text,i)=>({text,correct:i===q.c}));
+    return {cat:q.cat, q:q.q, opts:shuffle(opts)};
+  });
+  idx=0; score=0; streak=0; bestStreak=0;
+  document.getElementById('sb-best').textContent = best.get();
+  updateScoreboard();
+  loadQuestion();
+}
+
+function updateScoreboard(){
+  document.getElementById('sb-score').textContent=score;
+  document.getElementById('sb-streak').textContent=streak;
+  document.getElementById('sb-q').textContent=Math.min(idx+1,ROUND_SIZE);
+}
+
+function loadQuestion(){
+  if(idx>=round.length){ endGame(); return; }
+  locked=false;
+  const item=round[idx];
+  document.getElementById('q-category').textContent=item.cat;
+  document.getElementById('q-text').textContent=item.q;
+  updateScoreboard();
+
+  const wrap=document.getElementById('answers');
+  wrap.innerHTML='';
+  item.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='ans';
+    btn.innerHTML='<span class="num">'+String.fromCharCode(65+i)+'</span><span>'+opt.text+'</span>';
+    btn.onclick=()=>selectAnswer(btn,opt.correct);
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('next-btn').classList.remove('show');
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timerId);
+  timeLeft=TIME_PER_Q;
+  const arc=document.getElementById('timer-arc'), num=document.getElementById('timer-num');
+  arc.classList.remove('low');
+  arc.style.transition='none';
+  arc.style.strokeDashoffset='0';
+  num.textContent=timeLeft;
+  requestAnimationFrame(()=>{ arc.style.transition='stroke-dashoffset 1s linear,stroke .2s'; });
+  timerId=setInterval(()=>{
+    timeLeft--;
+    num.textContent=Math.max(timeLeft,0);
+    arc.style.strokeDashoffset=(CIRC*(1-timeLeft/TIME_PER_Q));
+    if(timeLeft<=3) arc.classList.add('low');
+    if(timeLeft<=0){ clearInterval(timerId); timeUp(); }
+  },1000);
+}
+
+function timeUp(){
+  if(locked)return;
+  locked=true;
+  const wrap=document.getElementById('answers');
+  [...wrap.children].forEach(b=>b.classList.add('locked'));
+  const correctIdx = round[idx].opts.findIndex(o=>o.correct);
+  wrap.children[correctIdx].classList.add('correct');
+  streak=0;
+  flashCard('red');
+  document.getElementById('next-btn').classList.add('show');
+  idx++;
+}
+
+function selectAnswer(btn,isCorrect){
+  if(locked)return;
+  locked=true;
+  clearInterval(timerId);
+  const wrap=document.getElementById('answers');
+  [...wrap.children].forEach(b=>b.classList.add('locked'));
+
+  if(isCorrect){
+    btn.classList.add('correct');
+    score++; streak++; if(streak>bestStreak) bestStreak=streak;
+    flashCard('green');
+  } else {
+    btn.classList.add('wrong');
+    const correctIdx = round[idx].opts.findIndex(o=>o.correct);
+    wrap.children[correctIdx].classList.add('correct');
+    streak=0;
+    flashCard('red');
+  }
+  updateScoreboard();
+  document.getElementById('next-btn').classList.add('show');
+  idx++;
+}
+
+function flashCard(type){
+  // type: 'green' (correct), 'yellow' (wrong pick), 'red' (timed out)
+  const el=document.getElementById('card-flash');
+  const shape=el.querySelector('.card-shape');
+  el.className='';
+  void el.offsetWidth;
+  if(type==='green'){
+    el.classList.add('green','show');
+    shape.style.background='';
+  } else {
+    el.classList.add('yellow','show');
+    shape.style.background = type==='red' ? '#c81d3a' : '';
+  }
+  setTimeout(()=>{ el.classList.remove('show'); },750);
+}
+
+function nextQuestion(){ loadQuestion(); }
+
+function endGame(){
+  clearInterval(timerId);
+  const acc = Math.round((score/round.length)*100);
+  const prevBest = best.get();
+  const newBest = Math.max(prevBest, score);
+  best.set(newBest);
+
+  document.getElementById('go-score').textContent = score+'/'+round.length;
+  document.getElementById('go-streak').textContent = bestStreak;
+  document.getElementById('go-acc').textContent = acc+'%';
+  document.getElementById('go-best').textContent = newBest+'/'+round.length;
+  document.getElementById('go-sub').textContent = score===round.length ? "Perfect round — clean sheet!" : (acc>=70 ? "Solid performance out there." : "Room to improve before the next matchday.");
+  document.getElementById('gameover').classList.add('show');
+}
+
+function showIntro(){
+  const logos=document.getElementById('intro-logos');
+  const glow=document.getElementById('intro-glow');
+  const sub=document.getElementById('intro-sub');
+  const bar=document.getElementById('intro-bar');
+  const prog=document.getElementById('intro-progress');
+
+  setTimeout(()=>{ if(logos){logos.style.opacity='1';logos.style.transform='scale(1) translateY(0)';} },150);
+  setTimeout(()=>{ if(glow)glow.style.opacity='1'; },500);
+  setTimeout(()=>{ if(sub)sub.style.opacity='1'; },700);
+  setTimeout(()=>{ if(bar)bar.style.opacity='1'; },880);
+  setTimeout(()=>{ if(prog)prog.style.width='100%'; },920);
+  setTimeout(()=>{
+    const intro=document.getElementById('page-intro');
+    intro.style.transition='opacity .5s ease';
+    intro.style.opacity='0';
+    setTimeout(()=>{intro.style.display='none';startGame();},500);
+  },2600);
+}
+
+showIntro();
+</script>
+</body>
+</html>
