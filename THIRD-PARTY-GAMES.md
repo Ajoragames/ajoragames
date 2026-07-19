@@ -14,18 +14,21 @@ Ajora Games IP. Each retains its original license in its own folder.
   See /javascript-racer/LICENSE
 - **/adarkroom/** — "A Dark Room" by Doublespeak Games. MPL-2.0 License.
   See /adarkroom/LICENSE.md
+- **/chess/** — by Zhang Zeyu. MIT License. See /chess/LICENSE
+- **/solitaire/** — by Justin Hatzimalis. MIT License. See /solitaire/LICENSE
+- **/tetris/** — by Jake Gordon and contributors. MIT License. See /tetris/LICENSE
 
 Note: GPLv3 titles must keep their license and source available as-is.
 Do not relicense or misrepresent authorship of these games.
 
 ---
 
-**Note on Snake, Minesweeper, Pong, Ten by Ten, Galaxy Invaders, and Candy
-Match**: these games are original Ajora Games implementations of
-public-domain, generic game mechanics (no third-party codebase was copied
-or forked for any of them). Full Ajora Games IP, same as Last One Standing,
-Higher or Lower, Would You Rather, Reflex Rush, Aim Rush, Quantum Forge, and
-Neon Velocity.
+**Note on Snake, Minesweeper, Pong, Ten by Ten, Galaxy Invaders, Candy
+Match, Sudoku, and Word Streak**: these games are original Ajora Games
+implementations of public-domain, generic game mechanics (no third-party
+codebase was copied or forked for any of them). Full Ajora Games IP, same
+as Last One Standing, Higher or Lower, Would You Rather, Reflex Rush, Aim
+Rush, Quantum Forge, and Neon Velocity.
 
 Pong, Ten by Ten, Galaxy Invaders, and Candy Match previously used
 third-party open-source code with unclear or missing licenses (see git
