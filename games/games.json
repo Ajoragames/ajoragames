@@ -13,7 +13,7 @@
     "title": "Higher or Lower",
     "path": "../higherorlower/",
     "logo": "hol-logo.svg",
-    "desc": "Populations, box office, streams, heights \u2014 guess if the next one's higher or lower. One wrong guess ends the streak.",
+    "desc": "Populations, box office, streams, heights — guess if the next one's higher or lower. One wrong guess ends the streak.",
     "accent": "#39ff5a",
     "tier": "og"
   },
@@ -31,7 +31,7 @@
     "title": "Golden Boot Trivia",
     "path": "../goldenboot/",
     "logo": "gbt-logo.svg",
-    "desc": "Countries, legends, and World Cup history \u2014 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card.",
+    "desc": "Four ways to play: World Cup mixed, national teams, club football, and Guess The Player. Beat the clock, build your streak, share your score.",
     "accent": "#F59E0B",
     "featured": true,
     "new": true,
@@ -44,7 +44,7 @@
     "logo": "2048-logo.png",
     "desc": "Slide the tiles, merge the numbers, chase the 2048 tile before the board fills up.",
     "accent": "#f2b179",
-    "credit": "Original by Gabriele Cirulli \u00b7 MIT License",
+    "credit": "Original by Gabriele Cirulli · MIT License",
     "tier": "arcade"
   },
   {
@@ -54,7 +54,7 @@
     "logo": "hextris-logo.png",
     "desc": "A hexagonal spin on block-stacking. Rotate the core, match colors, survive the speed-up.",
     "accent": "#00d1c1",
-    "credit": "Original by the Hextris Team \u00b7 GPLv3 License",
+    "credit": "Original by the Hextris Team · GPLv3 License",
     "tier": "arcade"
   },
   {
@@ -64,7 +64,7 @@
     "logo": "clumsybird-logo.png",
     "desc": "Tap to flap, dodge the pipes, and try not to faceplant on your very first attempt.",
     "accent": "#5ec9f7",
-    "credit": "Original by Ken Wheeler \u00b7 GPLv3 License",
+    "credit": "Original by Ken Wheeler · GPLv3 License",
     "tier": "arcade"
   },
   {
@@ -74,7 +74,7 @@
     "logo": "pacman-logo.svg",
     "desc": "Chomp every pellet, dodge four ghosts with minds of their own, and chase the high score.",
     "accent": "#FFD400",
-    "credit": "Original by Dale Harvey \u00b7 WTFPL License",
+    "credit": "Original by Dale Harvey · WTFPL License",
     "tier": "arcade"
   },
   {
@@ -84,7 +84,7 @@
     "logo": "tenbyten-logo.svg",
     "desc": "Drop blocks onto a 10x10 grid, clear full rows and columns, and keep the board from filling up.",
     "accent": "#FF8A00",
-    "credit": "Original by Jos\u00e9 Pedro Dias \u00b7 No license declared, used with attribution",
+    "credit": "Original by José Pedro Dias · No license declared, used with attribution",
     "tier": "arcade"
   },
   {
@@ -94,7 +94,7 @@
     "logo": "galaxyinvaders-logo.svg",
     "desc": "A galaxian-style shooter. Wipe out the formation before they wipe out you.",
     "accent": "#8B5CF6",
-    "credit": "Original by Shekhar Patnaik \u00b7 No license declared, used with attribution",
+    "credit": "Original by Shekhar Patnaik · No license declared, used with attribution",
     "tier": "arcade"
   },
   {
@@ -104,7 +104,7 @@
     "logo": "candymatch-logo.svg",
     "desc": "Swap and match colorful candies in rows and columns to rack up combos before you run out of moves.",
     "accent": "#FF4FA3",
-    "credit": "Original by Mia (MiaLearnsToCode) \u00b7 No license declared, used with attribution",
+    "credit": "Original by Mia (MiaLearnsToCode) · No license declared, used with attribution",
     "tier": "arcade"
   },
   {
@@ -114,7 +114,7 @@
     "logo": "brickgame-logo.svg",
     "desc": "Break every brick with a bouncing ball and a paddle you control. A classic arcade breakout.",
     "accent": "#39ff5a",
-    "credit": "Original by Chan Meng \u00b7 MIT License",
+    "credit": "Original by Chan Meng · MIT License",
     "tier": "arcade"
   },
   {
@@ -124,7 +124,7 @@
     "logo": "slimevolleyball-logo.svg",
     "desc": "Bounce the ball over the net and keep it off your side. First to the win condition takes the set.",
     "accent": "#4FD1FF",
-    "credit": "Original by Turing School / dtinianow \u00b7 MIT License",
+    "credit": "Original by Turing School / dtinianow · MIT License",
     "tier": "arcade"
   },
   {
@@ -134,7 +134,7 @@
     "logo": "racer-logo.svg",
     "desc": "A pseudo-3D road racer. Weave through traffic, ride the hills, and don't spin out on the curves.",
     "accent": "#FF6B35",
-    "credit": "Original by Jake Gordon \u00b7 MIT License",
+    "credit": "Original by Jake Gordon · MIT License",
     "tier": "arcade"
   },
   {
@@ -144,7 +144,7 @@
     "logo": "pong-logo.svg",
     "desc": "The original arcade classic. Mouse controls your paddle, AI controls the other. First to miss loses the rally.",
     "accent": "#39ff5a",
-    "credit": "Original by Harsha Verma \u00b7 No license declared, used with attribution",
+    "credit": "Original by Harsha Verma · No license declared, used with attribution",
     "tier": "arcade"
   },
   {
@@ -154,7 +154,7 @@
     "logo": "adarkroom-logo.svg",
     "desc": "Stoke a fire, build a settlement, and uncover what's waiting outside in this text-driven survival adventure.",
     "accent": "#FF9A3D",
-    "credit": "Original by Doublespeak Games \u00b7 MPL-2.0 License",
+    "credit": "Original by Doublespeak Games · MPL-2.0 License",
     "tier": "arcade"
   },
   {
@@ -180,7 +180,7 @@
     "title": "Reflex Rush",
     "path": "../reflexrush/",
     "logo": "reflexrush-logo.svg",
-    "desc": "Five lights, one reaction. Tap the instant it turns green \u2014 jump early and you're disqualified. How fast are you, really?",
+    "desc": "Five lights, one reaction. Tap the instant it turns green — jump early and you're disqualified. How fast are you, really?",
     "accent": "#ff2d3a",
     "tier": "og"
   },
@@ -210,7 +210,7 @@
     "logo": "solitaire-logo.svg",
     "desc": "The classic Klondike deal. Drag, tap, and clear all four foundations.",
     "accent": "#1FAA59",
-    "credit": "Original by John Hatzimalis \u00b7 MIT License",
+    "credit": "Original by John Hatzimalis · MIT License",
     "tier": "arcade"
   },
   {
@@ -220,7 +220,7 @@
     "logo": "sudoku-logo.svg",
     "desc": "Fill the 9x9 grid, break no rules. Three difficulties and a saved best time.",
     "accent": "#3B82F6",
-    "credit": "Classic puzzle concept \u00b7 original implementation by Ajora Games",
+    "credit": "Classic puzzle concept · original implementation by Ajora Games",
     "tier": "og"
   },
   {
@@ -230,7 +230,7 @@
     "logo": "tetris-logo.svg",
     "desc": "Stack the falling blocks, clear the lines, and try not to top out.",
     "accent": "#A855F7",
-    "credit": "Original by Jake Gordon \u00b7 MIT License",
+    "credit": "Original by Jake Gordon · MIT License",
     "tier": "arcade"
   },
   {
@@ -240,7 +240,7 @@
     "logo": "chess-logo.svg",
     "desc": "Play white against an on-board AI. Adjustable search depth, undo and redo included.",
     "accent": "#D4AF37",
-    "credit": "Original by Zhang Zeyu \u00b7 MIT License",
+    "credit": "Original by Zhang Zeyu · MIT License",
     "tier": "arcade"
   },
   {
@@ -250,7 +250,7 @@
     "logo": "snake-logo.svg",
     "desc": "The classic. Eat the pellets, grow longer, don't bite yourself or hit the wall.",
     "accent": "#39ff5a",
-    "credit": "Classic arcade concept \u00b7 original implementation by Ajora Games",
+    "credit": "Classic arcade concept · original implementation by Ajora Games",
     "tier": "arcade"
   },
   {
@@ -260,7 +260,7 @@
     "logo": "minesweeper-logo.svg",
     "desc": "Clear the grid without triggering a mine. Tap to reveal, flag what you suspect, trust the numbers.",
     "accent": "#ffb020",
-    "credit": "Classic puzzle concept \u00b7 original implementation by Ajora Games",
+    "credit": "Classic puzzle concept · original implementation by Ajora Games",
     "tier": "arcade"
   }
 ]

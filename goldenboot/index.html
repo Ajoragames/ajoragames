@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Golden Boot Trivia | Ajora Games</title>
-<meta name="description" content="Countries, legends, and World Cup history — 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card."/>
+<meta name="description" content="National teams, big clubs, legendary players, and World Cup history — pick your mode, beat the clock, and share your score."/>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -13,7 +13,7 @@
   "url": "https://ajoragames.com/goldenboot/",
   "genre": "Trivia",
   "author": { "@type": "Organization", "name": "Ajora Games", "url": "https://ajoragames.com" },
-  "description": "A football trivia game covering national teams, legendary players, and World Cup history, with a countdown timer per question.",
+  "description": "A football trivia game with multiple modes: World Cup mixed, national teams, club football, and a guess-the-player clue mode.",
   "playMode": "SinglePlayer",
   "applicationCategory": "Game"
 }
@@ -37,6 +37,8 @@
   --gold-deep:#d99312;
   --red:#c81d3a;
   --yellow:#ffd23f;
+  --green:#2e9e5b;
+  --blue:#4c7bd9;
   --floodlight:rgba(234,246,255,0.08);
 }
 html,body{height:100%;background:var(--turf-dark);overflow-x:hidden}
@@ -53,6 +55,7 @@ body{
   position:relative;
 }
 h1,h2,h3,.display{font-family:'Big Shoulders Display',sans-serif;font-weight:900;letter-spacing:.01em}
+button{font-family:inherit}
 
 /* NAV */
 nav{
@@ -72,138 +75,131 @@ nav{
 .nav-back{
   font-family:'Space Mono',monospace;font-weight:700;font-size:11px;color:var(--chalk-dim);text-decoration:none;
   letter-spacing:.03em;padding:6px 14px;border-radius:3px;border:1px solid rgba(237,231,220,0.25);
-  transition:color .2s,border-color .2s,transform .15s;
+  transition:color .2s,border-color .2s,transform .15s;background:none;cursor:pointer;
 }
 .nav-back:hover{color:var(--gold);border-color:var(--gold);transform:translateY(-1px)}
 @media(max-width:640px){.game-logo-name,.nav-logo-name{display:none}nav{padding:10px 14px}}
 
-/* SCOREBOARD STRIP */
-#scoreboard{
-  display:flex;align-items:center;justify-content:center;gap:0;
-  flex-shrink:0;position:relative;z-index:20;padding:14px 16px 0;
+/* SHARED SCREEN WRAPPER */
+.screen{flex:1;display:flex;flex-direction:column;align-items:center;padding:34px 18px 40px;position:relative;z-index:10;width:100%}
+.screen.hidden{display:none}
+.ms-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.35);padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.ms-title{font-size:clamp(28px,6vw,44px);line-height:.98;text-align:center;margin-bottom:30px;text-transform:uppercase}
+
+/* MODE SELECT GRID */
+.ms-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:640px;width:100%}
+@media(max-width:560px){.ms-grid{grid-template-columns:1fr}}
+.ms-card{
+  --accent:#ffb020;
+  background:var(--chalk);color:var(--ink);border:none;border-radius:12px;
+  padding:22px 20px;text-align:left;cursor:pointer;position:relative;overflow:hidden;
+  box-shadow:6px 6px 0 rgba(0,0,0,0.35);
+  border-top:5px solid var(--accent);
+  transition:transform .15s,box-shadow .15s;
+  display:flex;flex-direction:column;gap:6px;
 }
-.sb-block{
-  background:rgba(13,12,12,0.6);border:1px solid rgba(237,231,220,0.14);
-  padding:8px 20px;text-align:center;min-width:88px;
+.ms-card:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 rgba(0,0,0,0.4)}
+.ms-icon{font-size:30px;line-height:1;margin-bottom:4px}
+.ms-name{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:21px;text-transform:uppercase;line-height:1.05}
+.ms-desc{font-size:11.5px;color:#4a453c;line-height:1.45}
+.ms-meta{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-top:6px}
+
+/* SUB PICKER */
+.sp-back{align-self:flex-start;background:none;border:1px solid rgba(237,231,220,0.3);color:var(--chalk-dim);font-size:11px;padding:6px 14px;border-radius:20px;cursor:pointer;margin-bottom:18px;transition:color .2s,border-color .2s}
+.sp-back:hover{color:var(--gold);border-color:var(--gold)}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;max-width:680px;width:100%}
+.sp-chip{
+  background:var(--chalk);color:var(--ink);border:none;border-radius:10px;padding:16px 14px;
+  cursor:pointer;text-align:center;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:15px;
+  text-transform:uppercase;box-shadow:4px 4px 0 rgba(0,0,0,0.3);transition:transform .15s;line-height:1.15;
 }
+.sp-chip:hover{transform:translate(-2px,-2px)}
+.sp-chip.mixed{background:var(--gold);grid-column:1/-1}
+
+/* QUIZ SCREEN */
+#scoreboard{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:18px}
+.sb-block{background:rgba(13,12,12,0.6);border:1px solid rgba(237,231,220,0.14);padding:8px 20px;text-align:center;min-width:80px}
 .sb-block:first-child{border-radius:6px 0 0 6px;border-right:none}
 .sb-block:last-child{border-radius:0 6px 6px 0;border-left:none}
 .sb-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--chalk-dim)}
-.sb-value{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:var(--gold);line-height:1.2}
-#sb-progress{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:var(--chalk)}
+.sb-value{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:var(--gold);line-height:1.2}
+#sb-progress{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:var(--chalk)}
 
-/* MAIN / CARD */
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;position:relative;min-height:0}
-
-#timer-wrap{position:relative;width:88px;height:88px;margin-bottom:6px;flex-shrink:0}
+#timer-wrap{position:relative;width:80px;height:80px;margin-bottom:6px;flex-shrink:0}
 #timer-wrap svg{transform:rotate(-90deg)}
 #timer-bg{fill:none;stroke:rgba(237,231,220,0.14);stroke-width:6}
-#timer-arc{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .2s}
+#timer-arc{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;stroke-dasharray:226.2;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .2s}
 #timer-arc.low{stroke:var(--red)}
-#timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--chalk)}
+#timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;color:var(--chalk)}
 
-.eyebrow{
-  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);
-  background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.35);
-  padding:5px 14px;border-radius:20px;margin-bottom:16px;
-}
-
-#ticket{
-  width:100%;max-width:560px;
-  background:var(--chalk);color:var(--ink);
-  border-radius:14px;
-  padding:30px 26px 24px;
-  position:relative;
-  box-shadow:0 20px 50px rgba(0,0,0,0.45),0 0 0 1px rgba(0,0,0,0.06);
-}
-#ticket::before,#ticket::after{
-  content:'';position:absolute;top:50%;transform:translateY(-50%);
-  width:26px;height:26px;background:var(--turf-dark);border-radius:50%;
-}
-#ticket::before{left:-13px}
-#ticket::after{right:-13px}
-#q-text{
-  font-family:'Big Shoulders Display',sans-serif;font-weight:800;
-  font-size:clamp(20px,3.4vw,28px);line-height:1.22;margin-bottom:22px;
-  min-height:2.4em;display:flex;align-items:center;
-}
+#ticket{width:100%;max-width:560px;background:var(--chalk);color:var(--ink);border-radius:14px;padding:28px 24px 22px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,0.45),0 0 0 1px rgba(0,0,0,0.06)}
+#ticket::before,#ticket::after{content:'';position:absolute;top:50%;transform:translateY(-50%);width:24px;height:24px;background:var(--turf-dark);border-radius:50%}
+#ticket::before{left:-12px}
+#ticket::after{right:-12px}
+#q-text{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:clamp(19px,3.2vw,26px);line-height:1.22;margin-bottom:20px;min-height:2.4em;display:flex;align-items:center}
 #answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:520px){#answers{grid-template-columns:1fr}}
-.ans{
-  font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;text-align:left;
-  background:#fff;border:2px solid rgba(13,12,12,0.14);border-radius:8px;
-  padding:13px 16px;cursor:pointer;color:var(--ink);position:relative;
-  transition:border-color .15s,transform .12s,background .15s;
-  display:flex;align-items:center;gap:10px;
-}
+.ans{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;text-align:left;background:#fff;border:2px solid rgba(13,12,12,0.14);border-radius:8px;padding:12px 15px;cursor:pointer;color:var(--ink);position:relative;transition:border-color .15s,transform .12s,background .15s;display:flex;align-items:center;gap:10px}
 .ans:hover:not(.locked){border-color:var(--gold-deep);transform:translateY(-1px)}
-.ans .num{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;color:var(--chalk-dim);flex-shrink:0}
-.ans.correct{background:#e6f7ec;border-color:#2e9e5b;color:#1b6b3c}
-.ans.correct .num{color:#2e9e5b}
+.ans .num{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:14px;color:var(--chalk-dim);flex-shrink:0}
+.ans.correct{background:#e6f7ec;border-color:var(--green);color:#1b6b3c}
+.ans.correct .num{color:var(--green)}
 .ans.wrong{background:#fbe6e9;border-color:var(--red);color:#9c1428}
 .ans.wrong .num{color:var(--red)}
 .ans.locked{cursor:default}
 
-#next-btn{
-  margin-top:24px;padding:13px 40px;background:var(--gold);color:var(--ink);
-  font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;letter-spacing:.03em;
-  border:none;border-radius:6px;cursor:pointer;opacity:0;pointer-events:none;
-  transition:opacity .3s,transform .15s;text-transform:uppercase;
-}
-#next-btn.show{opacity:1;pointer-events:all}
-#next-btn:hover{transform:translateY(-2px)}
+#next-btn,.next-btn{margin-top:22px;padding:13px 40px;background:var(--gold);color:var(--ink);font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;letter-spacing:.03em;border:none;border-radius:6px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .3s,transform .15s;text-transform:uppercase}
+#next-btn.show,.next-btn.show{opacity:1;pointer-events:all}
+#next-btn:hover,.next-btn:hover{transform:translateY(-2px)}
 
-/* CARD FLASH overlay - referee card feedback */
-#card-flash{
-  position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;
-  display:flex;align-items:center;justify-content:center;
-}
-#card-flash .card-shape{
-  width:120px;height:170px;border-radius:8px;transform:scale(0.4) rotate(-8deg);
-  box-shadow:0 10px 40px rgba(0,0,0,0.5);
-}
+#card-flash{position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;display:flex;align-items:center;justify-content:center}
+#card-flash .card-shape{width:110px;height:155px;border-radius:8px;transform:scale(0.4) rotate(-8deg);box-shadow:0 10px 40px rgba(0,0,0,0.5)}
 #card-flash.yellow{background:rgba(255,210,63,0.12)}
 #card-flash.yellow .card-shape{background:var(--yellow)}
 #card-flash.green{background:rgba(46,158,91,0.1)}
-#card-flash.green .card-shape{background:#2e9e5b;width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+#card-flash.green .card-shape{background:var(--green);width:80px;height:80px;border-radius:50%}
 #card-flash.show{animation:cardFlash .7s ease forwards}
-@keyframes cardFlash{
-  0%{opacity:0}
-  15%{opacity:1}
-  15%{transform:none}
-  30%{}
-  100%{opacity:0}
-}
+@keyframes cardFlash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
 #card-flash.show .card-shape{animation:cardPop .7s cubic-bezier(.34,1.4,.4,1) forwards}
-@keyframes cardPop{
-  0%{transform:scale(0.3) rotate(-10deg)}
-  40%{transform:scale(1.08) rotate(3deg)}
-  60%{transform:scale(1) rotate(0)}
-  100%{transform:scale(1) rotate(0)}
-}
+@keyframes cardPop{0%{transform:scale(0.3) rotate(-10deg)}40%{transform:scale(1.08) rotate(3deg)}60%,100%{transform:scale(1) rotate(0)}}
 
-/* END SCREEN */
-#gameover{
-  position:fixed;inset:0;background:rgba(10,32,21,0.97);z-index:300;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:24px;
-}
+/* GUESS THE PLAYER */
+#guess-topbar{display:flex;gap:0;margin-bottom:18px}
+#guess-card{width:100%;max-width:560px;background:var(--chalk);color:var(--ink);border-radius:14px;padding:26px 24px;box-shadow:0 20px 50px rgba(0,0,0,0.45)}
+.gc-eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:4px}
+.gc-points{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;color:var(--gold-deep);margin-bottom:16px}
+#guess-clues{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;min-height:120px}
+.clue-line{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5;opacity:0;transform:translateY(6px);animation:clueIn .4s ease forwards}
+@keyframes clueIn{to{opacity:1;transform:translateY(0)}}
+.clue-num{font-family:'Big Shoulders Display',sans-serif;font-weight:900;color:var(--red);flex-shrink:0;font-size:14px}
+#guess-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){#guess-options{grid-template-columns:1fr}}
+.gopt{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;background:#fff;border:2px solid rgba(13,12,12,0.14);border-radius:8px;padding:12px 15px;cursor:pointer;color:var(--ink);transition:border-color .15s,transform .12s,background .15s;text-align:left}
+.gopt:hover:not(.locked){border-color:var(--red);transform:translateY(-1px)}
+.gopt.correct{background:#e6f7ec;border-color:var(--green);color:#1b6b3c}
+.gopt.wrong{background:#fbe6e9;border-color:var(--red);color:#9c1428}
+.gopt.locked{cursor:default}
+
+/* GAMEOVER / SHARE CARD */
+#gameover{position:fixed;inset:0;background:rgba(10,32,21,0.97);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:30px 20px;overflow-y:auto}
 #gameover.show{display:flex}
 .go-eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-.go-title{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(38px,8vw,64px);line-height:.95;color:var(--chalk);margin-bottom:6px}
+.go-title{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(32px,7vw,52px);line-height:.95;color:var(--chalk);margin-bottom:6px}
 .go-title span{color:var(--gold)}
-.go-score{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(70px,16vw,120px);color:var(--gold);line-height:1;margin:14px 0 4px}
-.go-sub{font-size:12px;color:var(--chalk-dim);margin-bottom:26px}
-.go-stats{display:flex;gap:28px;margin-bottom:30px;flex-wrap:wrap;justify-content:center}
+.go-score{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(56px,13vw,90px);color:var(--gold);line-height:1;margin:10px 0 4px}
+.go-sub{font-size:12px;color:var(--chalk-dim);margin-bottom:20px}
+.go-stats{display:flex;gap:26px;margin-bottom:22px;flex-wrap:wrap;justify-content:center}
 .go-stat-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--chalk-dim)}
-.go-stat-val{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:var(--chalk)}
-.go-play-btn{
-  padding:15px 46px;background:var(--gold);color:var(--ink);border:none;border-radius:6px;
-  font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;letter-spacing:.03em;
-  text-transform:uppercase;cursor:pointer;transition:transform .15s;
-}
+.go-stat-val{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:20px;color:var(--chalk)}
+#share-preview{max-width:260px;width:70vw;border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,0.5);margin-bottom:18px;display:block}
+.go-share-row{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;justify-content:center}
+.go-share-btn{padding:11px 22px;background:transparent;color:var(--chalk);border:1.5px solid var(--gold);border-radius:6px;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:background .15s,transform .15s}
+.go-share-btn:hover{background:rgba(255,176,32,0.12);transform:translateY(-2px)}
+.go-play-btn{padding:14px 42px;background:var(--gold);color:var(--ink);border:none;border-radius:6px;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:15px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:transform .15s;margin-bottom:10px}
 .go-play-btn:hover{transform:translateY(-2px)}
-.go-back-link{margin-top:16px;font-size:11px;color:var(--chalk-dim);text-decoration:none;letter-spacing:.03em}
+.go-change-btn{padding:11px 30px;background:none;color:var(--chalk-dim);border:1px solid rgba(237,231,220,0.3);border-radius:6px;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s;margin-bottom:14px}
+.go-change-btn:hover{color:var(--gold);border-color:var(--gold)}
+.go-back-link{font-size:11px;color:var(--chalk-dim);text-decoration:none;letter-spacing:.03em}
 .go-back-link:hover{color:var(--gold)}
 </style>
 <meta name="google-adsense-account" content="ca-pub-8780250723862238">
@@ -214,11 +210,11 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 <meta property="og:url" content="https://ajoragames.com/goldenboot/"/>
 <meta property="og:site_name" content="Ajora Games"/>
 <meta property="og:title" content="Golden Boot Trivia | Ajora Games"/>
-<meta property="og:description" content="Countries, legends, and World Cup history — 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card."/>
+<meta property="og:description" content="National teams, big clubs, legendary players, and World Cup history — pick your mode, beat the clock, and share your score."/>
 <meta property="og:image" content="https://ajoragames.com/games/gbt-logo-og.png"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Golden Boot Trivia | Ajora Games"/>
-<meta name="twitter:description" content="Countries, legends, and World Cup history — 15 rapid-fire questions with a draining match-clock timer. One wrong answer, and the ref shows you the card."/>
+<meta name="twitter:description" content="National teams, big clubs, legendary players, and World Cup history — pick your mode, beat the clock, and share your score."/>
 <meta name="twitter:image" content="https://ajoragames.com/games/gbt-logo-og.png"/>
 <!-- END social-meta -->
 </head>
@@ -257,47 +253,120 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   </div>
 </nav>
 
-<div id="scoreboard">
-  <div class="sb-block"><div class="sb-label">Score</div><div class="sb-value" id="sb-score">0</div></div>
-  <div class="sb-block"><div class="sb-label">Streak</div><div class="sb-value" id="sb-streak">0</div></div>
-  <div class="sb-block"><div class="sb-label">Question</div><div id="sb-progress"><span id="sb-q">1</span>/15</div></div>
-  <div class="sb-block"><div class="sb-label">Best</div><div class="sb-value" id="sb-best">0</div></div>
+<!-- MODE SELECT -->
+<div id="screen-modeselect" class="screen">
+  <div class="ms-eyebrow">Choose your match</div>
+  <h2 class="ms-title">Pick A Category</h2>
+  <div class="ms-grid">
+    <button class="ms-card" data-mode="worldcup" style="--accent:#ffb020">
+      <div class="ms-icon">🏆</div>
+      <div class="ms-name">World Cup Mixed</div>
+      <div class="ms-desc">72 questions on teams, legends & tournament history.</div>
+      <div class="ms-meta">15 Questions · Mixed</div>
+    </button>
+    <button class="ms-card" data-mode="country" style="--accent:#2e9e5b">
+      <div class="ms-icon">🌍</div>
+      <div class="ms-name">National Teams</div>
+      <div class="ms-desc">Pick a country and go deep on their football history.</div>
+      <div class="ms-meta">10 Countries</div>
+    </button>
+    <button class="ms-card" data-mode="club" style="--accent:#4c7bd9">
+      <div class="ms-icon">⚽</div>
+      <div class="ms-name">Club Football</div>
+      <div class="ms-desc">Real Madrid, Barcelona, United, and more.</div>
+      <div class="ms-meta">8 Clubs</div>
+    </button>
+    <button class="ms-card" data-mode="guess" style="--accent:#c81d3a">
+      <div class="ms-icon">🕵️</div>
+      <div class="ms-name">Guess The Player</div>
+      <div class="ms-desc">Clues drop one by one — buzz in early for max points.</div>
+      <div class="ms-meta">10 Rounds</div>
+    </button>
+  </div>
 </div>
 
-<main>
+<!-- SUB PICKER (country / club) -->
+<div id="screen-subpicker" class="screen hidden">
+  <button class="sp-back" id="sp-back">← Back</button>
+  <div class="ms-eyebrow" id="sp-eyebrow">National Teams</div>
+  <h2 class="ms-title" id="sp-title">Pick A Team</h2>
+  <div class="sp-grid" id="sp-grid"></div>
+</div>
+
+<!-- QUIZ SCREEN (worldcup / country / club) -->
+<div id="screen-quiz" class="screen hidden">
+  <div id="scoreboard">
+    <div class="sb-block"><div class="sb-label">Score</div><div class="sb-value" id="sb-score">0</div></div>
+    <div class="sb-block"><div class="sb-label">Streak</div><div class="sb-value" id="sb-streak">0</div></div>
+    <div class="sb-block"><div class="sb-label">Question</div><div id="sb-progress"><span id="sb-q">1</span>/<span id="sb-total">15</span></div></div>
+    <div class="sb-block"><div class="sb-label">Best</div><div class="sb-value" id="sb-best">0</div></div>
+  </div>
+
   <div id="timer-wrap">
-    <svg width="88" height="88" viewBox="0 0 88 88">
-      <circle id="timer-bg" cx="44" cy="44" r="40"/>
-      <circle id="timer-arc" cx="44" cy="44" r="40"/>
+    <svg width="80" height="80" viewBox="0 0 80 80">
+      <circle id="timer-bg" cx="40" cy="40" r="36"/>
+      <circle id="timer-arc" cx="40" cy="40" r="36"/>
     </svg>
     <div id="timer-num">10</div>
   </div>
 
-  <div class="eyebrow" id="q-category">TEAM STAT</div>
+  <div class="ms-eyebrow" id="q-category" style="margin-bottom:16px">TEAM STAT</div>
 
   <div id="ticket">
     <div id="q-text">Loading question…</div>
     <div id="answers"></div>
   </div>
 
-  <button id="next-btn" onclick="nextQuestion()">Next Question →</button>
-</main>
+  <button id="next-btn" class="next-btn">Next Question →</button>
+</div>
+
+<!-- GUESS THE PLAYER SCREEN -->
+<div id="screen-guess" class="screen hidden">
+  <div id="scoreboard">
+    <div class="sb-block"><div class="sb-label">Points</div><div class="sb-value" id="gp-points">0</div></div>
+    <div class="sb-block"><div class="sb-label">Round</div><div id="sb-progress"><span id="gp-round">1</span>/<span id="gp-total">10</span></div></div>
+    <div class="sb-block"><div class="sb-label">Correct</div><div class="sb-value" id="gp-correct">0</div></div>
+  </div>
+
+  <div id="guess-card">
+    <div class="gc-eyebrow">🕵️ Scouting Report</div>
+    <div class="gc-points" id="gp-avail">Guess now for up to 100 pts</div>
+    <div id="guess-clues"></div>
+    <div id="guess-options"></div>
+  </div>
+
+  <button id="guess-next-btn" class="next-btn">Next Player →</button>
+</div>
 
 <div id="card-flash"><div class="card-shape"></div></div>
 
 <div id="gameover">
-  <div class="go-eyebrow">Full time</div>
+  <div class="go-eyebrow" id="go-eyebrow">Full time</div>
   <div class="go-title"><span>Golden Boot</span><br>Trivia</div>
   <div class="go-score" id="go-score">0/15</div>
   <div class="go-sub" id="go-sub">Correct answers this round</div>
-  <div class="go-stats">
+  <div class="go-stats" id="go-stats">
     <div><div class="go-stat-label">Best Streak</div><div class="go-stat-val" id="go-streak">0</div></div>
     <div><div class="go-stat-label">Accuracy</div><div class="go-stat-val" id="go-acc">0%</div></div>
     <div><div class="go-stat-label">All-Time Best</div><div class="go-stat-val" id="go-best">0/15</div></div>
   </div>
-  <button class="go-play-btn" onclick="startGame()">Play Again</button>
+
+  <canvas id="share-canvas" width="600" height="750" style="display:none"></canvas>
+  <img id="share-preview" alt="Your Golden Boot Trivia result card" style="display:none"/>
+  <div class="go-share-row">
+    <button class="go-share-btn" id="download-card-btn">⬇ Download Card</button>
+    <button class="go-share-btn" id="native-share-btn">↗ Share</button>
+  </div>
+
+  <button class="go-play-btn" id="play-again-btn">Play Again</button>
+  <button class="go-change-btn" id="change-category-btn">Change Category</button>
   <a href="../games/" class="go-back-link">← Back to Games</a>
 </div>
+
+
+
+
+
 
 <script>
 const QUESTIONS = [
@@ -376,35 +445,356 @@ const QUESTIONS = [
 {cat:"CUP HISTORY",q:"Which 2026 co-host nation lost to Morocco in the Round of 16?",o:["Mexico","Canada","United States","None — all hosts advanced"],c:1},
 {cat:"CUP HISTORY",q:"Which 2026 co-host nation was eliminated by England in the Round of 16?",o:["Canada","United States","Mexico","None — all hosts advanced"],c:2},
 {cat:"CUP HISTORY",q:"Which two teams are contesting the 2026 World Cup Final?",o:["France and Argentina","Spain and Argentina","Spain and France","Argentina and England"],c:1},
+];const COUNTRY_BANK = {
+brazil:[
+ {q:"How many World Cup titles has Brazil won — the most of any nation?",o:["4","5","6","3"],c:1},
+ {q:"Brazil is the only country to have played in every World Cup ever held. Since which year has the tournament run?",o:["1926","1928","1930","1934"],c:2},
+ {q:"Which Brazilian is widely nicknamed \"O Rei\" — The King?",o:["Ronaldinho","Pelé","Zico","Romário"],c:1},
+ {q:"Brazil's home shirt is famously which color?",o:["Blue","Green","Yellow","White"],c:2},
+ {q:"Brazil suffered a shock 7-1 semifinal defeat at their own hosted World Cup in which year?",o:["2010","2014","2018","2006"],c:1},
+ {q:"Which Brazilian striker was nicknamed \"The Phenomenon\"?",o:["Rivaldo","Ronaldo Nazário","Adriano","Fred"],c:1},
+],
+argentina:[
+ {q:"Argentina's national team carries which nickname?",o:["La Roja","La Celeste","La Albiceleste","Los Cafeteros"],c:2},
+ {q:"Who captained Argentina to the 2022 World Cup title?",o:["Ángel Di María","Lionel Messi","Sergio Agüero","Rodrigo De Paul"],c:1},
+ {q:"Which Argentine legend scored the \"Hand of God\" goal in 1986?",o:["Diego Maradona","Gabriel Batistuta","Mario Kempes","Jorge Valdano"],c:0},
+ {q:"Argentina's shirt is famously light blue and white in which pattern?",o:["Checkered","Vertical stripes","Horizontal stripes","Solid with a sash"],c:1},
+ {q:"How many World Cup titles has Argentina won (through 2022)?",o:["2","3","4","1"],c:1},
+ {q:"Who is Argentina's all-time leading goalscorer?",o:["Diego Maradona","Gabriel Batistuta","Lionel Messi","Sergio Agüero"],c:2},
+],
+germany:[
+ {q:"Germany's national team is nicknamed...",o:["Die Mannschaft","Der Panzer","Das Team","Die Adler"],c:0},
+ {q:"Which German striker holds the all-time World Cup tournament scoring record with 16 goals?",o:["Gerd Müller","Miroslav Klose","Thomas Müller","Jürgen Klinsmann"],c:1},
+ {q:"Who captained West Germany to the 1974 World Cup title and later managed them to another in 1990?",o:["Franz Beckenbauer","Karl-Heinz Rummenigge","Lothar Matthäus","Berti Vogts"],c:0},
+ {q:"Who scored the winning goal in the 2014 World Cup final for Germany?",o:["Thomas Müller","Mesut Özil","Mario Götze","Miroslav Klose"],c:2},
+ {q:"How many World Cup titles has Germany won (through 2022, including as West Germany)?",o:["3","4","5","2"],c:1},
+ {q:"Germany has reached the World Cup final more times than any other nation. How many appearances is that?",o:["6","7","8","9"],c:2},
+],
+france:[
+ {q:"France's national team is nicknamed...",o:["Les Rouges","Les Tricolores","Les Bleus","Les Coqs"],c:2},
+ {q:"Which player won the World Cup as both a player in 1998 and head coach in 2018?",o:["Zinedine Zidane","Didier Deschamps","Thierry Henry","Laurent Blanc"],c:1},
+ {q:"Who scored a hat-trick in the 2022 World Cup final for France?",o:["Olivier Giroud","Antoine Griezmann","Kylian Mbappé","Ousmane Dembélé"],c:2},
+ {q:"How many World Cup titles has France won (through 2022)?",o:["1","2","3","4"],c:1},
+ {q:"Which France legend famously headbutted an opponent in the 2006 World Cup final?",o:["Thierry Henry","Zinedine Zidane","Patrick Vieira","Franck Ribéry"],c:1},
+ {q:"Which Monaco academy product broke through to stardom before starring for PSG and Real Madrid?",o:["Antoine Griezmann","Kylian Mbappé","Ousmane Dembélé","Karim Benzema"],c:1},
+],
+italy:[
+ {q:"Italy's national team is nicknamed...",o:["Gli Azzurri","I Rossi","Gli Aquile","I Blu"],c:0},
+ {q:"Which country was the first to win the World Cup twice in a row, in 1934 and 1938?",o:["Brazil","Uruguay","Italy","Germany"],c:2},
+ {q:"Which Italian goalkeeper played at five World Cups across a two-decade career?",o:["Dino Zoff","Gianluigi Buffon","Walter Zenga","Gianluigi Donnarumma"],c:1},
+ {q:"How many World Cup titles has Italy won?",o:["3","4","2","5"],c:1},
+ {q:"Italy famously failed to qualify for which two consecutive World Cups (2018 and 2022)?",o:["True","False — they qualified for both","They only missed 2018","They only missed 2022"],c:0},
+ {q:"Which two teams played the infamously violent \"Battle of Santiago\" at the 1962 World Cup, one of them Italy?",o:["Italy and Chile","Italy and Brazil","Italy and Argentina","Italy and Uruguay"],c:0},
+],
+spain:[
+ {q:"Spain's national team carries the nickname...",o:["La Furia","La Roja","Los Toros","La Naranja"],c:1},
+ {q:"Which Spanish midfielder scored the winning goal in the 2010 World Cup final?",o:["Xavi","Andrés Iniesta","David Villa","Cesc Fàbregas"],c:1},
+ {q:"Spain won their only World Cup title in which year?",o:["2006","2010","2014","2018"],c:1},
+ {q:"Which academy is famous for producing generations of Spain's technical midfielders, including Iniesta?",o:["La Masia","La Fábrica","Cantera","Sarriá"],c:0},
+ {q:"Spain's playing philosophy built around short passing and possession is widely known as...",o:["Total Football","Tiki-taka","Catenaccio","Route One"],c:1},
+ {q:"Which Spanish goalkeeper captained the side to their 2010 World Cup triumph?",o:["Iker Casillas","Pepe Reina","Víctor Valdés","David de Gea"],c:0},
+],
+england:[
+ {q:"England's men's team is nicknamed...",o:["The Lions","The Three Lions","The Red Devils","The Roaring Lions"],c:1},
+ {q:"Which England striker scored a hat-trick in the 1966 World Cup final?",o:["Bobby Charlton","Geoff Hurst","Jimmy Greaves","Roger Hunt"],c:1},
+ {q:"England's only World Cup title came in which year, on home soil?",o:["1962","1966","1970","1974"],c:1},
+ {q:"Which England striker won the Golden Boot at the 2018 World Cup?",o:["Harry Kane","Raheem Sterling","Marcus Rashford","Jamie Vardy"],c:0},
+ {q:"England's shirt is traditionally which color?",o:["Blue","White","Red","Navy"],c:1},
+ {q:"Which stadium is regarded as the home of the England national team?",o:["Old Trafford","Wembley Stadium","Anfield","Emirates Stadium"],c:1},
+],
+portugal:[
+ {q:"Which Portuguese forward has appeared in five different World Cups?",o:["Luís Figo","Cristiano Ronaldo","Eusébio","Rui Costa"],c:1},
+ {q:"Which Portuguese legend was nicknamed the \"Black Panther\" and starred at the 1966 World Cup?",o:["Eusébio","Luís Figo","Rui Costa","Fernando Peyroteo"],c:0},
+ {q:"Portugal won their first-ever major international trophy at which tournament in 2016?",o:["World Cup","European Championship","Confederations Cup","Nations League"],c:1},
+ {q:"What is Cristiano Ronaldo's widely used nickname?",o:["CR9","CR7","El Bicho","La Pulga"],c:1},
+ {q:"Portugal's team is often referred to in the press by which nickname?",o:["A Seleção","Os Leões","A Vermelha","Os Navegadores"],c:0},
+ {q:"Which club did Cristiano Ronaldo begin his senior career at before moving to Manchester United?",o:["Benfica","Porto","Sporting CP","Braga"],c:2},
+],
+netherlands:[
+ {q:"Which Dutch legend pioneered \"Total Football\" and has a signature turn move named after him?",o:["Johan Cruyff","Marco van Basten","Dennis Bergkamp","Ruud Gullit"],c:0},
+ {q:"The Netherlands have reached the World Cup final three times without ever winning it. True or false?",o:["True","False, they won once","False, they won twice","False, they've never reached a final"],c:0},
+ {q:"The Netherlands' shirt is famously which color?",o:["Red","Blue","Orange","Green"],c:2},
+ {q:"The Dutch national team is often nicknamed...",o:["Oranje","De Leeuwen","Het Elftal","De Adelaars"],c:0},
+ {q:"Which club is most associated with developing \"Total Football\" in the 1970s alongside the national team?",o:["Feyenoord","PSV Eindhoven","Ajax","AZ Alkmaar"],c:2},
+ {q:"Which Dutch striker won the Ballon d'Or three times in the late 1980s and early 1990s?",o:["Johan Cruyff","Marco van Basten","Dennis Bergkamp","Patrick Kluivert"],c:1},
+],
+uruguay:[
+ {q:"Uruguay's national team is nicknamed...",o:["La Naranja","La Celeste","La Albiceleste","Los Charrúas"],c:1},
+ {q:"Which country hosted and won the first-ever World Cup in 1930?",o:["Brazil","Argentina","Uruguay","Italy"],c:2},
+ {q:"How many World Cup titles has Uruguay won?",o:["1","2","3","4"],c:1},
+ {q:"Uruguay is one of the smallest countries by population to have won a World Cup. Which decade did they last win it?",o:["1930s","1950s","1970s","1990s"],c:1},
+ {q:"Which Uruguayan striker was a key figure for Liverpool and Barcelona at club level?",o:["Diego Forlán","Luis Suárez","Edinson Cavani","Álvaro Recoba"],c:1},
+ {q:"Uruguay's home shirt is traditionally which color?",o:["Sky blue","Navy blue","White","Green"],c:0},
+],
+};
+
+const CLUB_BANK = {
+realmadrid:[
+ {q:"How many European Cup / Champions League titles has Real Madrid won — the most of any club?",o:["11","13","15","9"],c:2},
+ {q:"Which Brazilian left-back spent over a decade at Real Madrid and is famous for a physics-defying free kick?",o:["Cafu","Roberto Carlos","Marcelo","Dani Alves"],c:1},
+ {q:"Real Madrid's home stadium is named after which club president and is often called simply \"the Bernabéu\"?",o:["Santiago Bernabéu","Florentino Pérez","Alfredo Di Stéfano","Ramón Calderón"],c:0},
+ {q:"Which Portuguese superstar spent nine seasons at Real Madrid, becoming their all-time top scorer?",o:["Luís Figo","Cristiano Ronaldo","Pepe","Fábio Coentrão"],c:1},
+ {q:"Real Madrid's home shirt is traditionally which color?",o:["Sky blue","All white","Red and white","Navy"],c:1},
+ {q:"Who scored a famous long-range volley for Real Madrid in the 2002 Champions League final?",o:["Raúl","Zinedine Zidane","Iván Helguera","Fernando Hierro"],c:1},
+],
+barcelona:[
+ {q:"Which Barcelona academy is famous for producing generations of technical stars including Messi and Iniesta?",o:["La Fábrica","La Masia","Sarriá","Cantera"],c:1},
+ {q:"Lionel Messi spent the vast majority of his club career at Barcelona, debuting for the first team in which year?",o:["2002","2004","2006","2008"],c:1},
+ {q:"Barcelona's home shirt is traditionally which color combination?",o:["Red and white","Blue and garnet (blaugrana)","All blue","Yellow and blue"],c:1},
+ {q:"Barcelona's famous motto, displayed at their stadium, translates to which phrase?",o:["More than a club","Forever champions","One club, one city","United we stand"],c:0},
+ {q:"Which Brazilian icon starred for Barcelona in the mid-2000s known for his flair and constant smile?",o:["Kaká","Ronaldinho","Rivaldo","Neymar"],c:1},
+ {q:"Which Dutch manager built Barcelona's modern possession-based identity in the early 1990s as both player and later coach?",o:["Louis van Gaal","Johan Cruyff","Frank Rijkaard","Ronald Koeman"],c:1},
+],
+manutd:[
+ {q:"Which Northern Irish winger of the 1960s was famous for the line about spending money on \"booze, birds, and fast cars\"?",o:["George Best","Denis Law","Bobby Charlton","Ryan Giggs"],c:0},
+ {q:"Manchester United's home stadium is nicknamed \"The Theatre of Dreams\" — what is it actually called?",o:["Anfield","Old Trafford","Etihad Stadium","Stamford Bridge"],c:1},
+ {q:"Which Portuguese star had two separate spells at Manchester United, first as a teenager and later returning as a global superstar?",o:["Cristiano Ronaldo","Luís Nani","Bruno Fernandes","Nemanja Matić"],c:0},
+ {q:"Manchester United's home shirt is traditionally which color?",o:["Red","Blue","White","Claret"],c:0},
+ {q:"Which manager led United to their famous 1999 Treble, winning the league, FA Cup, and Champions League in one season?",o:["Sir Matt Busby","Sir Alex Ferguson","David Moyes","Ron Atkinson"],c:1},
+ {q:"Manchester United's academy has produced many stars and is closely tied to which famous crop of players from the mid-1990s?",o:["The Class of '92","The Golden Generation","The Invincibles","The Busby Babes"],c:0},
+],
+mancity:[
+ {q:"Manchester City's home shirt is traditionally which color?",o:["Sky blue","Navy","Claret and blue","Maroon"],c:0},
+ {q:"City won their first-ever Champions League title in which year?",o:["2019","2021","2023","2017"],c:2},
+ {q:"Which Spanish manager transformed Manchester City into a dominant possession-based team starting in 2016?",o:["Pep Guardiola","Manuel Pellegrini","Roberto Mancini","Txiki Begiristain"],c:0},
+ {q:"Manchester City's home ground is officially known as which stadium?",o:["Maine Road","Etihad Stadium","City of Manchester Arena","Eastlands Park"],c:1},
+ {q:"Which Argentine striker became City's all-time record goalscorer in the early 2020s?",o:["Sergio Agüero","Carlos Tevez","Julián Álvarez","Gabriel Jesus"],c:0},
+ {q:"City completed a rare domestic Treble (league, FA Cup, Champions League) in which season?",o:["2020-21","2022-23","2018-19","2021-22"],c:1},
+],
+liverpool:[
+ {q:"Liverpool's home shirt is traditionally which color?",o:["All red","Red and white","Blue and red","Claret"],c:0},
+ {q:"Liverpool's stadium anthem, sung before every home match, is which song?",o:["Blue Moon","You'll Never Walk Alone","Glory Glory","Fields of Anfield Road"],c:1},
+ {q:"Liverpool's home ground is known as which famous stadium?",o:["Goodison Park","Anfield","Old Trafford","Villa Park"],c:1},
+ {q:"Which German manager led Liverpool to Champions League and Premier League glory in 2019 and 2020?",o:["Jürgen Klopp","Rafael Benítez","Brendan Rodgers","Roy Hodgson"],c:0},
+ {q:"Liverpool famously came back from 3-0 down at halftime to win the Champions League final on penalties in which year?",o:["2005","2007","2019","2001"],c:0},
+ {q:"Which Uruguayan striker was a key figure for Liverpool in the early 2010s before joining Barcelona?",o:["Diego Forlán","Luis Suárez","Edinson Cavani","Darwin Núñez"],c:1},
+],
+bayern:[
+ {q:"Bayern Munich's home shirt is traditionally which colors?",o:["Red and white","Blue and white","All black","Green and white"],c:0},
+ {q:"Which German sweeper captained Bayern and West Germany to major titles in the 1970s?",o:["Franz Beckenbauer","Sepp Maier","Gerd Müller","Uli Hoeness"],c:0},
+ {q:"Bayern Munich's home stadium is known as which distinctive glowing arena?",o:["Signal Iduna Park","Allianz Arena","Volksparkstadion","Olympiastadion"],c:1},
+ {q:"Bayern won a Treble (Bundesliga, DFB-Pokal, Champions League) in which two seasons?",o:["2012-13 and 2019-20","2010-11 and 2015-16","2013-14 and 2017-18","2011-12 and 2018-19"],c:0},
+ {q:"Which prolific striker holds Bayern's all-time World Cup and club scoring legacy from the 1970s?",o:["Gerd Müller","Karl-Heinz Rummenigge","Klaus Fischer","Uwe Seeler"],c:0},
+ {q:"Bayern Munich have dominated German football, winning the Bundesliga how many times in a row from 2012-13 to 2022-23?",o:["8","10","11","6"],c:2},
+],
+juventus:[
+ {q:"Juventus' home shirt is famous for which pattern?",o:["Solid black","Black and white stripes","All white","Red and black stripes"],c:1},
+ {q:"Which Italian goalkeeper spent almost his entire career as Juventus' number one, playing at five World Cups?",o:["Dino Zoff","Gianluigi Buffon","Walter Zenga","Salvatore Sirigu"],c:1},
+ {q:"Juventus is nicknamed \"La Vecchia Signora,\" which translates to what?",o:["The Old Lady","The Grand Dame","The Black Queen","The Ancient One"],c:0},
+ {q:"Juventus' home stadium in Turin is known as which arena?",o:["San Siro","Allianz Stadium","Stadio Olimpico","Stadio San Paolo"],c:1},
+ {q:"Which French superstar spent a hugely successful spell at Juventus in the mid-1990s before joining Real Madrid?",o:["Zinedine Zidane","Thierry Henry","David Trezeguet","Michel Platini"],c:0},
+ {q:"Juventus have won more Serie A titles than any other Italian club. Which club has won the second most?",o:["AC Milan","Inter Milan","Napoli","Roma"],c:1},
+],
+psg:[
+ {q:"PSG's home shirt is traditionally which colors?",o:["Blue, red, and white","All green","Yellow and black","Sky blue and white"],c:0},
+ {q:"PSG's home stadium is known as which historic ground?",o:["Stade de France","Parc des Princes","Vélodrome","Stade Pierre-Mauroy"],c:1},
+ {q:"Which French forward broke through at Monaco before becoming a global superstar at PSG?",o:["Antoine Griezmann","Kylian Mbappé","Ousmane Dembélé","Karim Benzema"],c:1},
+ {q:"PSG finally won their first Champions League title in which year, beating Inter Milan in the final?",o:["2023","2024","2025","2022"],c:1},
+ {q:"Which Brazilian superstar joined PSG in a then-world-record transfer from Barcelona in 2017?",o:["Neymar","Kaká","Ronaldinho","Coutinho"],c:0},
+ {q:"PSG is based in which French city?",o:["Marseille","Lyon","Paris","Nice"],c:2},
+],
+};
+
+const PLAYERS = [
+{name:"Lionel Messi", options:["Lionel Messi","Neymar","Luka Modrić","Luis Suárez"], clues:[
+ "Born in Rosario, Argentina, in 1987.",
+ "Spent the majority of his club career at Barcelona, debuting for the first team in 2004.",
+ "Holds the record for the most Ballon d'Or wins, with eight.",
+ "Captained Argentina to the 2022 World Cup title."]},
+{name:"Cristiano Ronaldo", options:["Cristiano Ronaldo","Lionel Messi","Wayne Rooney","Luís Figo"], clues:[
+ "Born on the island of Madeira, Portugal, in 1985.",
+ "Began his senior career at Sporting CP before Manchester United signed him in 2003.",
+ "Is football's all-time record scorer at international level.",
+ "Widely known by the nickname \"CR7.\""]},
+{name:"Diego Maradona", options:["Diego Maradona","Gabriel Batistuta","Mario Kempes","Jorge Valdano"], clues:[
+ "Born in a poor suburb of Buenos Aires, Argentina, in 1960.",
+ "Transferred to Napoli in 1984 for what was then a world-record fee.",
+ "Scored the infamous \"Hand of God\" goal at the 1986 World Cup.",
+ "Captained Argentina to the World Cup title that same year."]},
+{name:"Pelé", options:["Pelé","Garrincha","Zico","Romário"], clues:[
+ "Born Edson Arantes do Nascimento in Brazil in 1940.",
+ "Made his professional debut for Santos at just 15 years old.",
+ "Won three World Cups as a player — the only person ever to do so.",
+ "Widely nicknamed \"O Rei\" — The King."]},
+{name:"Zinedine Zidane", options:["Zinedine Zidane","Thierry Henry","Patrick Vieira","Didier Deschamps"], clues:[
+ "Born in Marseille to Algerian immigrant parents in 1972.",
+ "Starred for Juventus before a then-world-record transfer to Real Madrid.",
+ "Scored a famous long-range volley in the 2002 Champions League final.",
+ "Headbutted an opponent in his final match, the 2006 World Cup final."]},
+{name:"Ronaldinho", options:["Ronaldinho","Ronaldo Nazário","Kaká","Robinho"], clues:[
+ "Born in Porto Alegre, Brazil, in 1980.",
+ "Known for his flair, he won the Ballon d'Or in 2005.",
+ "Starred for Barcelona alongside a young Lionel Messi.",
+ "Famous for constant smiling and outrageous skills on the pitch."]},
+{name:"Kylian Mbappé", options:["Kylian Mbappé","Antoine Griezmann","Olivier Giroud","Ousmane Dembélé"], clues:[
+ "Born near Paris, France, in 1998.",
+ "Broke through at Monaco before moving to PSG in 2017.",
+ "Scored a hat-trick in a World Cup final, only the second player ever to do so.",
+ "Later moved to Real Madrid as one of the sport's biggest stars."]},
+{name:"Ronaldo Nazário", options:["Ronaldo Nazário","Rivaldo","Adriano","Fred"], clues:[
+ "Born in Rio de Janeiro, Brazil, in 1976.",
+ "Nicknamed \"The Phenomenon\" for his explosive dribbling and finishing.",
+ "Was the top scorer as Brazil won the World Cup in 2002.",
+ "Played for Barcelona, Inter Milan, and Real Madrid at his peak."]},
+{name:"Johan Cruyff", options:["Johan Cruyff","Marco van Basten","Dennis Bergkamp","Ruud Gullit"], clues:[
+ "Born in Amsterdam, Netherlands, in 1947.",
+ "Pioneered \"Total Football\" with Ajax and the Netherlands national team.",
+ "Has a signature turning move named after him.",
+ "Later managed Barcelona to major European success."]},
+{name:"George Best", options:["George Best","Bobby Charlton","Denis Law","Ryan Giggs"], clues:[
+ "Born in Belfast, Northern Ireland, in 1946.",
+ "Starred for Manchester United through the 1960s.",
+ "Famous for a quote about spending money on \"booze, birds, and fast cars.\"",
+ "Widely considered one of the greatest dribblers the game has seen."]},
+{name:"Franz Beckenbauer", options:["Franz Beckenbauer","Karl-Heinz Rummenigge","Lothar Matthäus","Berti Vogts"], clues:[
+ "Born in Munich, Germany, in 1945.",
+ "Pioneered the modern attacking sweeper position.",
+ "Captained West Germany to the 1974 World Cup title.",
+ "Later managed the same country to another title in 1990."]},
+{name:"Luka Modrić", options:["Luka Modrić","Ivan Rakitić","Mario Mandžukić","Marcelo Brozović"], clues:[
+ "Born in Zadar, Croatia, in 1985.",
+ "Known for his exceptional passing range from midfield.",
+ "Led Croatia to their first-ever World Cup final in 2018.",
+ "Won the Ballon d'Or that same year, ending a decade of two-player dominance."]},
+{name:"Thierry Henry", options:["Thierry Henry","Patrick Vieira","Robert Pirès","Nicolas Anelka"], clues:[
+ "Born near Paris, France, in 1977.",
+ "Became Arsenal's all-time leading goalscorer.",
+ "Part of Arsenal's famous unbeaten league season.",
+ "Won the World Cup with France in 1998."]},
+{name:"Roberto Carlos", options:["Roberto Carlos","Cafu","Marcelo","Dani Alves"], clues:[
+ "Born in Brazil in 1973.",
+ "Famous for a physics-defying free kick against France in 1997.",
+ "Starred as a left-back for Real Madrid for over a decade.",
+ "Won three Champions League titles with the club."]},
+{name:"Andrés Iniesta", options:["Andrés Iniesta","Xavi","Cesc Fàbregas","Sergio Busquets"], clues:[
+ "Born in a small Spanish village in 1984.",
+ "A graduate of Barcelona's famous youth academy.",
+ "Scored the winning goal in the 2010 World Cup final.",
+ "Known for his calm, elegant midfield play."]},
+{name:"Gianluigi Buffon", options:["Gianluigi Buffon","Dino Zoff","Walter Zenga","Gianluigi Donnarumma"], clues:[
+ "Born in Carrara, Italy, in 1978.",
+ "Spent almost his entire career as one club's goalkeeper.",
+ "Played at five World Cups across two decades.",
+ "Won the World Cup with Italy in 2006."]},
 ];
 
-const ROUND_SIZE=15, TIME_PER_Q=10, CIRC=251.2;
+/* ============ DISPLAY NAME MAPS ============ */
+const COUNTRY_NAMES = {brazil:"Brazil",argentina:"Argentina",germany:"Germany",france:"France",italy:"Italy",spain:"Spain",england:"England",portugal:"Portugal",netherlands:"Netherlands",uruguay:"Uruguay"};
+const CLUB_NAMES = {realmadrid:"Real Madrid",barcelona:"Barcelona",manutd:"Man United",mancity:"Man City",liverpool:"Liverpool",bayern:"Bayern Munich",juventus:"Juventus",psg:"PSG"};
+
+/* ============ SHARED STATE ============ */
+const ROUND_SIZE=15, TIME_PER_Q=10, CIRC=226.2;
+const QUICK_ROUND_SIZE=6;
+let currentMode='worldcup', currentSubject=null;
 let round=[], idx=0, score=0, streak=0, bestStreak=0, locked=false, timerId=null, timeLeft=TIME_PER_Q;
-const best = { get(){ try{return parseInt(localStorage.getItem('gbt_best')||'0',10)}catch(e){return 0} },
-               set(v){ try{localStorage.setItem('gbt_best',String(v))}catch(e){} } };
+let roundSize=ROUND_SIZE;
+
+const best = {
+  get(mode){ try{return parseInt(localStorage.getItem('gbt_best_'+mode)||'0',10)}catch(e){return 0} },
+  set(mode,v){ try{localStorage.setItem('gbt_best_'+mode,String(v))}catch(e){} }
+};
 
 function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-function startGame(){
+function showScreen(id){
+  ['screen-modeselect','screen-subpicker','screen-quiz','screen-guess'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s!==id);
+  });
+}
+
+/* ============ MODE SELECT ============ */
+document.querySelectorAll('.ms-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    const mode = card.dataset.mode;
+    if(mode==='worldcup'){ currentMode='worldcup'; currentSubject=null; beginQuiz(); }
+    else if(mode==='guess'){ beginGuessMode(); }
+    else { openSubPicker(mode); }
+  });
+});
+
+function openSubPicker(type){
+  currentMode = type;
+  const eyebrow = document.getElementById('sp-eyebrow');
+  const title = document.getElementById('sp-title');
+  const grid = document.getElementById('sp-grid');
+  grid.innerHTML='';
+
+  const namesMap = type==='country' ? COUNTRY_NAMES : CLUB_NAMES;
+  const mixedLabel = type==='country' ? 'Mixed Countries (15Q)' : 'Mixed Clubs (15Q)';
+  eyebrow.textContent = type==='country' ? 'National Teams' : 'Club Football';
+  title.textContent = type==='country' ? 'Pick A Team' : 'Pick A Club';
+
+  const mixedChip = document.createElement('button');
+  mixedChip.className = 'sp-chip mixed';
+  mixedChip.textContent = mixedLabel;
+  mixedChip.onclick = ()=>{ currentSubject=null; beginQuiz(); };
+  grid.appendChild(mixedChip);
+
+  Object.keys(namesMap).forEach(key=>{
+    const chip = document.createElement('button');
+    chip.className = 'sp-chip';
+    chip.textContent = namesMap[key];
+    chip.onclick = ()=>{ currentSubject=key; beginQuiz(); };
+    grid.appendChild(chip);
+  });
+
+  showScreen('screen-subpicker');
+}
+
+document.getElementById('sp-back').addEventListener('click', ()=> showScreen('screen-modeselect'));
+document.getElementById('change-category-btn').addEventListener('click', ()=>{
   document.getElementById('gameover').classList.remove('show');
-  round = shuffle(QUESTIONS).slice(0,ROUND_SIZE).map(q=>{
+  showScreen('screen-modeselect');
+});
+
+/* ============ QUIZ ENGINE (worldcup / country / club) ============ */
+function getPool(){
+  if(currentMode==='worldcup') return QUESTIONS;
+  if(currentMode==='country'){
+    if(currentSubject) return COUNTRY_BANK[currentSubject];
+    return Object.values(COUNTRY_BANK).flat();
+  }
+  if(currentMode==='club'){
+    if(currentSubject) return CLUB_BANK[currentSubject];
+    return Object.values(CLUB_BANK).flat();
+  }
+  return QUESTIONS;
+}
+
+function getModeKey(){
+  return currentMode + (currentSubject ? ':'+currentSubject : ':mixed');
+}
+
+function getCategoryLabel(item){
+  if(item.cat) return item.cat;
+  if(currentMode==='country') return currentSubject ? COUNTRY_NAMES[currentSubject].toUpperCase() : 'NATIONAL TEAMS';
+  if(currentMode==='club') return currentSubject ? CLUB_NAMES[currentSubject].toUpperCase() : 'CLUB FOOTBALL';
+  return 'TRIVIA';
+}
+
+function beginQuiz(){
+  const pool = getPool();
+  roundSize = currentSubject ? Math.min(QUICK_ROUND_SIZE, pool.length) : Math.min(ROUND_SIZE, pool.length);
+  round = shuffle(pool).slice(0,roundSize).map(q=>{
     const opts = q.o.map((text,i)=>({text,correct:i===q.c}));
-    return {cat:q.cat, q:q.q, opts:shuffle(opts)};
+    return {cat:getCategoryLabel(q), q:q.q, o:shuffle(opts)};
   });
   idx=0; score=0; streak=0; bestStreak=0;
-  document.getElementById('sb-best').textContent = best.get();
+  document.getElementById('sb-total').textContent = roundSize;
+  document.getElementById('sb-best').textContent = best.get(getModeKey());
   updateScoreboard();
+  showScreen('screen-quiz');
   loadQuestion();
 }
 
 function updateScoreboard(){
   document.getElementById('sb-score').textContent=score;
   document.getElementById('sb-streak').textContent=streak;
-  document.getElementById('sb-q').textContent=Math.min(idx+1,ROUND_SIZE);
+  document.getElementById('sb-q').textContent=Math.min(idx+1,roundSize);
 }
 
 function loadQuestion(){
-  if(idx>=round.length){ endGame(); return; }
+  if(idx>=round.length){ endQuizRound(); return; }
   locked=false;
   const item=round[idx];
   document.getElementById('q-category').textContent=item.cat;
@@ -413,7 +803,7 @@ function loadQuestion(){
 
   const wrap=document.getElementById('answers');
   wrap.innerHTML='';
-  item.opts.forEach((opt,i)=>{
+  item.o.forEach((opt,i)=>{
     const btn=document.createElement('button');
     btn.className='ans';
     btn.innerHTML='<span class="num">'+String.fromCharCode(65+i)+'</span><span>'+opt.text+'</span>';
@@ -448,7 +838,7 @@ function timeUp(){
   locked=true;
   const wrap=document.getElementById('answers');
   [...wrap.children].forEach(b=>b.classList.add('locked'));
-  const correctIdx = round[idx].opts.findIndex(o=>o.correct);
+  const correctIdx = round[idx].o.findIndex(o=>o.correct);
   wrap.children[correctIdx].classList.add('correct');
   streak=0;
   flashCard('red');
@@ -469,7 +859,7 @@ function selectAnswer(btn,isCorrect){
     flashCard('green');
   } else {
     btn.classList.add('wrong');
-    const correctIdx = round[idx].opts.findIndex(o=>o.correct);
+    const correctIdx = round[idx].o.findIndex(o=>o.correct);
     wrap.children[correctIdx].classList.add('correct');
     streak=0;
     flashCard('red');
@@ -479,8 +869,9 @@ function selectAnswer(btn,isCorrect){
   idx++;
 }
 
+document.getElementById('next-btn').addEventListener('click', loadQuestion);
+
 function flashCard(type){
-  // type: 'green' (correct), 'yellow' (wrong pick), 'red' (timed out)
   const el=document.getElementById('card-flash');
   const shape=el.querySelector('.card-shape');
   el.className='';
@@ -495,23 +886,300 @@ function flashCard(type){
   setTimeout(()=>{ el.classList.remove('show'); },750);
 }
 
-function nextQuestion(){ loadQuestion(); }
-
-function endGame(){
+function endQuizRound(){
   clearInterval(timerId);
+  const modeKey = getModeKey();
   const acc = Math.round((score/round.length)*100);
-  const prevBest = best.get();
+  const prevBest = best.get(modeKey);
   const newBest = Math.max(prevBest, score);
-  best.set(newBest);
+  best.set(modeKey, newBest);
 
-  document.getElementById('go-score').textContent = score+'/'+round.length;
-  document.getElementById('go-streak').textContent = bestStreak;
-  document.getElementById('go-acc').textContent = acc+'%';
-  document.getElementById('go-best').textContent = newBest+'/'+round.length;
-  document.getElementById('go-sub').textContent = score===round.length ? "Perfect round — clean sheet!" : (acc>=70 ? "Solid performance out there." : "Room to improve before the next matchday.");
-  document.getElementById('gameover').classList.add('show');
+  const modeLabel = currentMode==='worldcup' ? 'World Cup Mixed'
+    : currentMode==='country' ? (currentSubject ? COUNTRY_NAMES[currentSubject] : 'National Teams Mixed')
+    : (currentSubject ? CLUB_NAMES[currentSubject] : 'Club Football Mixed');
+
+  showGameOver({
+    modeLabel,
+    scoreText: score+'/'+round.length,
+    subText: score===round.length ? "Perfect round — clean sheet!" : (acc>=70 ? "Solid performance out there." : "Room to improve before the next matchday."),
+    stats: [
+      {label:'Best Streak', val: bestStreak},
+      {label:'Accuracy', val: acc+'%'},
+      {label:'All-Time Best', val: newBest+'/'+round.length}
+    ],
+    shareLine: score+'/'+round.length+' on '+modeLabel+' ('+acc+'% accuracy)'
+  });
 }
 
+/* ============ GUESS THE PLAYER ENGINE ============ */
+const GP_ROUNDS=10, GP_CLUE_DELAY=4500, GP_POINTS=[100,75,50,25];
+let gpRound=[], gpIdx=0, gpPoints=0, gpCorrect=0, gpLocked=false, gpClueIdx=0, gpClueTimer=null;
+
+function beginGuessMode(){
+  gpRound = shuffle(PLAYERS).slice(0, Math.min(GP_ROUNDS, PLAYERS.length));
+  gpIdx=0; gpPoints=0; gpCorrect=0;
+  document.getElementById('gp-total').textContent = gpRound.length;
+  showScreen('screen-guess');
+  loadGuessRound();
+}
+
+function updateGuessScoreboard(){
+  document.getElementById('gp-points').textContent = gpPoints;
+  document.getElementById('gp-round').textContent = Math.min(gpIdx+1, gpRound.length);
+  document.getElementById('gp-correct').textContent = gpCorrect;
+}
+
+function loadGuessRound(){
+  if(gpIdx>=gpRound.length){ endGuessMode(); return; }
+  gpLocked=false; gpClueIdx=0;
+  updateGuessScoreboard();
+
+  const player = gpRound[gpIdx];
+  document.getElementById('guess-clues').innerHTML='';
+  document.getElementById('gp-avail').textContent = 'Guess now for up to 100 pts';
+  document.getElementById('guess-next-btn').classList.remove('show');
+
+  const optsWrap = document.getElementById('guess-options');
+  optsWrap.innerHTML='';
+  const shuffledOpts = shuffle(player.options);
+  shuffledOpts.forEach(optName=>{
+    const btn=document.createElement('button');
+    btn.className='gopt';
+    btn.textContent=optName;
+    btn.onclick=()=>selectGuess(btn, optName===player.name);
+    optsWrap.appendChild(btn);
+  });
+
+  revealNextClue();
+}
+
+function revealNextClue(){
+  if(gpLocked) return;
+  const player = gpRound[gpIdx];
+  if(gpClueIdx>=player.clues.length){
+    clearTimeout(gpClueTimer);
+    if(!gpLocked){ gpTimeoutFail(); }
+    return;
+  }
+  const cluesWrap = document.getElementById('guess-clues');
+  const line = document.createElement('div');
+  line.className='clue-line';
+  line.innerHTML = '<span class="clue-num">'+(gpClueIdx+1)+'.</span><span>'+player.clues[gpClueIdx]+'</span>';
+  cluesWrap.appendChild(line);
+
+  const availPts = GP_POINTS[gpClueIdx];
+  document.getElementById('gp-avail').textContent = 'Guess now for up to '+availPts+' pts';
+  gpClueIdx++;
+
+  clearTimeout(gpClueTimer);
+  if(gpClueIdx < player.clues.length){
+    gpClueTimer = setTimeout(revealNextClue, GP_CLUE_DELAY);
+  } else {
+    gpClueTimer = setTimeout(()=>{ if(!gpLocked) gpTimeoutFail(); }, GP_CLUE_DELAY);
+  }
+}
+
+function gpTimeoutFail(){
+  if(gpLocked) return;
+  gpLocked=true;
+  clearTimeout(gpClueTimer);
+  const player = gpRound[gpIdx];
+  [...document.getElementById('guess-options').children].forEach(b=>{
+    b.classList.add('locked');
+    if(b.textContent===player.name) b.classList.add('correct');
+  });
+  document.getElementById('gp-avail').textContent = 'Time\u2019s up \u2014 it was '+player.name;
+  flashCard('red');
+  document.getElementById('guess-next-btn').classList.add('show');
+  gpIdx++;
+}
+
+function selectGuess(btn,isCorrect){
+  if(gpLocked)return;
+  gpLocked=true;
+  clearTimeout(gpClueTimer);
+  const player = gpRound[gpIdx];
+  const earnedPts = isCorrect ? GP_POINTS[Math.min(gpClueIdx-1,3)] : 0;
+
+  [...document.getElementById('guess-options').children].forEach(b=>b.classList.add('locked'));
+  if(isCorrect){
+    btn.classList.add('correct');
+    gpPoints += earnedPts; gpCorrect++;
+    document.getElementById('gp-avail').textContent = 'Correct! +'+earnedPts+' pts';
+    flashCard('green');
+  } else {
+    btn.classList.add('wrong');
+    [...document.getElementById('guess-options').children].forEach(b=>{ if(b.textContent===player.name) b.classList.add('correct'); });
+    document.getElementById('gp-avail').textContent = 'Not quite \u2014 it was '+player.name;
+    flashCard('red');
+  }
+  updateGuessScoreboard();
+  document.getElementById('guess-next-btn').classList.add('show');
+  gpIdx++;
+}
+
+document.getElementById('guess-next-btn').addEventListener('click', loadGuessRound);
+
+function endGuessMode(){
+  clearTimeout(gpClueTimer);
+  const acc = Math.round((gpCorrect/gpRound.length)*100);
+  const prevBest = best.get('guess');
+  const newBest = Math.max(prevBest, gpPoints);
+  best.set('guess', newBest);
+
+  showGameOver({
+    modeLabel: 'Guess The Player',
+    scoreText: gpPoints+' pts',
+    subText: gpCorrect===gpRound.length ? "Perfect round \u2014 you know your legends!" : (acc>=70 ? "Sharp scouting eye." : "The clues will get easier next time \u2014 probably."),
+    stats: [
+      {label:'Correct', val: gpCorrect+'/'+gpRound.length},
+      {label:'Accuracy', val: acc+'%'},
+      {label:'All-Time Best', val: newBest+' pts'}
+    ],
+    shareLine: gpPoints+' pts on Guess The Player ('+gpCorrect+'/'+gpRound.length+' correct)'
+  });
+}
+
+/* ============ GAME OVER + SHARE CARD ============ */
+let lastResult = null;
+
+function showGameOver(result){
+  lastResult = result;
+  document.getElementById('go-score').textContent = result.scoreText;
+  document.getElementById('go-sub').textContent = result.subText;
+  const statsWrap = document.getElementById('go-stats');
+  statsWrap.innerHTML = result.stats.map(s=>
+    '<div><div class="go-stat-label">'+s.label+'</div><div class="go-stat-val">'+s.val+'</div></div>'
+  ).join('');
+  document.getElementById('go-eyebrow').textContent = result.modeLabel;
+  document.getElementById('gameover').classList.add('show');
+  try{ drawShareCard(result); }catch(e){
+    console.error('Share card failed to render', e);
+    document.getElementById('share-preview').style.display='none';
+    document.querySelector('.go-share-row').style.display='none';
+  }
+}
+
+function drawShareCard(result){
+  const canvas = document.getElementById('share-canvas');
+  const ctx = canvas.getContext('2d');
+  const W=600,H=750;
+
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#123420');
+  grad.addColorStop(1,'#0a2015');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle='rgba(255,176,32,0.35)';
+  ctx.lineWidth=3;
+  ctx.strokeRect(18,18,W-36,H-36);
+
+  ctx.fillStyle='#ffb020';
+  ctx.font='700 13px monospace';
+  ctx.textAlign='center';
+  ctx.fillText('AJORA GAMES  \u25C6  GOLDEN BOOT TRIVIA', W/2, 70);
+
+  ctx.fillStyle='#ede7dc';
+  ctx.font='900 30px "Big Shoulders Display", sans-serif';
+  ctx.fillText(result.modeLabel.toUpperCase(), W/2, 120);
+
+  ctx.fillStyle='#ffb020';
+  ctx.font='900 120px "Big Shoulders Display", sans-serif';
+  ctx.fillText(result.scoreText, W/2, 300);
+
+  ctx.fillStyle='#b9b3a4';
+  ctx.font='13px monospace';
+  ctx.fillText(result.subText, W/2, 350);
+
+  const statY = 460;
+  const statXs = [W/2-180, W/2, W/2+180];
+  result.stats.slice(0,3).forEach((s,i)=>{
+    ctx.fillStyle='#b9b3a4';
+    ctx.font='700 11px monospace';
+    ctx.fillText(s.label.toUpperCase(), statXs[i], statY);
+    ctx.fillStyle='#ede7dc';
+    ctx.font='900 26px "Big Shoulders Display", sans-serif';
+    ctx.fillText(String(s.val), statXs[i], statY+34);
+  });
+
+  ctx.strokeStyle='rgba(237,231,220,0.2)';
+  ctx.setLineDash([6,6]);
+  ctx.beginPath();
+  ctx.moveTo(50,540);
+  ctx.lineTo(W-50,540);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle='#ffb020';
+  ctx.font='900 20px "Big Shoulders Display", sans-serif';
+  ctx.fillText('REAL ONES KNOW.', W/2, 600);
+
+  ctx.fillStyle='#b9b3a4';
+  ctx.font='700 13px monospace';
+  ctx.fillText('ajoragames.com/goldenboot', W/2, 650);
+
+  const img = new Image();
+  img.onload = ()=>{
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(W/2, 690, 34, 0, Math.PI*2);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(img, W/2-34, 690-34, 68, 68);
+    ctx.restore();
+    finalizeShareCard();
+  };
+  img.onerror = finalizeShareCard;
+  img.src = 'gbt-logo.svg';
+}
+
+function finalizeShareCard(){
+  const canvas = document.getElementById('share-canvas');
+  const preview = document.getElementById('share-preview');
+  preview.src = canvas.toDataURL('image/png');
+  preview.style.display='block';
+}
+
+document.getElementById('download-card-btn').addEventListener('click', ()=>{
+  const canvas = document.getElementById('share-canvas');
+  canvas.toBlob(blob=>{
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'golden-boot-trivia-score.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }, 'image/png');
+});
+
+document.getElementById('native-share-btn').addEventListener('click', async ()=>{
+  const canvas = document.getElementById('share-canvas');
+  const text = lastResult ? lastResult.shareLine + ' \u2014 play at ajoragames.com/goldenboot' : 'Golden Boot Trivia \u2014 ajoragames.com/goldenboot';
+  try{
+    canvas.toBlob(async (blob)=>{
+      const file = new File([blob], 'golden-boot-trivia.png', {type:'image/png'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], title:'Golden Boot Trivia', text});
+      } else if(navigator.share){
+        await navigator.share({title:'Golden Boot Trivia', text, url:'https://ajoragames.com/goldenboot/'});
+      } else {
+        await navigator.clipboard.writeText(text);
+        alert('Copied to clipboard!');
+      }
+    }, 'image/png');
+  }catch(e){ /* user cancelled share, ignore */ }
+});
+
+document.getElementById('play-again-btn').addEventListener('click', ()=>{
+  document.getElementById('gameover').classList.remove('show');
+  if(currentMode==='guess') beginGuessMode();
+  else beginQuiz();
+});
+
+/* ============ INTRO ============ */
 function showIntro(){
   const logos=document.getElementById('intro-logos');
   const glow=document.getElementById('intro-glow');
@@ -528,7 +1196,7 @@ function showIntro(){
     const intro=document.getElementById('page-intro');
     intro.style.transition='opacity .5s ease';
     intro.style.opacity='0';
-    setTimeout(()=>{intro.style.display='none';startGame();},500);
+    setTimeout(()=>{intro.style.display='none';},500);
   },2600);
 }
 
